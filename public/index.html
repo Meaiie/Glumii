@@ -385,15 +385,15 @@
                     <div class="carb-ratio-group">
                         <div class="form-group">
                             <label for="carb_ratio_breakfast">อาหารเช้า (Breakfast) *</label>
-                            <input type="number" id="carb_ratio_breakfast" name="carb_ratio_breakfast" step="0.1" min="0" placeholder="เช่น 10" required>
+                            <input type="number" id="carb_ratio_breakfast" name="carb_ratio_breakfast" step="0.1" min="0" placeholder="เช่น 30 %" required>
                         </div>
                         <div class="form-group">
                             <label for="carb_ratio_lunch">อาหารกลางวัน (Lunch) *</label>
-                            <input type="number" id="carb_ratio_lunch" name="carb_ratio_lunch" step="0.1" min="0" placeholder="เช่น 12" required>
+                            <input type="number" id="carb_ratio_lunch" name="carb_ratio_lunch" step="0.1" min="0" placeholder="เช่น 40 %" required>
                         </div>
                         <div class="form-group">
                             <label for="carb_ratio_dinner">อาหารเย็น (Dinner) *</label>
-                            <input type="number" id="carb_ratio_dinner" name="carb_ratio_dinner" step="0.1" min="0" placeholder="เช่น 15" required>
+                            <input type="number" id="carb_ratio_dinner" name="carb_ratio_dinner" step="0.1" min="0" placeholder="เช่น 30 %" required>
                         </div>
                     </div>
                 </div>
@@ -448,7 +448,7 @@
 
         async function initializeLiff() {
             try {
-                await liff.init({ liffId: "2007439905-GqXEPnq4" }); // LIFF ID ของคุณ
+                await liff.init({ liffId: "2007493917-XdpdZalP" }); // LIFF ID ของคุณ
                 if (!liff.isLoggedIn()) {
                     liff.login();
                 } else {
