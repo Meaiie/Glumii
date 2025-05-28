@@ -3,8 +3,8 @@ const fetch = require('node-fetch'); // จำเป็นต้องติด�
 
 exports.handler = async function(event, context) {
   // นี่คือ URL ของ Google Apps Script Web App ของคุณ
-  const googleAppsScriptUrl = 'https://script.google.com/macros/s/AKfycbw-c7R94ARHkvr0qIyI6Ter1LE4tvMEbVkh-8zhiYRvf8F9lmd5b2K3mYir86_7eljYHg/exec';
-
+  const googleAppsScriptUrl = 'https://script.google.com/macros/s/AKfycbyqIWrKS4atLipVI5RWfIrC_SkQ2xkVZoGXQfIh0bu5lyjJDX6Oi8JA1CIwmYdx-FvpfA/exec';
+                               
   // จัดการ Preflight request (OPTIONS)
   if (event.httpMethod === 'OPTIONS') {
     return {
