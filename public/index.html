@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบบันทึกข้อมูลคนไข้สตรีตั้งครรภ์</title>
+    <style>
+        /* CSS ของคุณยังคงอยู่เหมือนเดิม */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: sans-serif;
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 50%, #e1bee7 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ef78a0, #f897c1);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .form-container {
+            padding: 40px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            color: #f494be;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f8bbd9;
+            padding-bottom: 8px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .form-group.full-width {
+            flex: 100%;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #f8bbd9;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #f1a1bc;
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1);
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 8px;
+        }
+        
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .radio-item input[type="radio"] {
+            width: auto;
+            margin: 0;
+        }
+        
+        .conditional-input {
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .conditional-input.show {
+            display: block;
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 8px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: #fce4ec;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+        
+        .checkbox-item:hover {
+            background: #f8bbd9;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+        
+        .carb-ratio-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #f5abc4, #f9b0cf);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 30px auto 0;
+            box-shadow: 0 4px 15px rgba(232, 131, 165, 0.3);
+        }
+        
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(192, 116, 141, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #ec8cac;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        
+        .success-message {
+            display: none;
+            background: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .error-message {
+            display: none;
+            background: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .liff-status {
+            text-align: center;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        
+        .liff-connected {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        
+        .liff-disconnected {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 20px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .form-group {
+                min-width: auto;
+            }
+            
+            .carb-ratio-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> ระบบบันทึกข้อมูลคนไข้</h1>
+            <p>สตรีตั้งครรภ์</p>
+        </div>
+        
+        <div class="form-container">
+            <div id="liffStatus" class="liff-status liff-disconnected">
+                🔄 กำลังเชื่อมต่อ LINE...
+            </div>
+            
+            <form id="patientForm">
+                <div class="form-section">
+                    <h3 class="section-title">ข้อมูลส่วนตัว</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="full_name">ชื่อ-นามสกุล *</label>
+                            <input type="text" id="full_name" name="full_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="nickname">ชื่อเล่น *</label>
+                            <input type="text" id="nickname" name="nickname" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="hospital_id">รหัสโรงพยาบาล *</label>
+                            <input type="text" id="hospital_id" name="hospital_id" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="national_id">เลขบัตรประชาชน *</label>
+                            <input type="text" id="national_id" name="national_id" pattern="[0-9]{13}" maxlength="13" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="birth_date">วันเกิด *</label>
+                            <input type="date" id="birth_date" name="birth_date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="height">ส่วนสูง (ซม.) *</label>
+                            <input type="number" id="height" name="height" min="100" max="200" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3 class="section-title">ข้อมูลสุขภาพ</h3>
+                    
+                    <div class="form-group full-width">
+                        <label>โรคประจำตัว *</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="chronicDiseaseNo" name="chronicDisease" value="ไม่มี" required>
+                                <label for="chronicDiseaseNo">ไม่มี</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="chronicDiseaseYes" name="chronicDisease" value="มี" required>
+                                <label for="chronicDiseaseYes">มี</label>
+                            </div>
+                        </div>
+                        <div class="conditional-input" id="chronicDiseaseDetail">
+                            <input type="text" id="comorbidities" name="comorbidities" placeholder="ระบุโรคประจำตัว">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label>ยาที่ใช้ก่อนตั้งครรภ์ *</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="medicationNo" name="medication" value="ไม่มี" required>
+                                <label for="medicationNo">ไม่มี</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="medicationYes" name="medication" value="มี" required>
+                                <label for="medicationYes">มี</label>
+                            </div>
+                        </div>
+                        <div class="conditional-input" id="medicationDetail">
+                            <textarea id="pre_pregnancy_medications" name="pre_pregnancy_medications" rows="3" placeholder="ระบุยาที่ใช้"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pre_pregnancy_weight">น้ำหนักก่อนตั้งครรภ์ (กก.) *</label>
+                            <input type="number" id="pre_pregnancy_weight" name="pre_pregnancy_weight" min="30" max="150" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="weight">น้ำหนักปัจจุบัน (กก.) *</label>
+                            <input type="number" id="weight" name="weight" min="30" max="150" step="0.1" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3 class="section-title">ข้อมูลการตั้งครรภ์</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fetus_count">จำนวนทารกในครรภ์ *</label>
+                            <select id="fetus_count" name="fetus_count" required>
+                                <option value="">เลือกจำนวนทารก</option>
+                                <option value="1">1 คน</option>
+                                <option value="2">2 คน</option>
+                                <option value="3">3 คน</option>
+                                <option value="4">4 คน หรือมากกว่า</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="due_date">วันครบกำหนดคลอด *</label>
+                            <input type="date" id="due_date" name="due_date" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3 class="section-title">อัตราส่วนคาร์บ</h3>
+                    
+                    <div class="carb-ratio-group">
+                        <div class="form-group">
+                            <label for="carb_ratio_breakfast">อาหารเช้า (Breakfast) *</label>
+                            <input type="number" id="carb_ratio_breakfast" name="carb_ratio_breakfast" step="0.1" min="0" placeholder="เช่น 10" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carb_ratio_lunch">อาหารกลางวัน (Lunch) *</label>
+                            <input type="number" id="carb_ratio_lunch" name="carb_ratio_lunch" step="0.1" min="0" placeholder="เช่น 12" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carb_ratio_dinner">อาหารเย็น (Dinner) *</label>
+                            <input type="number" id="carb_ratio_dinner" name="carb_ratio_dinner" step="0.1" min="0" placeholder="เช่น 15" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3 class="section-title">วันที่ต้องเจาะน้ำตาล (เลือก 3 วัน)</h3>
+                    
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="monday" class="sugar-check" value="จันทร์">
+                            <label for="monday">จันทร์</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="tuesday" class="sugar-check" value="อังคาร">
+                            <label for="tuesday">อังคาร</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="wednesday" class="sugar-check" value="พุธ">
+                            <label for="wednesday">พุธ</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="thursday" class="sugar-check" value="พฤหัสบดี">
+                            <label for="thursday">พฤหัสบดี</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="friday" class="sugar-check" value="ศุกร์">
+                            <label for="friday">ศุกร์</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="saturday" class="sugar-check" value="เสาร์">
+                            <label for="saturday">เสาร์</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="sunday" class="sugar-check" value="อาทิตย์">
+                            <label for="sunday">อาทิตย์</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn" disabled>💾 บันทึกข้อมูล</button>
+                
+                <div class="loading" id="loading">⏳ กำลังบันทึกข้อมูล...</div>
+                <div class="success-message" id="successMessage">✅ บันทึกข้อมูลเรียบร้อยแล้ว!</div>
+                <div class="error-message" id="errorMessage">❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง</div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        let isLiffReady = false;
+
+        async function initializeLiff() {
+            try {
+                await liff.init({ liffId: "2007439905-GqXEPnq4" }); // LIFF ID ของคุณ
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                } else {
+                    isLiffReady = true;
+                    document.getElementById('liffStatus').className = 'liff-status liff-connected';
+                    document.getElementById('liffStatus').innerHTML = '✅ เชื่อมต่อ LINE สำเร็จ';
+                    document.querySelector('.submit-btn').disabled = false;
+                }
+            } catch (error) {
+                console.error('LIFF initialization failed:', error);
+                document.getElementById('liffStatus').innerHTML = '❌ ไม่สามารถเชื่อมต่อ LINE ได้';
+            }
+        }
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+
+            if (!isLiffReady) {
+                alert('กรุณารอให้เชื่อมต่อ LINE เสร็จสิ้น');
+                return;
+            }
+
+            const selectedSugarCheck = Array.from(document.querySelectorAll('.sugar-check:checked')).map(cb => cb.value);
+            if (selectedSugarCheck.length !== 3) {
+                alert('กรุณาเลือก "วันที่ต้องเจาะน้ำตาล" ให้ครบ 3 วัน');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+            document.querySelector('.submit-btn').disabled = true;
+
+            try {
+                const profile = await liff.getProfile();
+                const userId = profile.userId;
+
+                let comorbidities = '';
+                const chronicDiseaseRadio = document.querySelector('input[name="chronicDisease"]:checked');
+                if (chronicDiseaseRadio) {
+                    comorbidities = chronicDiseaseRadio.value === 'มี' ? (document.getElementById('comorbidities').value || '') : 'ไม่มี';
+                } else {
+                    comorbidities = 'ไม่ระบุ'; // เพิ่มกรณีที่ไม่ได้เลือกเลย
+                }
+
+                let prePregMedications = '';
+                const medicationRadio = document.querySelector('input[name="medication"]:checked');
+                if (medicationRadio) {
+                    prePregMedications = medicationRadio.value === 'มี' ? (document.getElementById('pre_pregnancy_medications').value || '') : 'ไม่มี';
+                } else {
+                    prePregMedications = 'ไม่ระบุ'; // เพิ่มกรณีที่ไม่ได้เลือกเลย
+                }
+
+                const formData = {
+                    userId,
+                    full_name: document.getElementById('full_name').value || '',
+                    nickname: document.getElementById('nickname').value || '',
+                    hospital_id: document.getElementById('hospital_id').value || '',
+                    national_id: document.getElementById('national_id').value || '',
+                    birth_date: document.getElementById('birth_date').value || '',
+                    comorbidities,
+                    pre_pregnancy_medications: prePregMedications,
+                    pre_pregnancy_weight: parseFloat(document.getElementById('pre_pregnancy_weight').value) || 0,
+                    weight: parseFloat(document.getElementById('weight').value) || 0,
+                    height: parseFloat(document.getElementById('height').value) || 0,
+                    fetus_count: parseInt(document.getElementById('fetus_count').value) || 0,
+                    due_date: document.getElementById('due_date').value || '',
+                    carb_ratio: {
+                        breakfast: parseFloat(document.getElementById('carb_ratio_breakfast').value) || 0,
+                        lunch: parseFloat(document.getElementById('carb_ratio_lunch').value) || 0,
+                        dinner: parseFloat(document.getElementById('carb_ratio_dinner').value) || 0
+                    },
+                    sugar_check_days: selectedSugarCheck
+                };
+
+                console.log('Sending data:', JSON.stringify(formData, null, 2));
+
+                // **** สำคัญ: เปลี่ยน URL ตรงนี้ให้ชี้ไปยัง Netlify Function ของคุณ ****
+                const url = '/.netlify/functions/apps-script-proxy'; 
+                console.log('Attempting to fetch to Netlify Function:', url);
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    const errorDetails = await response.text(); // อ่านข้อความผิดพลาดจาก server
+                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails}`);
+                }
+
+                const result = await response.json();
+                console.log('Server response from Netlify Function:', result);
+
+                if (result.status === 'success') {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                    console.log('✅ ข้อมูลบันทึกสำเร็จ!');
+
+                    setTimeout(() => {
+                        document.getElementById('patientForm').reset();
+                        document.getElementById('successMessage').style.display = 'none';
+                        document.querySelector('.submit-btn').disabled = false;
+                        document.querySelectorAll('.sugar-check').forEach(cb => cb.disabled = false);
+                        document.getElementById('chronicDiseaseDetail').classList.remove('show');
+                        document.getElementById('medicationDetail').classList.remove('show');
+                        // ไม่ต้องใช้ window.history.replaceState สำหรับการแสดงผลสำเร็จ/ล้มเหลว เพราะไม่ได้มาจาก redirect ของ Apps Script แล้ว
+                    }, 3000);
+                } else {
+                    // กรณีที่ Apps Script ตอบกลับมาว่ามีข้อผิดพลาด แต่ HTTP status ยังเป็น 200
+                    throw new Error(result.message || 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ Apps Script');
+                }
+            } catch (error) {
+                console.error('❌ Submit Error:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('errorMessage').innerHTML = `❌ เกิดข้อผิดพลาด: ${error.message}`;
+                document.querySelector('.submit-btn').disabled = false;
+
+                setTimeout(() => {
+                    document.getElementById('errorMessage').style.display = 'none';
+                    // ไม่ต้องใช้ window.history.replaceState สำหรับการแสดงผลสำเร็จ/ล้มเหลว
+                }, 8000);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // ลบโค้ดจัดการ redirect จาก Apps Script ออก เพราะตอนนี้ใช้ Netlify Function เป็นตัวกลางแล้ว
+            // const urlParams = new URLSearchParams(window.location.search);
+            // const status = urlParams.get('status');
+            // const message = urlParams.get('message');
+            // ... (โค้ดส่วนนี้ถูกลบออกไป) ...
+
+            document.querySelectorAll('input[name="chronicDisease"]').forEach(radio => {
+                radio.addEventListener('change', function () {
+                    const detail = document.getElementById('chronicDiseaseDetail');
+                    if (this.value === 'มี') {
+                        detail.classList.add('show');
+                        document.getElementById('comorbidities').required = true;
+                    } else {
+                        detail.classList.remove('show');
+                        document.getElementById('comorbidities').required = false;
+                        document.getElementById('comorbidities').value = '';
+                    }
+                });
+            });
+
+            document.querySelectorAll('input[name="medication"]').forEach(radio => {
+                radio.addEventListener('change', function () {
+                    const detail = document.getElementById('medicationDetail');
+                    if (this.value === 'มี') {
+                        detail.classList.add('show');
+                        document.getElementById('pre_pregnancy_medications').required = true;
+                    } else {
+                        detail.classList.remove('show');
+                        document.getElementById('pre_pregnancy_medications').required = false;
+                        document.getElementById('pre_pregnancy_medications').value = '';
+                    }
+                });
+            });
+
+            document.querySelectorAll('.sugar-check').forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    const checked = document.querySelectorAll('.sugar-check:checked');
+                    if (checked.length >= 3) {
+                        document.querySelectorAll('.sugar-check:not(:checked)').forEach(cb => cb.disabled = true);
+                    } else {
+                        document.querySelectorAll('.sugar-check').forEach(cb => cb.disabled = false);
+                    }
+                });
+            });
+
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('due_date').min = today;
+
+            initializeLiff();
+            // ลบ debugTest() ออกไป เพราะไม่จำเป็นแล้ว
+            // debugTest(); 
+
+            document.getElementById('patientForm').addEventListener('submit', handleSubmit);
+        });
+    </script>
+
+</body>
+</html>

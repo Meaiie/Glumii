@@ -1,0 +1,16 @@
+{
+  "name": "patient-form-app",
+  "version": "1.0.0",
+  "description": "Patient data entry form with Netlify Functions and Google Apps Script",
+  "main": "netlify/functions/apps-script-proxy.js",
+  "scripts": {
+    "start": "netlify dev",
+    "build": "echo 'No custom build step needed for static files'"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.1" 
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
