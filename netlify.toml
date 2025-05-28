@@ -1,7 +1,19 @@
 [build]
-  publish = "public"      # บอก Netlify ว่าไฟล์เว็บของคุณอยู่ในโฟลเดอร์ 'public'
-  functions = "netlify/functions" # บอก Netlify ว่า Functions ของคุณอยู่ในโฟลเดอร์ 'netlify/functions'
+  publish = "public"
+  functions = "netlify/functions"
+  command = "npm install"
+  node_version = "20" # <--- เพิ่ม/แก้ไขบรรทัดนี้: กำหนด Node.js version สำหรับทั้ง build และ functions
 
-[functions]
-  node_bundler = "esbuild"
-  node_version = "18" # แนะนำ Node.js 18 ขึ้นไป
+# ไม่ต้องมีส่วน [functions] แยกต่างหากเพื่อกำหนด node_version
+# ถ้ามี [functions] แยกมาแต่เดิมและมี node_version = "..." ให้ลบทิ้งไป
+
+[[redirects]]
+  from = "/submit"
+  to = "/.netlify/functions/apps-script-proxy"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
