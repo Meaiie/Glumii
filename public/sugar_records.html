@@ -1,0 +1,581 @@
+<div class="header-nav">
+    <div class="nav-item" data-page="profile">
+        <i class="icon-profile"></i> ประวัติส่วนตัว
+    </div>
+    <div class="nav-item" data-page="food-records">
+        <i class="icon-food"></i> บันทึกอาหาร
+    </div>
+    <div class="nav-item active" data-page="sugar-records">
+        <i class="icon-sugar"></i> บันทึกน้ำตาล
+    </div>
+</div>
+
+<div class="form-container">
+    <div class="form-section">
+        <h3 class="section-title">บันทึกระดับน้ำตาลในเลือด
+            <button class="add-btn" id="addSugarRecordBtn">+ เพิ่มค่าน้ำตาล</button>
+        </h3>
+        
+        <div class="date-navigator">
+            <button id="prevWeekSugar">&lt; สัปดาห์ก่อน</button>
+            <span id="currentWeekSugar"></span>
+            <button id="nextWeekSugar">สัปดาห์ถัดไป &gt;</button>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="sugarChart"></canvas>
+            <div class="loading" id="sugarChartLoading">⏳ กำลังโหลดกราฟ...</div>
+        </div>
+        <div class="chart-legend">
+            <span class="legend-item normal">ปกติ</span>
+            <span class="legend-item warning">เฝ้าระวัง</span>
+            <span class="legend-item high">สูงเกินไป</span>
+        </div>
+
+        <h3 class="section-title">ค่าน้ำตาลวันนี้ (<span id="currentDateSugarTable"></span>)
+            <input type="date" id="selectDateSugarTable" class="date-picker">
+        </h3>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>เวลา</th>
+                        <th>ค่าน้ำตาล (MG/DL)</th>
+                        <th>ช่วงเวลา</th>
+                        <th>หมายเหตุ</th>
+                        <th>การจัดการ</th>
+                    </tr>
+                </thead>
+                <tbody id="sugarRecordsTableBody">
+                    <div class="loading" id="sugarTableLoading">⏳ กำลังโหลดข้อมูล...</div>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="form-section doctor-advice">
+            <h3 class="section-title">คำแนะนำจากแพทย์</h3>
+            <div class="advice-item">
+                <p>ควรควบคุมระดับน้ำตาลให้ต่ำกว่า 140 mg/dL และก่อนอาหารให้อยู่ระหว่าง 70-95 mg/dL</p>
+            </div>
+            <div class="advice-item">
+                <p>ควรออกกำลังกายเบาๆ วันละ 30 นาที เช่น เดินหลังอาหารเย็น เพื่อช่วยควบคุมระดับน้ำตาล</p>
+            </div>
+            <div class="advice-item">
+                <p>ทานอาหารที่มีดัชนีน้ำตาลต่ำ (Low GI) เช่น ข้าวกล้อง ธัญพืช ผักใบเขียว และโปรตีนไม่ติดมัน</p>
+            </div>
+        </div>
+
+        <div class="success-message" id="sugarSuccess">✅ บันทึกข้อมูลเรียบร้อยแล้ว!</div>
+        <div class="error-message" id="sugarError">❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง</div>
+    </div>
+</div>
+
+<div id="sugarRecordModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h3 id="sugarModalTitle">เพิ่มค่าน้ำตาล</h3>
+        <form id="sugarRecordForm">
+            <div class="form-group">
+                <label for="sugarDate">วันที่</label>
+                <input type="date" id="sugarDate" required>
+            </div>
+            <div class="form-group">
+                <label for="sugarTime">เวลา</label>
+                <input type="time" id="sugarTime" required>
+            </div>
+            <div class="form-group">
+                <label for="sugarValue">ค่าน้ำตาลในเลือด (mg/dL)</label>
+                <input type="number" id="sugarValue" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="sugarPeriod">ช่วงเวลา</label>
+                <select id="sugarPeriod" required>
+                    <option value="">เลือกช่วงเวลา</option>
+                    <option value="ก่อนอาหารเช้า">ก่อนอาหารเช้า</option>
+                    <option value="หลังอาหารเช้า 1.5 ชม.">หลังอาหารเช้า 1.5 ชม.</option>
+                    <option value="ก่อนอาหารกลางวัน">ก่อนอาหารกลางวัน</option>
+                    <option value="หลังอาหารกลางวัน 1.5 ชม.">หลังอาหารกลางวัน 1.5 ชม.</option>
+                    <option value="ก่อนอาหารเย็น">ก่อนอาหารเย็น</option>
+                    <option value="หลังอาหารเย็น 1.5 ชม.">หลังอาหารเย็น 1.5 ชม.</option>
+                    <option value="ก่อนนอน">ก่อนนอน</option>
+                    <option value="อื่นๆ">อื่นๆ</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sugarNote">หมายเหตุ</label>
+                <textarea id="sugarNote" rows="2"></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="cancel-btn" id="cancelSugarModal">ยกเลิก</button>
+                <button type="submit" class="submit-btn">บันทึก</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let currentSugarUserId = '';
+    let currentSugarWeekStart = new Date(); // Start of the current week (Sunday)
+    let currentSugarTableDate = new Date(); // Date for the table view
+    let sugarChartInstance = null;
+    let editingSugarRecordId = null;
+
+    window.initSugarRecordsPage = async function(userId) {
+        currentSugarUserId = userId;
+        currentSugarWeekStart = getSundayOfCurrentWeek(new Date()); // Initialize to start of current week
+        setupSugarRecordsEventListeners();
+        displayCurrentSugarWeek();
+        displayCurrentSugarTableDate();
+        await Promise.all([
+            fetchSugarRecordsForChart(userId, currentSugarWeekStart),
+            fetchSugarRecordsForTable(userId, formatDate(currentSugarTableDate))
+        ]);
+    };
+
+    function setupSugarRecordsEventListeners() {
+        document.getElementById('addSugarRecordBtn').addEventListener('click', () => openSugarModal('add'));
+        document.querySelector('#sugarRecordModal .close-button').addEventListener('click', closeSugarModal);
+        document.getElementById('cancelSugarModal').addEventListener('click', closeSugarModal);
+        document.getElementById('sugarRecordForm').addEventListener('submit', handleSugarFormSubmit);
+
+        document.getElementById('prevWeekSugar').addEventListener('click', () => changeSugarWeek(-7));
+        document.getElementById('nextWeekSugar').addEventListener('click', () => changeSugarWeek(7));
+        
+        document.getElementById('selectDateSugarTable').addEventListener('change', (event) => {
+            currentSugarTableDate = new Date(event.target.value);
+            displayCurrentSugarTableDate();
+            fetchSugarRecordsForTable(currentSugarUserId, formatDate(currentSugarTableDate));
+        });
+
+        // Navigation for top menu
+        document.querySelectorAll('.header-nav .nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.header-nav .nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                const page = this.dataset.page;
+                if (page === 'profile') {
+                    loadContent('profile.html', 'mainContent', currentSugarUserId);
+                } else if (page === 'food-records') {
+                    loadContent('food_records.html', 'mainContent', currentSugarUserId);
+                } else if (page === 'sugar-records') {
+                    // Already on sugar records page
+                }
+            });
+        });
+    }
+
+    function formatDate(date) {
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        const day = d.getDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`; // Format YYYY-MM-DD
+    }
+
+    function getSundayOfCurrentWeek(date) {
+        const d = new Date(date);
+        const day = d.getDay(); // 0 for Sunday, 1 for Monday, etc.
+        const diff = d.getDate() - day; // Adjust to Sunday
+        return new Date(d.setDate(diff));
+    }
+
+    function displayCurrentSugarWeek() {
+        const sunday = new Date(currentSugarWeekStart);
+        const saturday = new Date(currentSugarWeekStart);
+        saturday.setDate(saturday.getDate() + 6); // Add 6 days to get Saturday
+
+        const options = { month: 'long', day: 'numeric' };
+        const weekRange = `${sunday.toLocaleDateString('th-TH', options)} - ${saturday.toLocaleDateString('th-TH', options)} ${saturday.getFullYear()}`;
+        document.getElementById('currentWeekSugar').textContent = weekRange;
+    }
+
+    async function changeSugarWeek(offsetDays) {
+        currentSugarWeekStart.setDate(currentSugarWeekStart.getDate() + offsetDays);
+        displayCurrentSugarWeek();
+        await fetchSugarRecordsForChart(currentSugarUserId, currentSugarWeekStart);
+    }
+
+    function displayCurrentSugarTableDate() {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDateSugarTable').textContent = currentSugarTableDate.toLocaleDateString('th-TH', options);
+        document.getElementById('selectDateSugarTable').value = formatDate(currentSugarTableDate);
+    }
+
+    async function fetchSugarRecordsForChart(userId, weekStartDate) {
+        document.getElementById('sugarChartLoading').style.display = 'block';
+        try {
+            const url = '/.netlify/functions/apps-script-proxy'; 
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    action: 'getSugarRecordsByWeek', 
+                    userId: userId, 
+                    startDate: formatDate(weekStartDate) 
+                })
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            const result = await response.json();
+
+            if (result.status === 'success' && result.data) {
+                renderSugarChart(result.data);
+            } else {
+                if (sugarChartInstance) { sugarChartInstance.destroy(); }
+                document.getElementById('sugarChart').getContext('2d').clearRect(0, 0, document.getElementById('sugarChart').width, document.getElementById('sugarChart').height);
+                // Optionally display a message that no data is available
+            }
+            document.getElementById('sugarChartLoading').style.display = 'none';
+        } catch (error) {
+            console.error('Error fetching sugar records for chart:', error);
+            document.getElementById('sugarChartLoading').style.display = 'none';
+            document.getElementById('sugarError').style.display = 'block';
+            document.getElementById('sugarError').innerHTML = `❌ เกิดข้อผิดพลาดในการดึงข้อมูลกราฟ: ${error.message}`;
+            setTimeout(() => { document.getElementById('sugarError').style.display = 'none'; }, 5000);
+        }
+    }
+
+    function renderSugarChart(data) {
+        const ctx = document.getElementById('sugarChart').getContext('2d');
+        if (sugarChartInstance) {
+            sugarChartInstance.destroy(); // Destroy previous chart instance
+        }
+
+        const labels = ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์', 'อาทิตย์'];
+        const datasets = [];
+
+        // Assuming data is structured like { 'YYYY-MM-DD': [{ pbs: X, sugarFlag: 'normal' }, ...] }
+        // We need to aggregate by day and then by flag (e.g., average or count) for charting
+        // For simplicity, let's just plot the PBS values and color the points
+
+        const pbsData = [];
+        const backgroundColors = [];
+        const borderColors = [];
+
+        labels.forEach((dayName, index) => {
+            const dayRecords = data.filter(record => {
+                const recordDate = new Date(record.datetime.split(' ')[0]);
+                return recordDate.getDay() === (index === 6 ? 0 : index + 1); // Adjust for Sunday (0) vs Monday (1) start
+            });
+
+            if (dayRecords.length > 0) {
+                // For simplicity, let's just plot the first record's PBS value for that day
+                // or you might want to plot multiple points or an average
+                const avgPbs = dayRecords.reduce((sum, rec) => sum + rec.pbs, 0) / dayRecords.length;
+                pbsData.push(avgPbs);
+                // Determine color based on average or most common flag
+                const flag = dayRecords[0].sugarFlag; // This is simplistic, consider average or a weighted flag
+                if (flag === 'normal') {
+                    backgroundColors.push('rgba(76, 175, 80, 0.6)'); // Green
+                    borderColors.push('rgba(76, 175, 80, 1)');
+                } else if (flag === 'warning') {
+                    backgroundColors.push('rgba(255, 193, 7, 0.6)'); // Yellow
+                    borderColors.push('rgba(255, 193, 7, 1)');
+                } else if (flag === 'high') {
+                    backgroundColors.push('rgba(244, 67, 54, 0.6)'); // Red
+                    borderColors.push('rgba(244, 67, 54, 1)');
+                } else {
+                    backgroundColors.push('rgba(150, 150, 150, 0.6)'); // Default
+                    borderColors.push('rgba(150, 150, 150, 1)');
+                }
+            } else {
+                pbsData.push(null); // No data for this day
+                backgroundColors.push('rgba(0,0,0,0)'); // Transparent
+                borderColors.push('rgba(0,0,0,0)');
+            }
+        });
+        
+        sugarChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'ค่าน้ำตาล (mg/dL)',
+                    data: pbsData,
+                    backgroundColor: backgroundColors,
+                    borderColor: borderColors,
+                    borderWidth: 2,
+                    pointRadius: 5,
+                    pointBackgroundColor: backgroundColors,
+                    pointBorderColor: borderColors,
+                    tension: 0.3,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: 'ค่าน้ำตาล (mg/dL)'
+                        },
+                        min: 50, // Example min
+                        max: 200, // Example max
+                        ticks: {
+                            stepSize: 10
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false // We use custom legend
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y + ' mg/dL';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
+    async function fetchSugarRecordsForTable(userId, date) {
+        document.getElementById('sugarTableLoading').style.display = 'block';
+        document.getElementById('sugarRecordsTableBody').innerHTML = '<tr><td colspan="5" class="loading-cell">⏳ กำลังโหลดข้อมูล...</td></tr>';
+        try {
+            const url = '/.netlify/functions/apps-script-proxy'; 
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'getSugarRecordsByDay', userId: userId, date: date })
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            const result = await response.json();
+
+            if (result.status === 'success' && result.data) {
+                renderSugarTable(result.data);
+            } else {
+                document.getElementById('sugarRecordsTableBody').innerHTML = '<tr><td colspan="5" class="empty-state-cell">ยังไม่มีบันทึกค่าน้ำตาลสำหรับวันนี้</td></tr>';
+            }
+            document.getElementById('sugarTableLoading').style.display = 'none';
+        } catch (error) {
+            console.error('Error fetching sugar records for table:', error);
+            document.getElementById('sugarTableLoading').style.display = 'none';
+            document.getElementById('sugarError').style.display = 'block';
+            document.getElementById('sugarError').innerHTML = `❌ เกิดข้อผิดพลาดในการดึงข้อมูลตาราง: ${error.message}`;
+            setTimeout(() => { document.getElementById('sugarError').style.display = 'none'; }, 5000);
+        }
+    }
+
+    function renderSugarTable(records) {
+        const tableBody = document.getElementById('sugarRecordsTableBody');
+        tableBody.innerHTML = ''; // Clear existing content
+        
+        if (records.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="5" class="empty-state-cell">ยังไม่มีบันทึกค่าน้ำตาลสำหรับวันนี้</td></tr>';
+            return;
+        }
+
+        records.sort((a, b) => {
+            const timeA = new Date(`2000/01/01 ${a.datetime.split(' ')[1]}`);
+            const timeB = new Date(`2000/01/01 ${b.datetime.split(' ')[1]}`);
+            return timeA - timeB;
+        });
+
+        records.forEach(record => {
+            let sugarClass = '';
+            if (record.sugarFlag === 'normal') {
+                sugarClass = 'normal';
+            } else if (record.sugarFlag === 'warning') {
+                sugarClass = 'warning';
+            } else if (record.sugarFlag === 'high') {
+                sugarClass = 'high';
+            }
+
+            const row = `
+                <tr>
+                    <td>${record.datetime.split(' ')[1].substring(0, 5)} น.</td>
+                    <td class="sugar-value ${sugarClass}">${record.pbs}</td>
+                    <td>${record.period}</td>
+                    <td>${record.note || '-'}</td>
+                    <td>
+                        <button class="action-btn edit-action-btn" data-id="${record.id}">แก้ไข</button>
+                        <button class="action-btn delete-action-btn" data-id="${record.id}">ลบ</button>
+                    </td>
+                </tr>
+            `;
+            tableBody.innerHTML += row;
+        });
+
+        tableBody.querySelectorAll('.edit-action-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => openSugarModal('edit', e.target.dataset.id));
+        });
+        tableBody.querySelectorAll('.delete-action-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => deleteSugarRecord(e.target.dataset.id));
+        });
+    }
+
+    function openSugarModal(mode, recordId = null) {
+        const modal = document.getElementById('sugarRecordModal');
+        const form = document.getElementById('sugarRecordForm');
+        document.getElementById('sugarModalTitle').textContent = mode === 'add' ? 'เพิ่มค่าน้ำตาล' : 'แก้ไขค่าน้ำตาล';
+        form.reset();
+        editingSugarRecordId = null;
+
+        const now = new Date();
+        document.getElementById('sugarDate').value = formatDate(currentSugarTableDate); // Default to current selected table date
+        document.getElementById('sugarTime').value = now.toTimeString().slice(0, 5); // Default to current time
+
+        if (mode === 'edit' && recordId) {
+            editingSugarRecordId = recordId;
+            // This part needs actual data. A simple way is to refetch all records for the day and filter.
+            fetchSugarRecordsForTable(currentSugarUserId, formatDate(currentSugarTableDate)).then(() => {
+                const allRecordsFetched = Array.from(document.getElementById('sugarRecordsTableBody').children)
+                    .map(row => ({
+                        id: row.querySelector('.edit-action-btn').dataset.id, // Assuming ID is linked to edit button
+                        datetime: `${document.getElementById('selectDateSugarTable').value} ${row.cells[0].textContent.replace(' น.', ':00')}`,
+                        pbs: parseFloat(row.cells[1].textContent),
+                        period: row.cells[2].textContent,
+                        note: row.cells[3].textContent === '-' ? '' : row.cells[3].textContent
+                    }));
+                const foundRecord = allRecordsFetched.find(r => r.id === recordId);
+                
+                if (foundRecord) {
+                    document.getElementById('sugarDate').value = foundRecord.datetime.split(' ')[0];
+                    document.getElementById('sugarTime').value = foundRecord.datetime.split(' ')[1].slice(0, 5);
+                    document.getElementById('sugarValue').value = foundRecord.pbs;
+                    document.getElementById('sugarPeriod').value = foundRecord.period;
+                    document.getElementById('sugarNote').value = foundRecord.note;
+                } else {
+                    console.error('Record not found for editing:', recordId);
+                    alert('ไม่พบรายการที่จะแก้ไข กรุณาลองใหม่');
+                    closeSugarModal();
+                    return;
+                }
+            });
+        }
+        modal.style.display = 'block';
+    }
+
+    function closeSugarModal() {
+        document.getElementById('sugarRecordModal').style.display = 'none';
+        editingSugarRecordId = null;
+    }
+
+    async function handleSugarFormSubmit(event) {
+        event.preventDefault();
+        const date = document.getElementById('sugarDate').value;
+        const time = document.getElementById('sugarTime').value;
+        const pbs = parseFloat(document.getElementById('sugarValue').value);
+        const period = document.getElementById('sugarPeriod').value;
+        const note = document.getElementById('sugarNote').value;
+
+        if (isNaN(pbs) || pbs < 0) {
+            alert('กรุณากรอกค่าน้ำตาลให้ถูกต้อง');
+            return;
+        }
+
+        let sugarFlag = 'normal';
+        if (period.includes('ก่อนอาหาร') && (pbs < 70 || pbs > 95)) {
+            sugarFlag = pbs < 70 ? 'warning' : 'high'; // Assuming <70 is low, >95 is high for pre-meal
+        } else if (period.includes('หลังอาหาร') && pbs > 140) {
+            sugarFlag = 'high'; // Assuming >140 is high for post-meal
+        }
+        // More sophisticated logic for sugarFlag might be needed based on specific medical guidelines
+
+        const formData = {
+            userId: currentSugarUserId,
+            datetime: `${date} ${time}:00`,
+            pbs,
+            period,
+            note,
+            sugarFlag 
+        };
+
+        const action = editingSugarRecordId ? 'updateSugarRecord' : 'addSugarRecord';
+        if (editingSugarRecordId) {
+            formData.id = editingSugarRecordId; // Add ID for update operation
+        }
+
+        document.getElementById('sugarTableLoading').style.display = 'block';
+        document.getElementById('sugarSuccess').style.display = 'none';
+        document.getElementById('sugarError').style.display = 'none';
+
+        try {
+            const url = '/.netlify/functions/apps-script-proxy'; 
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: action, data: formData })
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                document.getElementById('sugarSuccess').style.display = 'block';
+                closeSugarModal();
+                await Promise.all([ // Refresh both chart and table
+                    fetchSugarRecordsForChart(currentSugarUserId, currentSugarWeekStart),
+                    fetchSugarRecordsForTable(currentSugarUserId, formatDate(currentSugarTableDate))
+                ]);
+                setTimeout(() => { document.getElementById('sugarSuccess').style.display = 'none'; }, 3000);
+            } else {
+                throw new Error(result.message || 'เกิดข้อผิดพลาดในการบันทึก/แก้ไขข้อมูล');
+            }
+        } catch (error) {
+            console.error('Error saving/updating sugar record:', error);
+            document.getElementById('sugarError').style.display = 'block';
+            document.getElementById('sugarError').innerHTML = `❌ เกิดข้อผิดพลาด: ${error.message}`;
+            setTimeout(() => { document.getElementById('sugarError').style.display = 'none'; }, 5000);
+        } finally {
+            document.getElementById('sugarTableLoading').style.display = 'none';
+        }
+    }
+
+    async function deleteSugarRecord(recordId) {
+        if (!confirm('คุณแน่ใจหรือไม่ว่าต้องการลบรายการค่าน้ำตาลนี้?')) {
+            return;
+        }
+
+        document.getElementById('sugarTableLoading').style.display = 'block';
+        document.getElementById('sugarSuccess').style.display = 'none';
+        document.getElementById('sugarError').style.display = 'none';
+
+        try {
+            const url = '/.netlify/functions/apps-script-proxy'; 
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'deleteSugarRecord', id: recordId, userId: currentSugarUserId })
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                document.getElementById('sugarSuccess').style.display = 'block';
+                await Promise.all([ // Refresh both chart and table
+                    fetchSugarRecordsForChart(currentSugarUserId, currentSugarWeekStart),
+                    fetchSugarRecordsForTable(currentSugarUserId, formatDate(currentSugarTableDate))
+                ]);
+                setTimeout(() => { document.getElementById('sugarSuccess').style.display = 'none'; }, 3000);
+            } else {
+                throw new Error(result.message || 'เกิดข้อผิดพลาดในการลบข้อมูล');
+            }
+        } catch (error) {
+            console.error('Error deleting sugar record:', error);
+            document.getElementById('sugarError').style.display = 'block';
+            document.getElementById('sugarError').innerHTML = `❌ เกิดข้อผิดพลาด: ${error.message}`;
+            setTimeout(() => { document.getElementById('sugarError').style.display = 'none'; }, 5000);
+        } finally {
+            document.getElementById('sugarTableLoading').style.display = 'none';
+        }
+    }
+</script>

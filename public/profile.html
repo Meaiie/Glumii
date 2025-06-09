@@ -1,0 +1,347 @@
+<div class="header-nav">
+    <div class="nav-item active" data-page="profile">
+        <i class="icon-profile"></i> ประวัติส่วนตัว
+    </div>
+    <div class="nav-item" data-page="food-records">
+        <i class="icon-food"></i> บันทึกอาหาร
+    </div>
+    <div class="nav-item" data-page="sugar-records">
+        <i class="icon-sugar"></i> บันทึกน้ำตาล
+    </div>
+</div>
+
+<div class="form-container">
+    <div class="form-section">
+        <h3 class="section-title">ข้อมูลส่วนตัว
+            <button class="edit-btn" id="editProfileBtn">แก้ไขข้อมูล</button>
+        </h3>
+        
+        <form id="profileForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>ชื่อ-นามสกุล</label>
+                    <input type="text" id="display_full_name" readonly>
+                </div>
+                <div class="form-group">
+                    <label>ชื่อเล่น</label>
+                    <input type="text" id="display_nickname" readonly>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>รหัสโรงพยาบาล</label>
+                    <input type="text" id="display_hospital_id" readonly>
+                </div>
+                <div class="form-group">
+                    <label>เลขบัตรประชาชน</label>
+                    <input type="text" id="display_national_id" readonly>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>วันเกิด</label>
+                    <input type="date" id="display_birth_date" readonly>
+                </div>
+                <div class="form-group">
+                    <label>ส่วนสูง (ซม.)</label>
+                    <input type="number" id="display_height" readonly>
+                </div>
+            </div>
+
+            <div class="form-group full-width">
+                <label>โรคประจำตัว</label>
+                <textarea id="display_comorbidities" rows="2" readonly></textarea>
+            </div>
+
+            <div class="form-group full-width">
+                <label>ยาที่ใช้ก่อนตั้งครรภ์</label>
+                <textarea id="display_pre_pregnancy_medications" rows="2" readonly></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>น้ำหนักก่อนตั้งครรภ์ (กก.)</label>
+                    <input type="number" id="display_pre_pregnancy_weight" readonly>
+                </div>
+                <div class="form-group">
+                    <label>น้ำหนักปัจจุบัน (กก.)</label>
+                    <input type="number" id="display_weight" readonly>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>จำนวนทารกในครรภ์</label>
+                    <input type="text" id="display_fetus_count" readonly>
+                </div>
+                <div class="form-group">
+                    <label>วันครบกำหนดคลอด</label>
+                    <input type="date" id="display_due_date" readonly>
+                </div>
+            </div>
+
+            <h3 class="section-title">อัตราส่วนคาร์บ</h3>
+            <div class="carb-ratio-group">
+                <div class="form-group">
+                    <label>อาหารเช้า</label>
+                    <input type="number" id="display_carb_breakfast" readonly>
+                </div>
+                <div class="form-group">
+                    <label>อาหารกลางวัน</label>
+                    <input type="number" id="display_carb_lunch" readonly>
+                </div>
+                <div class="form-group">
+                    <label>อาหารเย็น</label>
+                    <input type="number" id="display_carb_dinner" readonly>
+                </div>
+            </div>
+
+            <h3 class="section-title">วันที่ต้องเจาะน้ำตาล</h3>
+            <div class="checkbox-group" id="display_sugar_check_days">
+                </div>
+
+            <div class="edit-buttons" style="display: none;">
+                <button type="button" class="cancel-btn" id="cancelEditBtn">ยกเลิก</button>
+                <button type="submit" class="submit-btn">บันทึกข้อมูล</button>
+            </div>
+
+            <div class="loading" id="profileLoading">⏳ กำลังโหลดข้อมูล...</div>
+            <div class="success-message" id="profileSuccess">✅ บันทึกข้อมูลเรียบร้อยแล้ว!</div>
+            <div class="error-message" id="profileError">❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง</div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let currentUserId = '';
+
+    window.initProfilePage = async function(userId) {
+        currentUserId = userId;
+        document.getElementById('profileLoading').style.display = 'block';
+        await fetchProfileData(userId);
+        setupProfileEventListeners();
+    };
+
+    async function fetchProfileData(userId) {
+        try {
+            const url = '/.netlify/functions/apps-script-proxy'; 
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'getProfile', userId: userId })
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            const result = await response.json();
+
+            if (result.status === 'success' && result.data) {
+                const data = result.data;
+                document.getElementById('display_full_name').value = data.full_name || '';
+                document.getElementById('display_nickname').value = data.nickname || '';
+                document.getElementById('display_hospital_id').value = data.hospital_id || '';
+                document.getElementById('display_national_id').value = data.national_id || '';
+                document.getElementById('display_birth_date').value = data.birth_date || '';
+                document.getElementById('display_height').value = data.height || '';
+                document.getElementById('display_comorbidities').value = data.comorbidities || '';
+                document.getElementById('display_pre_pregnancy_medications').value = data.pre_pregnancy_medications || '';
+                document.getElementById('display_pre_pregnancy_weight').value = data.pre_pregnancy_weight || '';
+                document.getElementById('display_weight').value = data.weight || '';
+                document.getElementById('display_fetus_count').value = data.fetus_count ? `${data.fetus_count} คน` : '';
+                document.getElementById('display_due_date').value = data.due_date || '';
+                document.getElementById('display_carb_breakfast').value = data.carb_ratio ? data.carb_ratio.breakfast : '';
+                document.getElementById('display_carb_lunch').value = data.carb_ratio ? data.carb_ratio.lunch : '';
+                document.getElementById('display_carb_dinner').value = data.carb_ratio ? data.carb_ratio.dinner : '';
+
+                const sugarCheckDaysContainer = document.getElementById('display_sugar_check_days');
+                sugarCheckDaysContainer.innerHTML = ''; // Clear previous
+                const daysOfWeek = ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์', 'อาทิตย์'];
+                daysOfWeek.forEach(day => {
+                    const isChecked = data.sugar_check_days && data.sugar_check_days.includes(day);
+                    sugarCheckDaysContainer.innerHTML += `
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="profile_${day}" value="${day}" ${isChecked ? 'checked' : ''} disabled>
+                            <label for="profile_${day}">${day}</label>
+                        </div>
+                    `;
+                });
+                document.getElementById('profileLoading').style.display = 'none';
+            } else {
+                document.getElementById('profileError').style.display = 'block';
+                document.getElementById('profileError').innerHTML = `❌ ไม่พบข้อมูลผู้ใช้`;
+                document.getElementById('profileLoading').style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error fetching profile data:', error);
+            document.getElementById('profileLoading').style.display = 'none';
+            document.getElementById('profileError').style.display = 'block';
+            document.getElementById('profileError').innerHTML = `❌ เกิดข้อผิดพลาดในการดึงข้อมูล: ${error.message}`;
+        }
+    }
+
+    function setupProfileEventListeners() {
+        const editBtn = document.getElementById('editProfileBtn');
+        const cancelBtn = document.getElementById('cancelEditBtn');
+        const profileForm = document.getElementById('profileForm');
+        const editButtons = profileForm.querySelector('.edit-buttons');
+        const inputs = profileForm.querySelectorAll('input, select, textarea');
+
+        editBtn.addEventListener('click', () => {
+            inputs.forEach(input => {
+                if (input.id.startsWith('display_')) { // Target specific inputs
+                    input.readOnly = false;
+                    input.disabled = false; // Enable disabled checkboxes
+                    if (input.type === 'checkbox') {
+                        input.disabled = false;
+                    }
+                }
+            });
+            // Re-enable the 3-checkbox limit logic for sugar check days
+            document.querySelectorAll('.sugar-check').forEach(checkbox => {
+                checkbox.removeEventListener('change', handleSugarCheckChange); // Remove old listener first
+                checkbox.addEventListener('change', handleSugarCheckChange);
+            });
+            handleSugarCheckChange(); // Apply initial check
+
+            editBtn.style.display = 'none';
+            editButtons.style.display = 'flex';
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            inputs.forEach(input => {
+                if (input.id.startsWith('display_')) {
+                    input.readOnly = true;
+                    input.disabled = true; // Disable checkboxes again
+                    if (input.type === 'checkbox') {
+                        input.disabled = true;
+                    }
+                }
+            });
+            editBtn.style.display = 'block';
+            editButtons.style.display = 'none';
+            fetchProfileData(currentUserId); // Reload original data
+        });
+
+        profileForm.addEventListener('submit', handleProfileUpdate);
+
+        // Navigation for top menu
+        document.querySelectorAll('.header-nav .nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.header-nav .nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                const page = this.dataset.page;
+                if (page === 'profile') {
+                    // Already on profile page, refresh or do nothing
+                } else if (page === 'food-records') {
+                    loadContent('food_records.html', 'mainContent', currentUserId);
+                } else if (page === 'sugar-records') {
+                    loadContent('sugar_records.html', 'mainContent', currentUserId);
+                }
+            });
+        });
+    }
+
+    // Function to handle the 3-checkbox limit for sugar check days
+    function handleSugarCheckChange() {
+        const checked = document.querySelectorAll('#display_sugar_check_days input[type="checkbox"]:checked');
+        const allCheckboxes = document.querySelectorAll('#display_sugar_check_days input[type="checkbox"]');
+        if (checked.length >= 3) {
+            allCheckboxes.forEach(cb => {
+                if (!cb.checked) {
+                    cb.disabled = true;
+                }
+            });
+        } else {
+            allCheckboxes.forEach(cb => {
+                cb.disabled = false;
+            });
+        }
+    }
+
+    async function handleProfileUpdate(event) {
+        event.preventDefault();
+        document.getElementById('profileLoading').style.display = 'block';
+        document.getElementById('profileSuccess').style.display = 'none';
+        document.getElementById('profileError').style.display = 'none';
+
+        const selectedSugarCheck = Array.from(document.querySelectorAll('#display_sugar_check_days input[type="checkbox"]:checked')).map(cb => cb.value);
+        if (selectedSugarCheck.length !== 3) {
+            alert('กรุณาเลือก "วันที่ต้องเจาะน้ำตาล" ให้ครบ 3 วัน');
+            document.getElementById('profileLoading').style.display = 'none';
+            return;
+        }
+
+        try {
+            const formData = {
+                action: 'updateProfile', // ระบุ action สำหรับ Apps Script
+                userId: currentUserId,
+                full_name: document.getElementById('display_full_name').value || '',
+                nickname: document.getElementById('display_nickname').value || '',
+                hospital_id: document.getElementById('display_hospital_id').value || '',
+                national_id: document.getElementById('display_national_id').value || '',
+                birth_date: document.getElementById('display_birth_date').value || '',
+                height: parseFloat(document.getElementById('display_height').value) || 0,
+                comorbidities: document.getElementById('display_comorbidities').value || '',
+                pre_pregnancy_medications: document.getElementById('display_pre_pregnancy_medications').value || '',
+                pre_pregnancy_weight: parseFloat(document.getElementById('display_pre_pregnancy_weight').value) || 0,
+                weight: parseFloat(document.getElementById('display_weight').value) || 0,
+                fetus_count: parseInt(document.getElementById('display_fetus_count').value) || 0, // ควรเปลี่ยนเป็น select ในโหมดแก้ไข
+                due_date: document.getElementById('display_due_date').value || '',
+                carb_ratio: {
+                    breakfast: parseFloat(document.getElementById('display_carb_breakfast').value) || 0,
+                    lunch: parseFloat(document.getElementById('display_carb_lunch').value) || 0,
+                    dinner: parseFloat(document.getElementById('display_carb_dinner').value) || 0
+                },
+                sugar_check_days: selectedSugarCheck
+            };
+
+            const url = '/.netlify/functions/apps-script-proxy'; 
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) {
+                const errorDetails = await response.text();
+                throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails}`);
+            }
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                document.getElementById('profileSuccess').style.display = 'block';
+                document.getElementById('profileLoading').style.display = 'none';
+                
+                // Switch back to view mode
+                const inputs = document.getElementById('profileForm').querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    if (input.id.startsWith('display_')) {
+                        input.readOnly = true;
+                        input.disabled = true; // Disable checkboxes again
+                        if (input.type === 'checkbox') {
+                            input.disabled = true;
+                        }
+                    }
+                });
+                document.getElementById('editProfileBtn').style.display = 'block';
+                document.getElementById('profileForm').querySelector('.edit-buttons').style.display = 'none';
+
+                setTimeout(() => {
+                    document.getElementById('profileSuccess').style.display = 'none';
+                }, 3000);
+            } else {
+                throw new Error(result.message || 'เกิดข้อผิดพลาดในการอัปเดตข้อมูล');
+            }
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            document.getElementById('profileLoading').style.display = 'none';
+            document.getElementById('profileError').style.display = 'block';
+            document.getElementById('profileError').innerHTML = `❌ เกิดข้อผิดพลาด: ${error.message}`;
+            setTimeout(() => {
+                document.getElementById('profileError').style.display = 'none';
+            }, 8000);
+        }
+    }
+</script>

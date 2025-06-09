@@ -2,9 +2,9 @@
 const fetch = require('node-fetch'); // จำเป็นต้องติดตั้ง node-fetch: npm install node-fetch@2
 
 exports.handler = async function(event, context) {
-  // นี่คือ URL ของ Google Apps Script Web App ของคุณ
+  // นี่คือ URL ของ Google Apps Script Web App ของคุณ 
   const googleAppsScriptUrl = 'https://script.google.com/macros/s/AKfycbxq4QvLdwbvAACtljRCdJylq8Rmm1QpYaBayhcBABccy5DD7dLwiPw_lJxh7Tp1qR4Q/exec';
-                               
+                                
   // จัดการ Preflight request (OPTIONS)
   if (event.httpMethod === 'OPTIONS') {
     return {
@@ -20,7 +20,27 @@ exports.handler = async function(event, context) {
 
   try {
     // ดึงข้อมูลและ method จาก request ที่มาจากหน้าบ้านของคุณ
-    const requestBody = JSON.parse(event.body);
+    // สำหรับ POST requests, event.body จะเป็น string ที่ต้อง parse เป็น JSON
+    let requestBody;
+    if (event.body) {
+      try {
+        requestBody = JSON.parse(event.body);
+      } catch (e) {
+        console.error("Failed to parse request body as JSON:", e);
+        return {
+          statusCode: 400,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Methods': 'GET, POST',
+          },
+          body: JSON.stringify({ status: 'error', message: 'Invalid JSON in request body.' })
+        };
+      }
+    } else {
+      requestBody = {}; // ถ้าไม่มี body ก็กำหนดให้เป็น object ว่าง
+    }
+    
     const requestMethod = event.httpMethod;
 
     console.log(`Forwarding ${requestMethod} request to Google Apps Script.`);
