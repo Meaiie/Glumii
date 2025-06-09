@@ -164,23 +164,26 @@
     <script>
         let currentUserId = ''; // เก็บ userId ไว้ใช้ทั่วโลก
 
-        const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbxq4QvLdwbvAACtljRCdJylq8Rmm1QpYaBayhcBABccy5DD7dLwiPw_lJxh7Tp1qR4Q/exec'; // *** ใส่ Apps Script Web App URL ของคุณที่นี่ ***
+        // *** ใส่ Apps Script Web App URL ของคุณที่นี่ (URL ของ Proxy Function) ***
+        const appsScriptUrl = 'https://mellifluous-treacle-940f71.netlify.app/.netlify/functions/apps-script-proxy'; 
 
         function showLoading(show) {
             document.getElementById('loadingMessage').style.display = show ? 'block' : 'none';
             document.getElementById('submitButton').disabled = show;
         }
 
-        function showSuccess(show) {
-            document.getElementById('successMessage').style.display = show ? 'block' : 'none';
+        function showSuccess(show, message = 'บันทึกข้อมูลสำเร็จ!') {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = show ? 'block' : 'none';
             if (show) {
-                setTimeout(() => document.getElementById('successMessage').style.display = 'none', 3000);
+                setTimeout(() => successDiv.style.display = 'none', 3000);
             }
         }
 
-        function showError(show, message = '') {
+        function showError(show, message = 'เกิดข้อผิดพลาดในการบันทึกข้อมูล') {
             const errorDiv = document.getElementById('errorMessage');
-            errorDiv.textContent = message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล';
+            errorDiv.textContent = message;
             errorDiv.style.display = show ? 'block' : 'none';
             if (show) {
                 setTimeout(() => errorDiv.style.display = 'none', 5000);
@@ -189,7 +192,8 @@
 
         async function initializeLiff() {
             try {
-                await liff.init({ liffId: '2007493917-XdpdZalP' }); // *** ใส่ LIFF ID ของคุณที่นี่ ***
+                // *** ใส่ LIFF ID ของคุณที่นี่ ***
+                await liff.init({ liffId: '2007493917-XdpdZalP' }); 
                 document.getElementById('liffStatus').classList.remove('liff-disconnected');
                 document.getElementById('liffStatus').classList.add('liff-connected');
                 document.getElementById('liffStatus').textContent = '✅ เชื่อมต่อ LINE สำเร็จ';
@@ -207,13 +211,14 @@
                 console.error('LIFF initialization failed', err);
                 document.getElementById('liffStatus').classList.add('liff-error');
                 document.getElementById('liffStatus').textContent = '❌ ข้อผิดพลาดในการเชื่อมต่อ LINE';
-                showError(true, 'ไม่สามารถเชื่อมต่อ LINE ได้: ' + err.message);
+                showError(true, 'ไม่สามารถเชื่อมต่อ LINE ได้: ' + err.message + '. โปรดลองเปิดผ่านแอป LINE อีกครั้ง');
             }
         }
 
         async function checkUserStatus(userId) {
             try {
                 showLoading(true);
+                // ส่ง action=checkUser ไปยัง Apps Script ผ่าน Proxy
                 const response = await fetch(`${appsScriptUrl}?action=checkUser&userId=${userId}`);
                 const data = await response.json();
                 console.log('Check user status response:', data);
@@ -252,6 +257,7 @@
         async function loadPatientProfile(userId) {
             try {
                 showLoading(true);
+                // ส่ง action=getPatientProfile ไปยัง Apps Script ผ่าน Proxy
                 const response = await fetch(`${appsScriptUrl}?action=getPatientProfile&userId=${userId}`);
                 const data = await response.json();
                 console.log('Load patient profile response:', data);
@@ -304,7 +310,8 @@
                     // วันที่นัดเจาะน้ำตาล
                     if (profile.sugar_check_days) {
                         try {
-                            const sugarDays = JSON.parse(profile.sugar_check_days);
+                            // Apps Script ส่งมาเป็น Stringified JSON
+                            const sugarDays = JSON.parse(profile.sugar_check_days); 
                             document.querySelectorAll('.sugar-check').forEach(cb => {
                                 cb.checked = sugarDays.includes(cb.value);
                             });
@@ -320,7 +327,8 @@
                     // อัตราส่วนคาร์โบไฮเดรตต่ออินซูลิน
                     if (profile.carb_ratio) {
                         try {
-                            const carbRatio = JSON.parse(profile.carb_ratio);
+                            // Apps Script ส่งมาเป็น Stringified JSON
+                            const carbRatio = JSON.parse(profile.carb_ratio); 
                             document.getElementById('carb_ratio_morning').value = carbRatio.morning || '';
                             document.getElementById('carb_ratio_lunch').value = carbRatio.lunch || '';
                             document.getElementById('carb_ratio_dinner').value = carbRatio.dinner || '';
@@ -398,6 +406,7 @@
             data.action = actionType; // กำหนด action ในข้อมูลที่จะส่ง
 
             try {
+                // ส่ง POST request ไปยัง Apps Script ผ่าน Proxy
                 const response = await fetch(appsScriptUrl, {
                     method: 'POST',
                     headers: {
