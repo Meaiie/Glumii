@@ -207,7 +207,6 @@
                     const profile = await liff.getProfile();
                     liffUserId = profile.userId; // เก็บ userId
 
-                    // **** เพิ่มการตรวจสอบผู้ใช้ตรงนี้ ****
                     await checkUserProfile(liffUserId);
 
                     document.querySelector('.submit-btn').disabled = false;
@@ -215,15 +214,17 @@
             } catch (error) {
                 console.error('LIFF initialization failed:', error);
                 document.getElementById('liffStatus').innerHTML = '❌ ไม่สามารถเชื่อมต่อ LINE ได้';
+                // หาก LIFF เชื่อมต่อไม่ได้ หรือเกิดข้อผิดพลาดรุนแรง อาจจะแสดงฟอร์มไม่ได้
+                // คุณอาจจะต้องพิจารณา UX ตรงนี้เพิ่มเติม (เช่น แสดงข้อความบอกว่าไม่สามารถใช้งานได้)
             }
         }
 
         async function checkUserProfile(userId) {
             console.log('Checking user profile for userId:', userId);
             try {
-                const url = '/.netlify/functions/apps-script-proxy';
+                const url = '/.netlify/functions/apps-script-proxy'; 
                 const response = await fetch(url, {
-                    method: 'POST', // เราจะใช้ POST เพื่อส่ง action และ userId
+                    method: 'POST', 
                     headers: {
                         'Content-Type': 'application/json'
                     },
@@ -239,43 +240,51 @@
                 console.log('User check response from Netlify Function:', result);
 
                 if (result.status === 'profile_exists') {
-                    // ถ้าผู้ใช้มีโปรไฟล์อยู่แล้ว ให้เปลี่ยนเส้นทางไปหน้า Profile.html
-                    alert('คุณเคยกรอกข้อมูลแล้ว จะเปิดหน้า Profile.html');
-                    // คุณอาจจะส่งข้อมูล profileData ไปยัง Profile.html ด้วย URL parameters หรือ localStorage
-                    // ตัวอย่างการส่ง userId ไป
+                    // เก็บข้อมูลโปรไฟล์ใน localStorage ก่อน redirect
+                    localStorage.setItem('userProfile', JSON.stringify(result.profileData));
+
+                    // เปลี่ยนเส้นทางไปหน้า Profile.html ทันที
                     liff.openWindow({
-                        url: `Profile.html?userId=${userId}`,
-                        external: false // ให้อยู่ใน LIFF window
+                        url: `Profile.html`, 
+                        external: false 
                     });
                 } else if (result.status === 'new_user') {
                     // ถ้าผู้ใช้ยังไม่เคยกรอก ให้แสดงฟอร์ม
                     document.getElementById('patientForm').style.display = 'block';
-                    alert('กรุณากรอกข้อมูลเพื่อลงทะเบียนใหม่');
+                    // ไม่มี alert() สำหรับผู้ใช้ใหม่แล้ว
                 } else {
                     // กรณีเกิดข้อผิดพลาดจาก Apps Script แต่ HTTP status ยังเป็น 200
                     console.error('Error from Apps Script during checkUser:', result.message);
-                    alert(`เกิดข้อผิดพลาดในการตรวจสอบข้อมูล: ${result.message}`);
-                    document.getElementById('patientForm').style.display = 'block'; // แสดงฟอร์มไว้ก่อน
+                    // ไม่มี alert() ให้ผู้ใช้เห็น แต่จะแสดงฟอร์มเผื่อไว้
+                    document.getElementById('patientForm').style.display = 'block'; 
                 }
 
             } catch (error) {
                 console.error('Error checking user profile via Netlify Function:', error);
-                alert(`เกิดข้อผิดพลาดในการตรวจสอบโปรไฟล์: ${error.message}`);
-                document.getElementById('patientForm').style.display = 'block'; // แสดงฟอร์มไว้ก่อน
+                // ไม่มี alert() ให้ผู้ใช้เห็น แต่จะแสดงฟอร์มเผื่อไว้
+                document.getElementById('patientForm').style.display = 'block'; 
             }
         }
 
         async function handleSubmit(event) {
             event.preventDefault();
 
-            if (!isLiffReady || !liffUserId) { // ตรวจสอบ liffUserId ด้วย
-                alert('กรุณารอให้เชื่อมต่อ LINE และดึงข้อมูลผู้ใช้เสร็จสิ้น');
+            if (!isLiffReady || !liffUserId) { 
+                // สามารถใช้ UI Element อื่นๆ เช่น แสดงข้อความใน div แทน alert
+                // document.getElementById('errorMessage').innerText = 'กรุณารอให้เชื่อมต่อ LINE และดึงข้อมูลผู้ใช้เสร็จสิ้น';
+                // document.getElementById('errorMessage').style.display = 'block';
+                console.warn('LIFF not ready or userId not available.');
                 return;
             }
 
             const selectedSugarCheck = Array.from(document.querySelectorAll('.sugar-check:checked')).map(cb => cb.value);
             if (selectedSugarCheck.length !== 3) {
-                alert('กรุณาเลือก "วันที่ต้องเจาะน้ำตาล" ให้ครบ 3 วัน');
+                // แสดงข้อความใน div แทน alert
+                document.getElementById('errorMessage').innerHTML = '❌ กรุณาเลือก "วันที่ต้องเจาะน้ำตาล" ให้ครบ 3 วัน';
+                document.getElementById('errorMessage').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('errorMessage').style.display = 'none';
+                }, 5000); // ซ่อนข้อความหลังจาก 5 วินาที
                 return;
             }
 
@@ -283,7 +292,6 @@
             document.querySelector('.submit-btn').disabled = true;
 
             try {
-                // ดึงค่า formData เหมือนเดิม
                 let comorbidities = '';
                 const chronicDiseaseRadio = document.querySelector('input[name="chronicDisease"]:checked');
                 if (chronicDiseaseRadio) {
@@ -301,8 +309,8 @@
                 }
 
                 const formData = {
-                    action: 'saveData', // เพิ่ม action เพื่อบอก Apps Script ว่าให้บันทึกข้อมูล
-                    userId: liffUserId, // ใช้ userId ที่ดึงมาแล้ว
+                    action: 'saveData', 
+                    userId: liffUserId, 
                     full_name: document.getElementById('full_name').value || '',
                     nickname: document.getElementById('nickname').value || '',
                     hospital_id: document.getElementById('hospital_id').value || '',
@@ -350,20 +358,16 @@
                     console.log('✅ ข้อมูลบันทึกสำเร็จ!');
 
                     setTimeout(() => {
-                        document.getElementById('patientForm').reset();
+                        // ไม่ต้อง reset ฟอร์ม เพราะจะเปลี่ยนหน้าไป Profile.html
                         document.getElementById('successMessage').style.display = 'none';
                         document.querySelector('.submit-btn').disabled = false;
-                        document.querySelectorAll('.sugar-check').forEach(cb => cb.disabled = false);
-                        document.getElementById('chronicDiseaseDetail').classList.remove('show');
-                        document.getElementById('medicationDetail').classList.remove('show');
                         
-                        // หลังจากบันทึกสำเร็จ อาจจะเปิดหน้า Profile.html หรือปิด LIFF window
+                        // Redirect ไป Profile.html เลย
                         liff.openWindow({
-                            url: `Profile.html?userId=${liffUserId}`,
+                            url: `Profile.html`, 
                             external: false
                         });
-                        // หรือ liff.closeWindow(); ถ้าต้องการปิด
-                    }, 3000);
+                    }, 3000); // ให้ผู้ใช้เห็นข้อความ "บันทึกข้อมูลเรียบร้อยแล้ว!" เป็นเวลา 3 วินาที ก่อนเปลี่ยนหน้า
                 } else {
                     throw new Error(result.message || 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ Apps Script');
                 }

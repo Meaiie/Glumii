@@ -9,6 +9,7 @@ body {
     background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 50%, #e1bee7 100%);
     min-height: 100vh;
     padding: 20px;
+    color: #333; /* ตั้งค่าสีข้อความเริ่มต้น */
 }
 
 .container {
@@ -25,25 +26,118 @@ body {
     color: white;
     text-align: center;
     padding: 30px 20px;
+    font-size: 1.2em; /* ปรับ font-size ให้เข้ากับ Profile.html */
+    font-weight: bold;
+    display: flex; /* เพิ่ม display flex */
+    justify-content: space-between; /* จัดวางซ้าย-ขวา */
+    align-items: center; /* จัดแนวตั้งกึ่งกลาง */
 }
 
 .header h1 {
     font-size: 2em;
     margin-bottom: 10px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin: 0; /* ลบ margin ที่ไม่จำเป็นออก */
+    font-size: 1.5em; /* ปรับขนาดสำหรับ h1 ใน header ของ profile */
 }
 
 .header p {
     opacity: 0.9;
     font-size: 1.1em;
+    margin: 0; /* ลบ margin ที่ไม่จำเป็นออก */
+    color: #fff; /* ให้สีเป็นสีขาว */
 }
 
-.form-container {
-    padding: 40px;
+/* User Info ใน Header ของ Profile Page */
+.user-info {
+    display: flex;
+    align-items: center;
+    font-size: 0.9em;
+    color: white;
 }
 
-.form-section {
+.user-info img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+/* LIFF Status */
+.liff-status {
+    text-align: center;
+    padding: 10px;
+    /* margin-bottom: 20px; ไม่จำเป็นสำหรับ profile page เพราะเป็นส่วนของ container */
+    border-radius: 10px;
+    font-weight: bold;
+    margin: 20px; /* เพิ่ม margin เพื่อให้มีพื้นที่รอบๆ */
+}
+
+.liff-connected {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.liff-disconnected {
+    background: #ffebee;
+    color: #c62828;
+}
+
+/* Navigation Tabs for Profile Page */
+.nav-tabs {
+    display: flex;
+    border-bottom: 1px solid #fce4ec; /* ใช้สีอ่อนๆ จากธีม */
+    background-color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95em;
+    padding: 0 20px; /* เพิ่ม padding ด้านข้าง */
+}
+
+.nav-tab {
+    flex: 1;
+    text-align: center;
+    padding: 15px 0;
+    cursor: pointer;
+    color: #888; /* สีเทาอ่อนสำหรับ tab ที่ไม่ได้เลือก */
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.nav-tab.active {
+    color: #ef78a0; /* สีชมพูเข้มสำหรับ tab ที่เลือก */
+}
+
+.nav-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #ef78a0; /* สีชมพูเข้มขีดเส้นใต้ */
+}
+
+.nav-tab:hover {
+    background-color: #fce4ec; /* สีอ่อนๆ เมื่อ hover */
+    color: #ef78a0;
+}
+
+/* Form Container & Sections (ใช้ร่วมกับ Register page) */
+.form-container, .profile-container {
+    padding: 40px; /* ใช้ padding เดียวกัน */
+}
+
+.form-section, .profile-section { /* ใช้คลาสเดียวกัน */
     margin-bottom: 30px;
+    background: rgba(255, 255, 255, 0.9); /* ให้โปร่งแสงเล็กน้อย */
+    border-radius: 15px; /* ปรับ border-radius ให้กลมขึ้น */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* เพิ่ม shadow เล็กน้อย */
+    padding: 30px; /* เพิ่ม padding ภายใน section */
 }
 
 .section-title {
@@ -55,6 +149,61 @@ body {
     padding-bottom: 8px;
 }
 
+/* Profile Section Header (สำหรับ Profile Page) */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f8bbd9; /* ใช้สีเดียวกับ section-title */
+}
+
+.section-header h3 {
+    margin: 0;
+    color: #f494be;
+    font-size: 1.3em;
+}
+
+/* Edit/Save/Cancel Buttons */
+.edit-btn, .save-btn, .cancel-btn {
+    background: linear-gradient(135deg, #f5abc4, #f9b0cf);
+    color: white;
+    border: none;
+    border-radius: 20px; /* ทำให้ปุ่มกลมขึ้น */
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(232, 131, 165, 0.2);
+}
+
+.edit-btn:hover, .save-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(192, 116, 141, 0.3);
+}
+
+.cancel-btn {
+    background: #ccc;
+    margin-right: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cancel-btn:hover {
+    background: #bbb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0; /* ลบ margin-top ซ้ำซ้อน */
+}
+
+
+/* Form Row and Group (ใช้ร่วมกับ Register page) */
 .form-row {
     display: flex;
     gap: 20px;
@@ -98,6 +247,7 @@ textarea:focus {
     box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1);
 }
 
+/* Radio & Checkbox Groups (ใช้ร่วมกับ Register page) */
 .radio-group {
     display: flex;
     gap: 15px;
@@ -113,7 +263,34 @@ textarea:focus {
 .radio-item input[type="radio"] {
     width: auto;
     margin: 0;
+    /* ปรับขนาด radio button */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #f8bbd9;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
 }
+
+.radio-item input[type="radio"]:checked {
+    background-color: #ef78a0;
+    border-color: #ef78a0;
+}
+
+.radio-item input[type="radio"]:checked::before {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    margin: 3px;
+    background-color: white;
+    border-radius: 50%;
+}
+
 
 .conditional-input {
     margin-top: 10px;
@@ -148,7 +325,35 @@ textarea:focus {
 .checkbox-item input[type="checkbox"] {
     width: auto;
     margin: 0;
+    /* ปรับขนาด checkbox */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #f8bbd9;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
 }
+
+.checkbox-item input[type="checkbox"]:checked {
+    background-color: #ef78a0;
+    border-color: #ef78a0;
+}
+
+.checkbox-item input[type="checkbox"]:checked::before {
+    content: '\2713'; /* Checkmark symbol */
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    line-height: 14px; /* Adjust as needed */
+    color: white;
+    font-size: 14px;
+}
+
 
 .carb-ratio-group {
     display: grid;
@@ -156,6 +361,7 @@ textarea:focus {
     gap: 20px;
 }
 
+/* Submit Button (ใช้ร่วมกับ Register page) */
 .submit-btn {
     background: linear-gradient(135deg, #f5abc4, #f9b0cf);
     color: white;
@@ -186,6 +392,7 @@ textarea:focus {
     transform: none;
 }
 
+/* Message Styles (ใช้ร่วมกับ Register page) */
 .loading {
     display: none;
     text-align: center;
@@ -214,42 +421,126 @@ textarea:focus {
     margin-top: 20px;
 }
 
-.liff-status {
-    text-align: center;
-    padding: 10px;
-    margin-bottom: 20px;
-    border-radius: 10px;
-    font-weight: bold;
+/* Profile Page Specific Styles (for display mode) */
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 คอลัมน์สำหรับจอใหญ่ */
+    gap: 15px 20px; /* ระยะห่างระหว่าง grid items */
 }
 
-.liff-connected {
-    background: #e8f5e8;
-    color: #2e7d32;
+.profile-item {
+    display: flex;
+    flex-direction: column;
 }
 
-.liff-disconnected {
-    background: #ffebee;
-    color: #c62828;
+.profile-item label {
+    font-size: 0.85em;
+    color: #777;
+    margin-bottom: 5px;
 }
 
+.profile-item span {
+    font-size: 1em;
+    color: #333;
+    padding: 8px 0; /* Padding for display text */
+    word-break: break-word; /* เพื่อให้ข้อความยาวๆ ขึ้นบรรทัดใหม่ได้ */
+    /* background-color: #fefefe; */ /* อาจจะใส่พื้นหลังให้ดูเป็นช่อง */
+    /* border-bottom: 1px dashed #eee; */ /* หรือเส้นประ */
+    min-height: 40px; /* ให้มีความสูงเท่าๆ กับ input */
+    display: flex;
+    align-items: center; /* จัดแนวตั้งกึ่งกลาง */
+}
+
+.profile-item.full-width {
+    grid-column: 1 / -1; /* spans across both columns */
+}
+
+.profile-item.full-width span {
+    white-space: pre-wrap; /* เพื่อให้ขึ้นบรรทัดใหม่ใน textarea ที่แสดงผล */
+}
+
+/* Edit Mode Specific Styles */
+.edit-mode .profile-item span {
+    display: none; /* ซ่อนค่าที่แสดงเมื่ออยู่ในโหมดแก้ไข */
+}
+
+.edit-mode .profile-item .form-group {
+    display: flex; /* แสดง input ในโหมดแก้ไข */
+    flex-direction: column; /* จัดแนวตั้งเหมือนเดิม */
+    margin-bottom: 0; /* ลบ margin bottom ที่ไม่จำเป็นเมื่ออยู่ใน item */
+}
+.edit-mode .profile-item .form-group input,
+.edit-mode .profile-item .form-group textarea,
+.edit-mode .profile-item .form-group select {
+    display: block; /* แสดง input/textarea/select ในโหมดแก้ไข */
+}
+
+/* Display Mode Specific Styles */
+.display-mode .profile-item .form-group {
+    display: none; /* ซ่อน input ในโหมดแสดงผล */
+}
+
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
-    .form-container {
+    .container {
+        padding: 0; /* ลบ padding ออกบนมือถือเพื่อให้เต็มจอ */
+        border-radius: 0; /* ลบ border-radius บนมือถือ */
+        box-shadow: none; /* ลบ shadow บนมือถือ */
+    }
+    body {
+        padding: 0; /* ลบ padding บน body เพื่อให้ container เต็มจอ */
+    }
+    .form-container, .profile-container {
         padding: 20px;
     }
 
     .form-row {
         flex-direction: column;
+        gap: 0; /* Remove gap when stacking */
     }
-
     .form-group {
         min-width: auto;
+        width: 100%;
+        margin-bottom: 15px; /* เพิ่มระยะห่างระหว่าง form-group เมื่อจัดเรียงแนวตั้ง */
     }
-
+    .profile-grid {
+        grid-template-columns: 1fr; /* Single column on small screens */
+    }
     .carb-ratio-group {
         grid-template-columns: 1fr;
     }
-
     .checkbox-group {
         grid-template-columns: 1fr;
+    }
+
+    .header {
+        padding: 20px 15px; /* ปรับ padding header บนมือถือ */
+    }
+    .nav-tabs {
+        padding: 0 10px; /* ปรับ padding nav-tabs บนมือถือ */
+    }
+    .nav-tab {
+        font-size: 0.9em;
+    }
+}
+
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: 1.3em;
+    }
+    .header p {
+        font-size: 0.9em;
+    }
+    .section-title, .section-header h3 {
+        font-size: 1.2em;
+    }
+    .edit-btn, .save-btn, .cancel-btn {
+        padding: 8px 12px;
+        font-size: 0.8em;
+    }
+    .submit-btn {
+        padding: 12px 20px;
+        font-size: 1em;
     }
 }
