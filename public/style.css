@@ -1,3 +1,4 @@
+/* Global Reset and Body Styling */
 * {
     margin: 0;
     padding: 0;
@@ -12,6 +13,7 @@ body {
     color: #333; /* ตั้งค่าสีข้อความเริ่มต้น */
 }
 
+/* Main Container */
 .container {
     max-width: 800px;
     margin: 0 auto;
@@ -21,6 +23,7 @@ body {
     overflow: hidden;
 }
 
+/* Header Styling */
 .header {
     background: linear-gradient(135deg, #ef78a0, #f897c1);
     color: white;
@@ -48,7 +51,7 @@ body {
     color: #fff; /* ให้สีเป็นสีขาว */
 }
 
-/* User Info ใน Header ของ Profile Page */
+/* User Info in Header */
 .user-info {
     display: flex;
     align-items: center;
@@ -67,7 +70,6 @@ body {
 .liff-status {
     text-align: center;
     padding: 10px;
-    /* margin-bottom: 20px; ไม่จำเป็นสำหรับ profile page เพราะเป็นส่วนของ container */
     border-radius: 10px;
     font-weight: bold;
     margin: 20px; /* เพิ่ม margin เพื่อให้มีพื้นที่รอบๆ */
@@ -83,7 +85,7 @@ body {
     color: #c62828;
 }
 
-/* Navigation Tabs for Profile Page */
+/* Navigation Tabs */
 .nav-tabs {
     display: flex;
     border-bottom: 1px solid #fce4ec; /* ใช้สีอ่อนๆ จากธีม */
@@ -127,7 +129,7 @@ body {
     color: #ef78a0;
 }
 
-/* Form Container & Sections (ใช้ร่วมกับ Register page) */
+/* Form Container & Sections (Shared with Register/Profile) */
 .form-container, .profile-container {
     padding: 40px; /* ใช้ padding เดียวกัน */
 }
@@ -149,7 +151,7 @@ body {
     padding-bottom: 8px;
 }
 
-/* Profile Section Header (สำหรับ Profile Page) */
+/* Section Header (for Profile and Food Records) */
 .section-header {
     display: flex;
     justify-content: space-between;
@@ -165,7 +167,7 @@ body {
     font-size: 1.3em;
 }
 
-/* Edit/Save/Cancel Buttons */
+/* Edit/Save/Cancel Buttons (General purpose) */
 .edit-btn, .save-btn, .cancel-btn {
     background: linear-gradient(135deg, #f5abc4, #f9b0cf);
     color: white;
@@ -202,8 +204,7 @@ body {
     margin-top: 0; /* ลบ margin-top ซ้ำซ้อน */
 }
 
-
-/* Form Row and Group (ใช้ร่วมกับ Register page) */
+/* Form Row and Group (Shared with Register/Profile/Food Records) */
 .form-row {
     display: flex;
     gap: 20px;
@@ -214,6 +215,8 @@ body {
 .form-group {
     flex: 1;
     min-width: 250px;
+    display: flex; /* Added for consistency in form group display */
+    flex-direction: column; /* Added for consistency */
 }
 
 .form-group.full-width {
@@ -247,7 +250,7 @@ textarea:focus {
     box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1);
 }
 
-/* Radio & Checkbox Groups (ใช้ร่วมกับ Register page) */
+/* Radio & Checkbox Groups */
 .radio-group {
     display: flex;
     gap: 15px;
@@ -290,7 +293,6 @@ textarea:focus {
     background-color: white;
     border-radius: 50%;
 }
-
 
 .conditional-input {
     margin-top: 10px;
@@ -354,14 +356,13 @@ textarea:focus {
     font-size: 14px;
 }
 
-
 .carb-ratio-group {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
 }
 
-/* Submit Button (ใช้ร่วมกับ Register page) */
+/* Submit Button */
 .submit-btn {
     background: linear-gradient(135deg, #f5abc4, #f9b0cf);
     color: white;
@@ -392,7 +393,7 @@ textarea:focus {
     transform: none;
 }
 
-/* Message Styles (ใช้ร่วมกับ Register page) */
+/* Message Styles */
 .loading {
     display: none;
     text-align: center;
@@ -444,8 +445,6 @@ textarea:focus {
     color: #333;
     padding: 8px 0; /* Padding for display text */
     word-break: break-word; /* เพื่อให้ข้อความยาวๆ ขึ้นบรรทัดใหม่ได้ */
-    /* background-color: #fefefe; */ /* อาจจะใส่พื้นหลังให้ดูเป็นช่อง */
-    /* border-bottom: 1px dashed #eee; */ /* หรือเส้นประ */
     min-height: 40px; /* ให้มีความสูงเท่าๆ กับ input */
     display: flex;
     align-items: center; /* จัดแนวตั้งกึ่งกลาง */
@@ -480,6 +479,176 @@ textarea:focus {
     display: none; /* ซ่อน input ในโหมดแสดงผล */
 }
 
+/* --- Food Records Specific Styles --- */
+/* Overall container for food records - already defined as .food-records-container in food_records.html but here for consistency */
+.food-records-container {
+    padding: 20px; /* Adjust padding to match form-container padding */
+    /* Remove background, border-radius, box-shadow if .container already handles it, or keep if you want distinct styling */
+    /* background-color: #fff; */
+    /* border-radius: 10px; */
+    /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); */
+    margin-top: 0; /* No extra margin if it's within .container directly */
+}
+
+/* Form section styling for food/sugar records - similar to .profile-section */
+.record-form-section {
+    background-color: #f9f9f9; /* Lighter background for the form itself */
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #eee;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03); /* Lighter shadow for form */
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+/* Re-using existing .form-group styles */
+/* Re-using existing .form-group label styles */
+/* Re-using existing input, select, textarea styles */
+/* Re-using .form-group.full-width */
+
+/* Button styling for form within records (add/save/cancel) */
+.button-group.form-btns {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.add-record-btn {
+    background-color: #4CAF50; /* Green */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px; /* Slightly less rounded than main buttons */
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.add-record-btn:hover {
+    background-color: #45a049;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+.save-btn { /* Overrides the general .save-btn slightly for specific form */
+    background-color: #007bff; /* Blue */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.save-btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+.cancel-btn { /* Overrides the general .cancel-btn slightly for specific form */
+    background-color: #dc3545; /* Red */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.cancel-btn:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+/* Table styling for records display */
+.records-display-section {
+    overflow-x: auto; /* For responsive tables */
+    margin-top: 20px;
+    border-radius: 8px; /* Rounded corners for the table area */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Soft shadow */
+    background-color: #fff; /* White background for the table area */
+}
+
+#foodRecordsTable, #sugarRecordsTable { /* Apply to both tables */
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0; /* Adjust margin if records-display-section already has it */
+    font-size: 0.95rem;
+}
+
+#foodRecordsTable th,
+#foodRecordsTable td,
+#sugarRecordsTable th,
+#sugarRecordsTable td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+    vertical-align: top; /* Align content to top for longer menus/notes */
+}
+
+#foodRecordsTable th,
+#sugarRecordsTable th {
+    background-color: #e9ecef; /* Light gray header */
+    font-weight: bold;
+    color: #333;
+}
+
+#foodRecordsTable tbody tr:nth-child(even),
+#sugarRecordsTable tbody tr:nth-child(even) {
+    background-color: #f8f9fa; /* Alternate row shading */
+}
+
+.actions-cell {
+    white-space: nowrap; /* Prevent buttons from wrapping */
+    text-align: center;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    margin: 0 5px;
+    padding: 5px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.edit-record-btn {
+    color: #007bff; /* Blue for edit */
+}
+.edit-record-btn:hover {
+    background-color: #e7f2ff;
+}
+
+.delete-record-btn {
+    color: #dc3545; /* Red for delete */
+}
+.delete-record-btn:hover {
+    background-color: #ffe6e8;
+}
+
+/* No data message */
+.no-data-message {
+    text-align: center;
+    color: #888;
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
@@ -491,11 +660,11 @@ textarea:focus {
     body {
         padding: 0; /* ลบ padding บน body เพื่อให้ container เต็มจอ */
     }
-    .form-container, .profile-container {
+    .form-container, .profile-container, .food-records-container { /* Apply to food records container as well */
         padding: 20px;
     }
 
-    .form-row {
+    .form-row, .form-grid { /* Apply to form-grid as well */
         flex-direction: column;
         gap: 0; /* Remove gap when stacking */
     }
@@ -542,5 +711,24 @@ textarea:focus {
     .submit-btn {
         padding: 12px 20px;
         font-size: 1em;
+    }
+    .add-record-btn { /* Also adjust for smaller screens */
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+    .save-btn, .cancel-btn { /* For forms within records */
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+    #foodRecordsTable th,
+    #foodRecordsTable td,
+    #sugarRecordsTable th,
+    #sugarRecordsTable td {
+        padding: 8px; /* Reduce padding in table cells for smaller screens */
+        font-size: 0.85rem;
+    }
+    .icon-btn {
+        font-size: 0.9rem; /* Smaller icons */
+        padding: 3px;
     }
 }

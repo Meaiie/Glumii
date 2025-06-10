@@ -1,371 +1,426 @@
-<div class="header-nav">
-    <div class="nav-item" data-page="profile">
-        <i class="icon-profile"></i> ประวัติส่วนตัว
-    </div>
-    <div class="nav-item active" data-page="food-records">
-        <i class="icon-food"></i> บันทึกอาหาร
-    </div>
-    <div class="nav-item" data-page="sugar-records">
-        <i class="icon-sugar"></i> บันทึกน้ำตาล
-    </div>
-</div>
-
-<div class="form-container">
-    <div class="form-section">
-        <h3 class="section-title">บันทึกการรับประทานอาหาร
-            <button class="add-btn" id="addFoodRecordBtn">+ เพิ่มรายการอาหาร</button>
-        </h3>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บันทึกอาหาร - ระบบบันทึกข้อมูลคนไข้สตรีตั้งครรภ์</title>
+    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span>❤️ แอปสำหรับคุณแม่ตั้งครรภ์</span>
+            <div class="user-info">
+                สวัสดี, <span id="liffDisplayName">คุณแม่</span> <span>👩‍🦰</span>
+            </div>
+        </div>
         
-        <div class="date-navigator">
-            <button id="prevDayFood">&lt;</button>
-            <span id="currentDateFood"></span>
-            <button id="nextDayFood">&gt;</button>
-            <input type="date" id="selectDateFood" class="date-picker">
+        <div class="nav-tabs">
+            <a href="profile.html" class="nav-tab">
+                <i class="fas fa-user-alt"></i> ประวัติส่วนตัว
+            </a>
+            <a href="food_records.html" class="nav-tab active">
+                <i class="fas fa-utensils"></i> บันทึกอาหาร
+            </a>
+            <a href="sugar_records.html" class="nav-tab">
+                <i class="fas fa-tint"></i> บันทึกน้ำตาล
+            </a>
         </div>
 
-        <div id="foodRecordsList">
-            <div class="loading" id="foodLoading">⏳ กำลังโหลดข้อมูล...</div>
-        </div>
-
-        <div class="success-message" id="foodSuccess">✅ บันทึกข้อมูลเรียบร้อยแล้ว!</div>
-        <div class="error-message" id="foodError">❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง</div>
-    </div>
-</div>
-
-<div id="foodRecordModal" class="modal">
-    <div class="modal-content">
-        <span class="close-button">&times;</span>
-        <h3 id="modalTitle">เพิ่มรายการอาหาร</h3>
-        <form id="foodRecordForm">
-            <div class="form-group">
-                <label for="foodDate">วันที่</label>
-                <input type="date" id="foodDate" required>
+        <div class="food-records-container">
+            <div id="liffStatus" class="liff-status liff-disconnected">
+                🔄 กำลังเชื่อมต่อ LINE...
             </div>
-            <div class="form-group">
-                <label for="foodTime">เวลา</label>
-                <input type="time" id="foodTime" required>
+
+            <div class="section-header">
+                <h3 class="section-title">บันทึกอาหารประจำวัน</h3>
+                <button class="add-record-btn" id="addFoodRecordBtn">เพิ่มบันทึกอาหาร</button>
             </div>
-            <div class="form-group">
-                <label for="foodMeal">มื้ออาหาร</label>
-                <select id="foodMeal" required>
-                    <option value="">เลือกมื้ออาหาร</option>
-                    <option value="breakfast">อาหารเช้า</option>
-                    <option value="lunch">อาหารกลางวัน</option>
-                    <option value="dinner">อาหารเย็น</option>
-                    <option value="snack">อาหารว่าง</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="foodMenu">รายการอาหาร</label>
-                <input type="text" id="foodMenu" placeholder="เช่น ข้าวต้มไก่ 1 ถ้วย (200 กรัม)" required>
-            </div>
-            <div class="form-group">
-                <label for="foodCarbs">คาร์โบไฮเดรต (กรัม)</label>
-                <input type="number" id="foodCarbs" step="0.1" min="0" required>
-            </div>
-            <div class="modal-buttons">
-                <button type="button" class="cancel-btn" id="cancelFoodModal">ยกเลิก</button>
-                <button type="submit" class="submit-btn">บันทึก</button>
-            </div>
-        </form>
-    </div>
-</div>
 
-<script>
-    let currentFoodUserId = '';
-    let currentFoodDate = new Date(); // วันที่ปัจจุบัน
-    let editingFoodRecordId = null; // สำหรับเก็บ id ของรายการที่กำลังแก้ไข
-
-    window.initFoodRecordsPage = async function(userId) {
-        currentFoodUserId = userId;
-        setupFoodRecordsEventListeners();
-        displayCurrentFoodDate();
-        await fetchFoodRecords(userId, formatDate(currentFoodDate));
-    };
-
-    function setupFoodRecordsEventListeners() {
-        document.getElementById('addFoodRecordBtn').addEventListener('click', () => openFoodModal('add'));
-        document.querySelector('#foodRecordModal .close-button').addEventListener('click', closeFoodModal);
-        document.getElementById('cancelFoodModal').addEventListener('click', closeFoodModal);
-        document.getElementById('foodRecordForm').addEventListener('submit', handleFoodFormSubmit);
-        document.getElementById('prevDayFood').addEventListener('click', () => changeFoodDay(-1));
-        document.getElementById('nextDayFood').addEventListener('click', () => changeFoodDay(1));
-        document.getElementById('selectDateFood').addEventListener('change', (event) => {
-            currentFoodDate = new Date(event.target.value);
-            displayCurrentFoodDate();
-            fetchFoodRecords(currentFoodUserId, formatDate(currentFoodDate));
-        });
-
-        // Navigation for top menu
-        document.querySelectorAll('.header-nav .nav-item').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.header-nav .nav-item').forEach(nav => nav.classList.remove('active'));
-                this.classList.add('active');
-                const page = this.dataset.page;
-                if (page === 'profile') {
-                    loadContent('profile.html', 'mainContent', currentFoodUserId);
-                } else if (page === 'food-records') {
-                    // Already on food records page
-                } else if (page === 'sugar-records') {
-                    loadContent('sugar_records.html', 'mainContent', currentFoodUserId);
-                }
-            });
-        });
-    }
-
-    function formatDate(date) {
-        const d = new Date(date);
-        const year = d.getFullYear();
-        const month = (d.getMonth() + 1).toString().padStart(2, '0');
-        const day = d.getDate().toString().padStart(2, '0');
-        return `${year}-${month}-${day}`; // Format YYYY-MM-DD
-    }
-
-    function displayCurrentFoodDate() {
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('currentDateFood').textContent = `วันที่ ${currentFoodDate.toLocaleDateString('th-TH', options)}`;
-        document.getElementById('selectDateFood').value = formatDate(currentFoodDate);
-    }
-
-    async function changeFoodDay(offset) {
-        currentFoodDate.setDate(currentFoodDate.getDate() + offset);
-        displayCurrentFoodDate();
-        await fetchFoodRecords(currentFoodUserId, formatDate(currentFoodDate));
-    }
-
-    async function fetchFoodRecords(userId, date) {
-        document.getElementById('foodLoading').style.display = 'block';
-        document.getElementById('foodRecordsList').innerHTML = '<div class="loading">⏳ กำลังโหลดข้อมูล...</div>';
-        try {
-            const url = '/.netlify/functions/apps-script-proxy'; 
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'getFoodRecords', userId: userId, date: date })
-            });
-
-            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-            const result = await response.json();
-
-            if (result.status === 'success' && result.data) {
-                renderFoodRecords(result.data);
-            } else {
-                document.getElementById('foodRecordsList').innerHTML = '<p class="empty-state">ยังไม่มีบันทึกอาหารสำหรับวันนี้</p>';
-            }
-            document.getElementById('foodLoading').style.display = 'none';
-        } catch (error) {
-            console.error('Error fetching food records:', error);
-            document.getElementById('foodLoading').style.display = 'none';
-            document.getElementById('foodError').style.display = 'block';
-            document.getElementById('foodError').innerHTML = `❌ เกิดข้อผิดพลาดในการดึงข้อมูล: ${error.message}`;
-            setTimeout(() => { document.getElementById('foodError').style.display = 'none'; }, 5000);
-        }
-    }
-
-    function renderFoodRecords(records) {
-        const listContainer = document.getElementById('foodRecordsList');
-        listContainer.innerHTML = ''; // Clear existing content
-
-        const meals = {
-            'breakfast': 'อาหารเช้า',
-            'lunch': 'อาหารกลางวัน',
-            'dinner': 'อาหารเย็น',
-            'snack': 'อาหารว่าง'
-        };
-
-        const groupedRecords = records.reduce((acc, record) => {
-            const mealType = record.meal || 'unknown';
-            if (!acc[mealType]) {
-                acc[mealType] = [];
-            }
-            acc[mealType].push(record);
-            return acc;
-        }, {});
-
-        for (const mealType in meals) {
-            if (groupedRecords[mealType] && groupedRecords[mealType].length > 0) {
-                const mealTitle = meals[mealType];
-                const totalCarbs = groupedRecords[mealType].reduce((sum, item) => sum + (parseFloat(item.carbs) || 0), 0);
-                
-                let mealHtml = `
-                    <div class="meal-section">
-                        <h4>${mealTitle} (${groupedRecords[mealType][0].datetime.split(' ')[1] || ''})</h4>
-                        <ul class="food-list">
-                `;
-                groupedRecords[mealType].forEach(record => {
-                    mealHtml += `
-                        <li class="food-item">
-                            <span class="food-menu">${record.menu}</span>
-                            <span class="food-carbs">${record.carbs} กรัมคาร์บ</span>
-                            <div class="actions">
-                                <button class="action-btn edit-action-btn" data-id="${record.id}" data-action="edit">แก้ไข</button>
-                                <button class="action-btn delete-action-btn" data-id="${record.id}" data-action="delete">ลบ</button>
-                            </div>
-                        </li>
-                    `;
-                });
-                mealHtml += `
-                        </ul>
-                        <div class="total-carbs">รวมคาร์บ: ${totalCarbs.toFixed(1)} กรัม</div>
+            <div class="record-form-section" id="foodRecordFormSection" style="display: none;">
+                <form id="foodRecordForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="recordDate">วันที่</label>
+                            <input type="date" id="recordDate" name="datetime" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="recordTime">เวลา</label>
+                            <input type="time" id="recordTime" name="time" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="mealType">มื้ออาหาร</label>
+                            <select id="mealType" name="meal" required>
+                                <option value="">เลือกมื้ออาหาร</option>
+                                <option value="มื้อเช้า">มื้อเช้า</option>
+                                <option value="มื้อสาย">มื้อสาย</option>
+                                <option value="มื้อกลางวัน">มื้อกลางวัน</option>
+                                <option value="มื้อบ่าย">มื้อบ่าย</option>
+                                <option value="มื้อเย็น">มื้อเย็น</option>
+                                <option value="มื้อก่อนนอน">มื้อก่อนนอน</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="menuDescription">เมนูอาหาร</label>
+                            <textarea id="menuDescription" name="menu" rows="2" placeholder="เช่น ข้าวผัดไก่ 1 จาน, นมจืด 1 แก้ว" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="carbsAmount">คาร์บ (หน่วย)</label>
+                            <input type="number" id="carbsAmount" name="carbs" min="0" step="0.5" required>
+                        </div>
                     </div>
-                `;
-                listContainer.innerHTML += mealHtml;
-            }
-        }
+                    <div class="button-group form-btns">
+                        <button type="button" class="cancel-btn" id="cancelFoodRecordBtn">ยกเลิก</button>
+                        <button type="submit" class="save-btn" id="saveFoodRecordBtn">บันทึก</button>
+                    </div>
+                </form>
+            </div>
 
-        // Add event listeners for edit and delete buttons
-        listContainer.querySelectorAll('.edit-action-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => openFoodModal('edit', e.target.dataset.id));
-        });
-        listContainer.querySelectorAll('.delete-action-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => deleteFoodRecord(e.target.dataset.id));
-        });
+            <div class="loading" id="loading">⏳ กำลังดึงข้อมูล...</div>
+            <div class="success-message" id="successMessage">✅ บันทึกข้อมูลเรียบร้อยแล้ว!</div>
+            <div class="error-message" id="errorMessage">❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง</div>
+            <div class="no-data-message" id="noDataMessage" style="display: none;">
+                ยังไม่มีข้อมูลบันทึกอาหาร โปรดเพิ่มบันทึกแรกของคุณ!
+            </div>
 
-        if (records.length === 0) {
-            listContainer.innerHTML = '<p class="empty-state">ยังไม่มีบันทึกอาหารสำหรับวันนี้</p>';
-        }
-    }
+            <div class="records-display-section">
+                <table id="foodRecordsTable">
+                    <thead>
+                        <tr>
+                            <th>วันที่และเวลา</th>
+                            <th>มื้อ</th>
+                            <th>เมนู</th>
+                            <th>คาร์บ (หน่วย)</th>
+                            <th>การกระทำ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-    function openFoodModal(mode, recordId = null) {
-        const modal = document.getElementById('foodRecordModal');
-        const form = document.getElementById('foodRecordForm');
-        document.getElementById('modalTitle').textContent = mode === 'add' ? 'เพิ่มรายการอาหาร' : 'แก้ไขรายการอาหาร';
-        form.reset();
-        editingFoodRecordId = null;
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        let isLiffReady = false;
+        let liffUserId = null;
+        let currentEditingRecordId = null; // สำหรับเก็บ ID ของ record ที่กำลังแก้ไข
 
-        const now = new Date();
-        document.getElementById('foodDate').value = formatDate(currentFoodDate); // Default to current selected date
-        document.getElementById('foodTime').value = now.toTimeString().slice(0, 5); // Default to current time
-
-        if (mode === 'edit' && recordId) {
-            editingFoodRecordId = recordId;
-            // Find the record in the fetched data (you might need to refetch or store data)
-            // For simplicity, let's assume records are always fresh from fetchFoodRecords
-            fetchFoodRecords(currentFoodUserId, formatDate(currentFoodDate)).then(() => {
-                const recordToEdit = (document.getElementById('foodRecordsList').innerHTML.match(/data-id="([^"]+)"/g) || [])
-                    .map(s => s.match(/data-id="([^"]+)"/)[1])
-                    .find(id => id === recordId); // This is a placeholder, you'd need to properly store and retrieve data
-
-                // This part needs actual data. A simple way is to refetch all records and filter.
-                // Or better, store `result.data` in a global variable.
-                const allRecordsFetched = JSON.parse(localStorage.getItem('tempFoodRecordsCache')) || []; // Example: if you cache
-                const foundRecord = allRecordsFetched.find(r => r.id === recordId); // Assuming 'id' field
-                
-                if (foundRecord) {
-                    document.getElementById('foodDate').value = foundRecord.datetime.split(' ')[0];
-                    document.getElementById('foodTime').value = foundRecord.datetime.split(' ')[1].slice(0, 5);
-                    document.getElementById('foodMeal').value = foundRecord.meal;
-                    document.getElementById('foodMenu').value = foundRecord.menu;
-                    document.getElementById('foodCarbs').value = foundRecord.carbs;
+        async function initializeLiff() {
+            try {
+                await liff.init({ liffId: "2007493917-XdpdZalP" }); // LIFF ID ของคุณ
+                if (!liff.isLoggedIn()) {
+                    liff.login();
                 } else {
-                    console.error('Record not found for editing:', recordId);
-                    alert('ไม่พบรายการที่จะแก้ไข กรุณาลองใหม่');
-                    closeFoodModal();
-                    return;
+                    isLiffReady = true;
+                    document.getElementById('liffStatus').className = 'liff-status liff-connected';
+                    document.getElementById('liffStatus').innerHTML = '✅ เชื่อมต่อ LINE สำเร็จ';
+                    
+                    const profile = await liff.getProfile();
+                    liffUserId = profile.userId;
+                    document.getElementById('liffDisplayName').innerText = profile.displayName || 'คุณแม่';
+
+                    fetchFoodRecords(liffUserId);
                 }
-            });
-        }
-        modal.style.display = 'block';
-    }
-
-    function closeFoodModal() {
-        document.getElementById('foodRecordModal').style.display = 'none';
-        editingFoodRecordId = null;
-    }
-
-    async function handleFoodFormSubmit(event) {
-        event.preventDefault();
-        const date = document.getElementById('foodDate').value;
-        const time = document.getElementById('foodTime').value;
-        const meal = document.getElementById('foodMeal').value;
-        const menu = document.getElementById('foodMenu').value;
-        const carbs = parseFloat(document.getElementById('foodCarbs').value);
-
-        if (isNaN(carbs) || carbs < 0) {
-            alert('กรุณากรอกปริมาณคาร์โบไฮเดรตให้ถูกต้อง');
-            return;
-        }
-
-        const formData = {
-            userId: currentFoodUserId,
-            datetime: `${date} ${time}:00`,
-            meal,
-            menu,
-            carbs,
-        };
-
-        const action = editingFoodRecordId ? 'updateFoodRecord' : 'addFoodRecord';
-        if (editingFoodRecordId) {
-            formData.id = editingFoodRecordId; // Add ID for update operation
-        }
-
-        document.getElementById('foodLoading').style.display = 'block';
-        document.getElementById('foodSuccess').style.display = 'none';
-        document.getElementById('foodError').style.display = 'none';
-
-        try {
-            const url = '/.netlify/functions/apps-script-proxy'; 
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: action, data: formData })
-            });
-
-            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-            const result = await response.json();
-
-            if (result.status === 'success') {
-                document.getElementById('foodSuccess').style.display = 'block';
-                closeFoodModal();
-                await fetchFoodRecords(currentFoodUserId, formatDate(currentFoodDate)); // Refresh list
-                setTimeout(() => { document.getElementById('foodSuccess').style.display = 'none'; }, 3000);
-            } else {
-                throw new Error(result.message || 'เกิดข้อผิดพลาดในการบันทึก/แก้ไขข้อมูล');
+            } catch (error) {
+                console.error('LIFF initialization failed:', error);
+                document.getElementById('liffStatus').innerHTML = '❌ ไม่สามารถเชื่อมต่อ LINE ได้';
+                document.getElementById('liffStatus').className = 'liff-status liff-disconnected';
             }
-        } catch (error) {
-            console.error('Error saving/updating food record:', error);
-            document.getElementById('foodError').style.display = 'block';
-            document.getElementById('foodError').innerHTML = `❌ เกิดข้อผิดพลาด: ${error.message}`;
-            setTimeout(() => { document.getElementById('foodError').style.display = 'none'; }, 5000);
-        } finally {
-            document.getElementById('foodLoading').style.display = 'none';
-        }
-    }
-
-    async function deleteFoodRecord(recordId) {
-        if (!confirm('คุณแน่ใจหรือไม่ว่าต้องการลบรายการอาหารนี้?')) {
-            return;
         }
 
-        document.getElementById('foodLoading').style.display = 'block';
-        document.getElementById('foodSuccess').style.display = 'none';
-        document.getElementById('foodError').style.display = 'none';
+        async function fetchFoodRecords(userId) {
+            console.log('Fetching food records for userId:', userId);
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('noDataMessage').style.display = 'none';
 
-        try {
-            const url = '/.netlify/functions/apps-script-proxy'; 
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'deleteFoodRecord', id: recordId, userId: currentFoodUserId })
+            try {
+                // สมมติว่า Netlify Function endpoint สำหรับดึงข้อมูลอาหารคือเดียวกัน แต่เปลี่ยน action
+                const url = '/.netlify/functions/apps-script-proxy'; 
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action: 'getFoodRecords', userId: userId })
+                });
+
+                if (!response.ok) {
+                    const errorDetails = await response.text();
+                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails}`);
+                }
+
+                const result = await response.json();
+                console.log('Food records from Netlify Function:', result);
+
+                document.getElementById('loading').style.display = 'none';
+
+                if (result.status === 'success' && result.records && Array.isArray(result.records)) {
+                    displayFoodRecords(result.records);
+                } else {
+                    document.getElementById('noDataMessage').style.display = 'block';
+                    document.getElementById('foodRecordsTable').getElementsByTagName('tbody')[0].innerHTML = ''; // Clear table
+                    console.warn('No food records found or invalid data format:', result.message);
+                }
+
+            } catch (error) {
+                console.error('Error fetching food records:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('errorMessage').innerHTML = `❌ เกิดข้อผิดพลาดในการดึงข้อมูล: ${error.message}`;
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        }
+
+        function displayFoodRecords(records) {
+            const tableBody = document.getElementById('foodRecordsTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear existing records
+
+            if (records.length === 0) {
+                document.getElementById('noDataMessage').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('noDataMessage').style.display = 'none';
+
+            // Sort records by datetime descending (latest first)
+            records.sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
+
+            records.forEach(record => {
+                const row = tableBody.insertRow();
+                // Assumes record.datetime is in 'YYYY-MM-DD HH:MM:SS' format from backend
+                const dateTime = new Date(record.datetime);
+                const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+                const timeOptions = { hour: '2-digit', minute: '2-digit' };
+                const formattedDateTime = `${dateTime.toLocaleDateString('th-TH', dateOptions)} ${dateTime.toLocaleTimeString('th-TH', timeOptions)}`;
+
+                row.insertCell(0).innerText = formattedDateTime;
+                row.insertCell(1).innerText = record.meal || 'N/A';
+                row.insertCell(2).innerText = record.menu || 'N/A';
+                row.insertCell(3).innerText = record.carbs !== undefined ? record.carbs : 'N/A';
+
+                const actionsCell = row.insertCell(4);
+                actionsCell.className = 'actions-cell';
+                const editBtn = document.createElement('button');
+                editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+                editBtn.className = 'edit-record-btn icon-btn';
+                editBtn.title = 'แก้ไข';
+                editBtn.onclick = () => editFoodRecord(record);
+                actionsCell.appendChild(editBtn);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                deleteBtn.className = 'delete-record-btn icon-btn';
+                deleteBtn.title = 'ลบ';
+                deleteBtn.onclick = () => deleteFoodRecord(record.recordId); // สมมติว่ามี recordId
+                actionsCell.appendChild(deleteBtn);
+            });
+        }
+
+        function showFoodRecordForm(record = null) {
+            const formSection = document.getElementById('foodRecordFormSection');
+            formSection.style.display = 'block';
+            document.getElementById('addFoodRecordBtn').style.display = 'none';
+            document.getElementById('foodRecordForm').reset(); // Clear form
+
+            if (record) {
+                currentEditingRecordId = record.recordId; // เก็บ ID สำหรับการแก้ไข
+                // แยกวันที่และเวลาจาก record.datetime
+                const dateTime = new Date(record.datetime);
+                const date = dateTime.toISOString().split('T')[0];
+                const time = dateTime.toTimeString().split(' ')[0].substring(0, 5); // HH:MM
+
+                document.getElementById('recordDate').value = date;
+                document.getElementById('recordTime').value = time;
+                document.getElementById('mealType').value = record.meal || '';
+                document.getElementById('menuDescription').value = record.menu || '';
+                document.getElementById('carbsAmount').value = record.carbs !== undefined ? record.carbs : '';
+            } else {
+                currentEditingRecordId = null; // เพิ่ม record ใหม่
+                // Set default date to today
+                document.getElementById('recordDate').valueAsDate = new Date();
+            }
+        }
+
+        function hideFoodRecordForm() {
+            document.getElementById('foodRecordFormSection').style.display = 'none';
+            document.getElementById('addFoodRecordBtn').style.display = 'block';
+            document.getElementById('foodRecordForm').reset();
+            currentEditingRecordId = null;
+        }
+
+        async function handleSaveFoodRecord(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            if (!isLiffReady || !liffUserId) {
+                console.warn('LIFF not ready or userId not available for saving food record.');
+                showMessage('errorMessage', '❌ กรุณารอการเชื่อมต่อ LIFF ให้สมบูรณ์', 5000);
+                return;
+            }
+
+            const form = document.getElementById('foodRecordForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                showMessage('errorMessage', '❌ กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง', 5000);
+                return;
+            }
+
+            showMessage('loading', '⏳ กำลังบันทึกข้อมูล...');
+
+            const formData = new FormData(form);
+            const recordDate = formData.get('datetime');
+            const recordTime = formData.get('time');
+            const fullDateTime = `${recordDate} ${recordTime}:00`; // Combine date and time
+
+            const data = {
+                userId: liffUserId,
+                datetime: fullDateTime,
+                meal: formData.get('meal'),
+                menu: formData.get('menu'),
+                carbs: parseFloat(formData.get('carbs')), // Convert to number
+            };
+
+            let action = 'addFoodRecord';
+            if (currentEditingRecordId) {
+                action = 'updateFoodRecord';
+                data.recordId = currentEditingRecordId; // เพิ่ม ID สำหรับการอัปเดต
+            }
+            data.action = action;
+
+            console.log('Data to be sent for food record:', data);
+
+            try {
+                const url = '/.netlify/functions/apps-script-proxy'; 
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const errorDetails = await response.text();
+                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails}`);
+                }
+
+                const result = await response.json();
+                console.log('Save food record result:', result);
+
+                if (result.status === 'success') {
+                    showMessage('successMessage', '✅ บันทึกข้อมูลเรียบร้อยแล้ว!', 3000);
+                    hideFoodRecordForm();
+                    fetchFoodRecords(liffUserId); // Refresh records
+                } else {
+                    showMessage('errorMessage', `❌ เกิดข้อผิดพลาด: ${result.message || 'ไม่สามารถบันทึกข้อมูลได้'}`, 5000);
+                }
+
+            } catch (error) {
+                console.error('Error saving food record:', error);
+                showMessage('errorMessage', `❌ เกิดข้อผิดพลาดในการบันทึกข้อมูล: ${error.message}`, 5000);
+            }
+        }
+
+        async function editFoodRecord(record) {
+            showFoodRecordForm(record);
+            // Scroll to the form
+            document.getElementById('foodRecordFormSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function deleteFoodRecord(recordId) {
+            if (!confirm('คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้?')) {
+                return;
+            }
+
+            if (!isLiffReady || !liffUserId) {
+                showMessage('errorMessage', '❌ LIFF ยังไม่พร้อม', 5000);
+                return;
+            }
+
+            showMessage('loading', '⏳ กำลังลบข้อมูล...');
+
+            try {
+                const url = '/.netlify/functions/apps-script-proxy'; 
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        action: 'deleteFoodRecord', 
+                        userId: liffUserId, 
+                        recordId: recordId 
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorDetails = await response.text();
+                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails}`);
+                }
+
+                const result = await response.json();
+                console.log('Delete food record result:', result);
+
+                if (result.status === 'success') {
+                    showMessage('successMessage', '✅ ลบข้อมูลเรียบร้อยแล้ว!', 3000);
+                    fetchFoodRecords(liffUserId); // Refresh records
+                } else {
+                    showMessage('errorMessage', `❌ เกิดข้อผิดพลาด: ${result.message || 'ไม่สามารถลบข้อมูลได้'}`, 5000);
+                }
+
+            } catch (error) {
+                console.error('Error deleting food record:', error);
+                showMessage('errorMessage', `❌ เกิดข้อผิดพลาดในการลบข้อมูล: ${error.message}`, 5000);
+            }
+        }
+
+        function showMessage(elementId, message, duration = 0) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = message;
+                element.style.display = 'block';
+                if (duration > 0) {
+                    setTimeout(() => {
+                        element.style.display = 'none';
+                    }, duration);
+                }
+            }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeLiff();
+
+            // Navigation tab listeners (redirect to correct pages)
+            document.querySelector('.nav-tabs a[href="profile.html"]').addEventListener('click', (e) => {
+                e.preventDefault();
+                liff.openWindow({ url: `profile.html`, external: false });
+            });
+            document.querySelector('.nav-tabs a[href="food_records.html"]').addEventListener('click', (e) => {
+                e.preventDefault();
+                liff.openWindow({ url: `food_records.html`, external: false });
+            });
+            document.querySelector('.nav-tabs a[href="sugar_records.html"]').addEventListener('click', (e) => {
+                e.preventDefault();
+                liff.openWindow({ url: `sugar_records.html`, external: false });
             });
 
-            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-            const result = await response.json();
+            // Button listeners for form
+            document.getElementById('addFoodRecordBtn').addEventListener('click', () => showFoodRecordForm());
+            document.getElementById('cancelFoodRecordBtn').addEventListener('click', hideFoodRecordForm);
+            document.getElementById('foodRecordForm').addEventListener('submit', handleSaveFoodRecord);
 
-            if (result.status === 'success') {
-                document.getElementById('foodSuccess').style.display = 'block';
-                await fetchFoodRecords(currentFoodUserId, formatDate(currentFoodDate)); // Refresh list
-                setTimeout(() => { document.getElementById('foodSuccess').style.display = 'none'; }, 3000);
-            } else {
-                throw new Error(result.message || 'เกิดข้อผิดพลาดในการลบข้อมูล');
-            }
-        } catch (error) {
-            console.error('Error deleting food record:', error);
-            document.getElementById('foodError').style.display = 'block';
-            document.getElementById('foodError').innerHTML = `❌ เกิดข้อผิดพลาด: ${error.message}`;
-            setTimeout(() => { document.getElementById('foodError').style.display = 'none'; }, 5000);
-        } finally {
-            document.getElementById('foodLoading').style.display = 'none';
-        }
-    }
-</script>
+            // Set default date for new records
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('recordDate').value = today;
+        });
+    </script>
+</body>
+</html>

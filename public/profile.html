@@ -10,7 +10,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <span>❤️ แอปสำหรับคุณแม่ตั้งครรภ์</span>
+            <span>❤️ แอปสำหรับคุณแม่ตั้งครรษ์</span>
             <div class="user-info">
                 สวัสดี, <span id="liffDisplayName">คุณแม่</span> <span>👩‍🦰</span>
             </div>
@@ -341,7 +341,6 @@
             document.getElementById('displayCarbRatio').innerText = carbRatioText;
 
             // PBS Date (วันที่ต้องเจาะน้ำตาล)
-            // *** แก้ไขตรงนี้เพื่อป้องกัน TypeError ***
             const displayPbsDateElement = document.getElementById('displayPbsDate');
             if (displayPbsDateElement) {
                 if (data.pbs_date && Array.isArray(data.pbs_date) && data.pbs_date.length > 0) {
@@ -350,7 +349,6 @@
                     displayPbsDateElement.innerText = 'ไม่มี'; // ถ้าไม่มีข้อมูล หรือไม่ใช่ Array
                 }
             }
-            // **********************************
 
             document.getElementById('displayRegistrationDate').innerText = data.registration_date ? new Date(data.registration_date).toLocaleDateString('th-TH', {year: 'numeric', month: 'long', day: 'numeric'}) : 'N/A';
 
@@ -365,7 +363,7 @@
             document.getElementById('editHospitalId').value = data.hospital_id || '';
             document.getElementById('editNationalId').value = data.national_id || '';
             document.getElementById('editBirthDate').value = data.birth_date || '';
-            document.getElementById('editAge').value = data.age || ''; // อาจจะต้องคำนวณจากวันเกิด
+            document.getElementById('editAge').value = data.age || ''; 
             document.getElementById('editHeight').value = data.height || '';
             document.getElementById('editPrePregnancyWeight').value = data.pre_pregnancy_weight || '';
             document.getElementById('editWeight').value = data.weight || '';
@@ -485,13 +483,14 @@
             document.querySelectorAll('input[name="comorbidities_radio"]').forEach(radio => {
                 radio.addEventListener('change', function () {
                     const detail = document.getElementById('editComorbiditiesDetail');
+                    const input = document.getElementById('editComorbidities');
                     if (this.value === 'มี') {
                         detail.classList.add('show');
-                        document.getElementById('editComorbidities').required = true;
+                        input.required = true;
                     } else {
                         detail.classList.remove('show');
-                        document.getElementById('editComorbidities').required = false;
-                        document.getElementById('editComorbidities').value = '';
+                        input.required = false;
+                        input.value = '';
                     }
                 });
             });
@@ -500,13 +499,14 @@
             document.querySelectorAll('input[name="pre_pregnancy_medications_radio"]').forEach(radio => {
                 radio.addEventListener('change', function () {
                     const detail = document.getElementById('editPrePregnancyMedicationsDetail');
+                    const textarea = document.getElementById('editPrePregnancyMedications');
                     if (this.value === 'มี') {
                         detail.classList.add('show');
-                        document.getElementById('editPrePregnancyMedications').required = true;
+                        textarea.required = true;
                     } else {
                         detail.classList.remove('show');
-                        document.getElementById('editPrePregnancyMedications').required = false;
-                        document.getElementById('editPrePregnancyMedications').value = '';
+                        textarea.required = false;
+                        textarea.value = '';
                     }
                 });
             });
@@ -516,7 +516,7 @@
                 checkbox.addEventListener('change', checkSugarCheckboxes);
             });
             
-            // ตั้งค่า min สำหรับ due_date (ถ้ามีใน Profile ด้วย)
+            // ตั้งค่า min สำหรับ due_date
             const today = new Date().toISOString().split('T')[0];
             const editDueDateInput = document.getElementById('editDueDate');
             if (editDueDateInput) {
@@ -535,58 +535,59 @@
                 return;
             }
 
-            const selectedSugarCheck = Array.from(document.querySelectorAll('.sugar-check:checked')).map(cb => cb.value);
-            if (selectedSugarCheck.length !== 3) {
-                document.getElementById('errorMessage').innerHTML = '❌ กรุณาเลือก "วันที่ต้องเจาะน้ำตาล" ให้ครบ 3 วัน';
+            // ตรวจสอบความถูกต้องของฟอร์ม (HTML5 validation)
+            const form = document.getElementById('profileForm');
+            if (!form.checkValidity()) {
+                form.reportValidity(); // แสดงข้อความ error ของ input ที่ไม่ถูกต้อง
+                document.getElementById('errorMessage').innerHTML = '❌ กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง';
                 document.getElementById('errorMessage').style.display = 'block';
                 setTimeout(() => document.getElementById('errorMessage').style.display = 'none', 5000);
                 return;
             }
 
+            // แสดงสถานะ loading
             document.getElementById('loading').style.display = 'block';
-            document.getElementById('errorMessage').style.display = 'none';
             document.getElementById('successMessage').style.display = 'none';
-
-            const formData = {
-                userId: liffUserId,
-                action: 'updateProfile', // ระบุ action เป็น updateProfile
-                full_name: document.getElementById('editFullName').value,
-                nickname: document.getElementById('editNickname').value,
-                hospital_id: document.getElementById('editHospitalId').value,
-                national_id: document.getElementById('editNationalId').value,
-                birth_date: document.getElementById('editBirthDate').value,
-                age: document.getElementById('editAge').value,
-                height: document.getElementById('editHeight').value,
-                pre_pregnancy_weight: document.getElementById('editPrePregnancyWeight').value,
-                weight: document.getElementById('editWeight').value,
-                // BMI และ Weight Gain จะคำนวณจาก Apps Script
-                comorbidities: document.querySelector('input[name="comorbidities_radio"]:checked').value === 'มี' 
-                               ? document.getElementById('editComorbidities').value 
-                               : 'ไม่มี',
-                pre_pregnancy_medications: document.querySelector('input[name="pre_pregnancy_medications_radio"]:checked').value === 'มี' 
-                                           ? document.getElementById('editPrePregnancyMedications').value 
-                                           : 'ไม่มี',
-                fetus_count: document.getElementById('editFetusCount').value,
-                due_date: document.getElementById('editDueDate').value,
-                // Gestational Week, Calorie Required, Carb Unit Required จะคำนวณจาก Apps Script
-                carb_ratio: {
-                    breakfast: document.getElementById('editCarbRatioBreakfast').value,
-                    lunch: document.getElementById('editCarbRatioLunch').value,
-                    dinner: document.getElementById('editCarbRatioDinner').value
-                },
-                pbs_date: selectedSugarCheck // ข้อมูล PBS Date ที่ถูกเลือกจาก checkbox
-            };
-
-            console.log('Sending data to Netlify Function:', formData);
+            document.getElementById('errorMessage').style.display = 'none';
 
             try {
+                const formData = new FormData(form);
+                const data = {
+                    userId: liffUserId,
+                    action: 'updateProfile', // เปลี่ยน action เป็น updateProfile
+                };
+
+                // วนลูปเพื่อดึงข้อมูลจาก FormData และใส่ลงใน object data
+                for (let [key, value] of formData.entries()) {
+                    if (key === 'comorbidities_radio') {
+                        data.comorbidities = value === 'มี' ? formData.get('comorbidities_input') : 'ไม่มี';
+                    } else if (key === 'comorbidities_input') {
+                        // ไม่ต้องทำอะไร ถ้า comorbidities_radio เป็น 'ไม่มี' ค่านี้จะถูกละทิ้ง
+                    } else if (key === 'pre_pregnancy_medications_radio') {
+                        data.pre_pregnancy_medications = value === 'มี' ? formData.get('pre_pregnancy_medications_input') : 'ไม่มี';
+                    } else if (key === 'pre_pregnancy_medications_input') {
+                        // ไม่ต้องทำอะไร ถ้า pre_pregnancy_medications_radio เป็น 'ไม่มี' ค่านี้จะถูกละทิ้ง
+                    } else if (key.startsWith('carb_ratio_')) {
+                        if (!data.carb_ratio) data.carb_ratio = {};
+                        data.carb_ratio[key.replace('carb_ratio_', '')] = parseFloat(value);
+                    } else {
+                        data[key] = value;
+                    }
+                }
+
+                // ดึงข้อมูล PBS Date จาก checkbox ที่ถูกเลือก
+                const selectedPbsDates = Array.from(document.querySelectorAll('.sugar-check:checked')).map(cb => cb.value);
+                data.pbs_date = selectedPbsDates.length > 0 ? selectedPbsDates : [];
+
+                console.log('Data to be sent:', data);
+
                 const url = '/.netlify/functions/apps-script-proxy'; 
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify(data)
                 });
 
                 if (!response.ok) {
@@ -595,26 +596,34 @@
                 }
 
                 const result = await response.json();
-                console.log('Response from Netlify Function (Save Profile):', result);
+                console.log('Save profile result:', result);
 
                 if (result.status === 'success') {
+                    document.getElementById('loading').style.display = 'none';
                     document.getElementById('successMessage').style.display = 'block';
-                    currentProfileData = result.profileData; // อัปเดตข้อมูลโปรไฟล์ที่แสดงผล
-                    displayProfileData(currentProfileData); // แสดงผลข้อมูลที่บันทึกแล้ว
-                    setTimeout(() => document.getElementById('successMessage').style.display = 'none', 3000);
+                    document.getElementById('errorMessage').style.display = 'none';
+                    
+                    // อัปเดต currentProfileData และแสดงผลใหม่
+                    currentProfileData = result.profileData; 
+                    displayProfileData(currentProfileData);
+
+                    // ซ่อนข้อความสำเร็จหลังจาก 3 วินาที
+                    setTimeout(() => {
+                        document.getElementById('successMessage').style.display = 'none';
+                    }, 3000);
                 } else {
-                    document.getElementById('errorMessage').innerHTML = `❌ เกิดข้อผิดพลาดในการบันทึก: ${result.message || 'ไม่ทราบสาเหตุ'}`;
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'none';
+                    document.getElementById('errorMessage').innerHTML = `❌ เกิดข้อผิดพลาด: ${result.message || 'ไม่สามารถบันทึกข้อมูลได้'}`;
                     document.getElementById('errorMessage').style.display = 'block';
-                    setTimeout(() => document.getElementById('errorMessage').style.display = 'none', 5000);
                 }
 
             } catch (error) {
-                console.error('Error saving profile via Netlify Function:', error);
-                document.getElementById('errorMessage').innerHTML = `❌ เกิดข้อผิดพลาดในการบันทึก: ${error.message}`;
-                document.getElementById('errorMessage').style.display = 'block';
-                setTimeout(() => document.getElementById('errorMessage').style.display = 'none', 5000);
-            } finally {
+                console.error('Error saving profile:', error);
                 document.getElementById('loading').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'none';
+                document.getElementById('errorMessage').innerHTML = `❌ เกิดข้อผิดพลาดในการบันทึกข้อมูล: ${error.message}`;
+                document.getElementById('errorMessage').style.display = 'block';
             }
         }
     </script>
