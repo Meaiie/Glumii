@@ -10,21 +10,18 @@
 <body>
     <div class="container">
         <div class="header">
-            <span>❤️ แอปสำหรับคุณแม่ตั้งครรษ์</span>
+            <span>❤️ แอปสำหรับคุณแม่ตั้งครรภ์</span>
             <div class="user-info">
                 สวัสดี, <span id="liffDisplayName">คุณแม่</span> <span>👩‍🦰</span>
             </div>
         </div>
         
         <div class="nav-tabs">
-            <a href="#" class="nav-tab active">
-                <i class="fas fa-user-alt"></i> ประวัติส่วนตัว
+            <a href="#" class="nav-tab active" id="profileTab"> <i class="fas fa-user-alt"></i> ประวัติส่วนตัว
             </a>
-            <a href="#" class="nav-tab">
-                <i class="fas fa-utensils"></i> บันทึกอาหาร
+            <a href="#" class="nav-tab" id="foodRecordsTab"> <i class="fas fa-utensils"></i> บันทึกอาหาร
             </a>
-            <a href="#" class="nav-tab">
-                <i class="fas fa-tint"></i> บันทึกน้ำตาล
+            <a href="#" class="nav-tab" id="sugarRecordsTab"> <i class="fas fa-tint"></i> บันทึกน้ำตาล
             </a>
         </div>
 
@@ -336,8 +333,8 @@
 
             // Carb Ratio
             const carbRatioText = (data.carb_ratio && typeof data.carb_ratio === 'object') 
-                                        ? `เช้า: ${data.carb_ratio.breakfast || 0}% / กลางวัน: ${data.carb_ratio.lunch || 0}% / เย็น: ${data.carb_ratio.dinner || 0}%` 
-                                        : 'N/A';
+                                     ? `เช้า: ${data.carb_ratio.breakfast || 0}% / กลางวัน: ${data.carb_ratio.lunch || 0}% / เย็น: ${data.carb_ratio.dinner || 0}%` 
+                                     : 'N/A';
             document.getElementById('displayCarbRatio').innerText = carbRatioText;
 
             // PBS Date (วันที่ต้องเจาะน้ำตาล)
@@ -471,6 +468,100 @@
             }
         }
 
+        async function handleSaveProfile(event) {
+            event.preventDefault(); // ไม่ให้ form submit แบบปกติ
+
+            if (!isLiffReady || !liffUserId) {
+                console.warn('LIFF not ready or userId not available for saving profile.');
+                document.getElementById('errorMessage').innerHTML = '❌ กรุณารอการเชื่อมต่อ LIFF ให้สมบูรณ์';
+                document.getElementById('errorMessage').style.display = 'block';
+                setTimeout(() => document.getElementById('errorMessage').style.display = 'none', 5000);
+                return;
+            }
+
+            // ตรวจสอบความถูกต้องของฟอร์ม (HTML5 validation)
+            const form = document.getElementById('profileForm');
+            if (!form.checkValidity()) {
+                form.reportValidity(); // แสดงข้อความ error ของ input ที่ไม่ถูกต้อง
+                document.getElementById('errorMessage').innerHTML = '❌ กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง';
+                document.getElementById('errorMessage').style.display = 'block';
+                setTimeout(() => document.getElementById('errorMessage').style.display = 'none', 5000);
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+
+            const formData = new FormData(form);
+            const pbsDates = Array.from(document.querySelectorAll('.sugar-check:checked')).map(cb => cb.value);
+
+            const data = {
+                action: 'updateProfile', // Action for Google Apps Script
+                userId: liffUserId,
+                full_name: formData.get('full_name'),
+                nickname: formData.get('nickname'),
+                hospital_id: formData.get('hospital_id'),
+                national_id: formData.get('national_id'),
+                birth_date: formData.get('birth_date'),
+                age: formData.get('age') ? parseInt(formData.get('age')) : null,
+                height: formData.get('height') ? parseFloat(formData.get('height')) : null,
+                pre_pregnancy_weight: formData.get('pre_pregnancy_weight') ? parseFloat(formData.get('pre_pregnancy_weight')) : null,
+                weight: formData.get('weight') ? parseFloat(formData.get('weight')) : null,
+                comorbidities: formData.get('comorbidities_radio') === 'มี' ? formData.get('comorbidities_input') : 'ไม่มี',
+                pre_pregnancy_medications: formData.get('pre_pregnancy_medications_radio') === 'มี' ? formData.get('pre_pregnancy_medications_input') : 'ไม่มี',
+                fetus_count: formData.get('fetus_count') ? parseInt(formData.get('fetus_count')) : null,
+                due_date: formData.get('due_date'),
+                carb_ratio: {
+                    breakfast: formData.get('carb_ratio_breakfast') ? parseFloat(formData.get('carb_ratio_breakfast')) : null,
+                    lunch: formData.get('carb_ratio_lunch') ? parseFloat(formData.get('carb_ratio_lunch')) : null,
+                    dinner: formData.get('carb_ratio_dinner') ? parseFloat(formData.get('carb_ratio_dinner')) : null
+                },
+                pbs_date: pbsDates // Array of selected days
+            };
+
+            console.log('Data to be sent:', data);
+
+            try {
+                const url = '/.netlify/functions/apps-script-proxy'; 
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const errorDetails = await response.text();
+                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails}`);
+                }
+
+                const result = await response.json();
+                console.log('Save profile result:', result);
+
+                document.getElementById('loading').style.display = 'none';
+
+                if (result.status === 'success') {
+                    document.getElementById('successMessage').style.display = 'block';
+                    setTimeout(() => document.getElementById('successMessage').style.display = 'none', 3000);
+                    // Refresh data after successful save
+                    await getPatientProfileData(liffUserId); 
+                } else {
+                    document.getElementById('errorMessage').innerHTML = `❌ เกิดข้อผิดพลาด: ${result.message || 'ไม่สามารถบันทึกข้อมูลได้'}`;
+                    document.getElementById('errorMessage').style.display = 'block';
+                    setTimeout(() => document.getElementById('errorMessage').style.display = 'none', 5000);
+                }
+
+            } catch (error) {
+                console.error('Error saving profile:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('errorMessage').innerHTML = `❌ เกิดข้อผิดพลาดในการบันทึกข้อมูล: ${error.message}`;
+                document.getElementById('errorMessage').style.display = 'block';
+                setTimeout(() => document.getElementById('errorMessage').style.display = 'none', 5000);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             initializeLiff();
 
@@ -522,110 +613,33 @@
             if (editDueDateInput) {
                 editDueDateInput.min = today;
             }
-        });
 
-        async function handleSaveProfile(event) {
-            event.preventDefault(); // ไม่ให้ form submit แบบปกติ
-
-            if (!isLiffReady || !liffUserId) {
-                console.warn('LIFF not ready or userId not available for saving profile.');
-                document.getElementById('errorMessage').innerHTML = '❌ กรุณารอการเชื่อมต่อ LIFF ให้สมบูรณ์';
-                document.getElementById('errorMessage').style.display = 'block';
-                setTimeout(() => document.getElementById('errorMessage').style.display = 'none', 5000);
-                return;
-            }
-
-            // ตรวจสอบความถูกต้องของฟอร์ม (HTML5 validation)
-            const form = document.getElementById('profileForm');
-            if (!form.checkValidity()) {
-                form.reportValidity(); // แสดงข้อความ error ของ input ที่ไม่ถูกต้อง
-                document.getElementById('errorMessage').innerHTML = '❌ กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง';
-                document.getElementById('errorMessage').style.display = 'block';
-                setTimeout(() => document.getElementById('errorMessage').style.display = 'none', 5000);
-                return;
-            }
-
-            // แสดงสถานะ loading
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('successMessage').style.display = 'none';
-            document.getElementById('errorMessage').style.display = 'none';
-
-            try {
-                const formData = new FormData(form);
-                const data = {
-                    userId: liffUserId,
-                    action: 'updateProfile', // เปลี่ยน action เป็น updateProfile
-                };
-
-                // วนลูปเพื่อดึงข้อมูลจาก FormData และใส่ลงใน object data
-                for (let [key, value] of formData.entries()) {
-                    if (key === 'comorbidities_radio') {
-                        data.comorbidities = value === 'มี' ? formData.get('comorbidities_input') : 'ไม่มี';
-                    } else if (key === 'comorbidities_input') {
-                        // ไม่ต้องทำอะไร ถ้า comorbidities_radio เป็น 'ไม่มี' ค่านี้จะถูกละทิ้ง
-                    } else if (key === 'pre_pregnancy_medications_radio') {
-                        data.pre_pregnancy_medications = value === 'มี' ? formData.get('pre_pregnancy_medications_input') : 'ไม่มี';
-                    } else if (key === 'pre_pregnancy_medications_input') {
-                        // ไม่ต้องทำอะไร ถ้า pre_pregnancy_medications_radio เป็น 'ไม่มี' ค่านี้จะถูกละทิ้ง
-                    } else if (key.startsWith('carb_ratio_')) {
-                        if (!data.carb_ratio) data.carb_ratio = {};
-                        data.carb_ratio[key.replace('carb_ratio_', '')] = parseFloat(value);
-                    } else {
-                        data[key] = value;
-                    }
-                }
-
-                // ดึงข้อมูล PBS Date จาก checkbox ที่ถูกเลือก
-                const selectedPbsDates = Array.from(document.querySelectorAll('.sugar-check:checked')).map(cb => cb.value);
-                data.pbs_date = selectedPbsDates.length > 0 ? selectedPbsDates : [];
-
-                console.log('Data to be sent:', data);
-
-                const url = '/.netlify/functions/apps-script-proxy'; 
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (!response.ok) {
-                    const errorDetails = await response.text();
-                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails}`);
-                }
-
-                const result = await response.json();
-                console.log('Save profile result:', result);
-
-                if (result.status === 'success') {
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('successMessage').style.display = 'block';
-                    document.getElementById('errorMessage').style.display = 'none';
-                    
-                    // อัปเดต currentProfileData และแสดงผลใหม่
-                    currentProfileData = result.profileData; 
-                    displayProfileData(currentProfileData);
-
-                    // ซ่อนข้อความสำเร็จหลังจาก 3 วินาที
-                    setTimeout(() => {
-                        document.getElementById('successMessage').style.display = 'none';
-                    }, 3000);
+            // Navigation tab listeners
+            document.getElementById('profileTab').addEventListener('click', (e) => {
+                e.preventDefault();
+                if (liff.isLoggedIn()) {
+                    liff.openWindow({ url: `${window.location.origin}/profile.html`, external: false });
                 } else {
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('successMessage').style.display = 'none';
-                    document.getElementById('errorMessage').innerHTML = `❌ เกิดข้อผิดพลาด: ${result.message || 'ไม่สามารถบันทึกข้อมูลได้'}`;
-                    document.getElementById('errorMessage').style.display = 'block';
+                    console.warn('LIFF not logged in, cannot open profile page.');
                 }
-
-            } catch (error) {
-                console.error('Error saving profile:', error);
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('successMessage').style.display = 'none';
-                document.getElementById('errorMessage').innerHTML = `❌ เกิดข้อผิดพลาดในการบันทึกข้อมูล: ${error.message}`;
-                document.getElementById('errorMessage').style.display = 'block';
-            }
-        }
+            });
+            document.getElementById('foodRecordsTab').addEventListener('click', (e) => {
+                e.preventDefault();
+                if (liff.isLoggedIn()) {
+                    liff.openWindow({ url: `${window.location.origin}/food_records.html`, external: false });
+                } else {
+                    console.warn('LIFF not logged in, cannot open food records page.');
+                }
+            });
+            document.getElementById('sugarRecordsTab').addEventListener('click', (e) => {
+                e.preventDefault();
+                if (liff.isLoggedIn()) {
+                    liff.openWindow({ url: `${window.location.origin}/sugar_records.html`, external: false });
+                } else {
+                    console.warn('LIFF not logged in, cannot open sugar records page.');
+                }
+            });
+        });
     </script>
 </body>
 </html>

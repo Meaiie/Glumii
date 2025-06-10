@@ -17,13 +17,13 @@
         </div>
         
         <div class="nav-tabs">
-            <a href="profile.html" class="nav-tab">
+            <a href="#" class="nav-tab" id="profileTab">
                 <i class="fas fa-user-alt"></i> ประวัติส่วนตัว
             </a>
-            <a href="food_records.html" class="nav-tab active">
+            <a href="#" class="nav-tab active" id="foodRecordsTab">
                 <i class="fas fa-utensils"></i> บันทึกอาหาร
             </a>
-            <a href="sugar_records.html" class="nav-tab">
+            <a href="#" class="nav-tab" id="sugarRecordsTab">
                 <i class="fas fa-tint"></i> บันทึกน้ำตาล
             </a>
         </div>
@@ -59,6 +59,7 @@
                                 <option value="มื้อบ่าย">มื้อบ่าย</option>
                                 <option value="มื้อเย็น">มื้อเย็น</option>
                                 <option value="มื้อก่อนนอน">มื้อก่อนนอน</option>
+                                <option value="อื่นๆ">อื่นๆ</option>
                             </select>
                         </div>
                         <div class="form-group full-width">
@@ -106,11 +107,12 @@
     <script>
         let isLiffReady = false;
         let liffUserId = null;
-        let currentEditingRecordId = null; // สำหรับเก็บ ID ของ record ที่กำลังแก้ไข
+        let currentEditingRecordId = null; 
 
         async function initializeLiff() {
             try {
-                await liff.init({ liffId: "2007493917-XdpdZalP" }); // LIFF ID ของคุณ
+                // ตรวจสอบ LIFF ID ของคุณอีกครั้ง
+                await liff.init({ liffId: "2007493917-XdpdZalP" }); 
                 if (!liff.isLoggedIn()) {
                     liff.login();
                 } else {
@@ -139,7 +141,7 @@
             document.getElementById('noDataMessage').style.display = 'none';
 
             try {
-                // สมมติว่า Netlify Function endpoint สำหรับดึงข้อมูลอาหารคือเดียวกัน แต่เปลี่ยน action
+                // Fetch from Netlify Function
                 const url = '/.netlify/functions/apps-script-proxy'; 
                 const response = await fetch(url, {
                     method: 'POST',
@@ -163,7 +165,7 @@
                     displayFoodRecords(result.records);
                 } else {
                     document.getElementById('noDataMessage').style.display = 'block';
-                    document.getElementById('foodRecordsTable').getElementsByTagName('tbody')[0].innerHTML = ''; // Clear table
+                    document.getElementById('foodRecordsTable').getElementsByTagName('tbody')[0].innerHTML = ''; 
                     console.warn('No food records found or invalid data format:', result.message);
                 }
 
@@ -177,7 +179,7 @@
 
         function displayFoodRecords(records) {
             const tableBody = document.getElementById('foodRecordsTable').getElementsByTagName('tbody')[0];
-            tableBody.innerHTML = ''; // Clear existing records
+            tableBody.innerHTML = ''; 
 
             if (records.length === 0) {
                 document.getElementById('noDataMessage').style.display = 'block';
@@ -191,7 +193,6 @@
 
             records.forEach(record => {
                 const row = tableBody.insertRow();
-                // Assumes record.datetime is in 'YYYY-MM-DD HH:MM:SS' format from backend
                 const dateTime = new Date(record.datetime);
                 const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
                 const timeOptions = { hour: '2-digit', minute: '2-digit' };
@@ -215,7 +216,7 @@
                 deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
                 deleteBtn.className = 'delete-record-btn icon-btn';
                 deleteBtn.title = 'ลบ';
-                deleteBtn.onclick = () => deleteFoodRecord(record.recordId); // สมมติว่ามี recordId
+                deleteBtn.onclick = () => deleteFoodRecord(record.recordId); 
                 actionsCell.appendChild(deleteBtn);
             });
         }
@@ -224,14 +225,13 @@
             const formSection = document.getElementById('foodRecordFormSection');
             formSection.style.display = 'block';
             document.getElementById('addFoodRecordBtn').style.display = 'none';
-            document.getElementById('foodRecordForm').reset(); // Clear form
+            document.getElementById('foodRecordForm').reset(); 
 
             if (record) {
-                currentEditingRecordId = record.recordId; // เก็บ ID สำหรับการแก้ไข
-                // แยกวันที่และเวลาจาก record.datetime
+                currentEditingRecordId = record.recordId; 
                 const dateTime = new Date(record.datetime);
                 const date = dateTime.toISOString().split('T')[0];
-                const time = dateTime.toTimeString().split(' ')[0].substring(0, 5); // HH:MM
+                const time = dateTime.toTimeString().split(' ')[0].substring(0, 5); 
 
                 document.getElementById('recordDate').value = date;
                 document.getElementById('recordTime').value = time;
@@ -239,8 +239,7 @@
                 document.getElementById('menuDescription').value = record.menu || '';
                 document.getElementById('carbsAmount').value = record.carbs !== undefined ? record.carbs : '';
             } else {
-                currentEditingRecordId = null; // เพิ่ม record ใหม่
-                // Set default date to today
+                currentEditingRecordId = null; 
                 document.getElementById('recordDate').valueAsDate = new Date();
             }
         }
@@ -253,7 +252,7 @@
         }
 
         async function handleSaveFoodRecord(event) {
-            event.preventDefault(); // Prevent default form submission
+            event.preventDefault(); 
 
             if (!isLiffReady || !liffUserId) {
                 console.warn('LIFF not ready or userId not available for saving food record.');
@@ -273,20 +272,20 @@
             const formData = new FormData(form);
             const recordDate = formData.get('datetime');
             const recordTime = formData.get('time');
-            const fullDateTime = `${recordDate} ${recordTime}:00`; // Combine date and time
+            const fullDateTime = `${recordDate} ${recordTime}:00`; 
 
             const data = {
                 userId: liffUserId,
                 datetime: fullDateTime,
                 meal: formData.get('meal'),
                 menu: formData.get('menu'),
-                carbs: parseFloat(formData.get('carbs')), // Convert to number
+                carbs: parseFloat(formData.get('carbs')), 
             };
 
             let action = 'addFoodRecord';
             if (currentEditingRecordId) {
                 action = 'updateFoodRecord';
-                data.recordId = currentEditingRecordId; // เพิ่ม ID สำหรับการอัปเดต
+                data.recordId = currentEditingRecordId; 
             }
             data.action = action;
 
@@ -313,7 +312,7 @@
                 if (result.status === 'success') {
                     showMessage('successMessage', '✅ บันทึกข้อมูลเรียบร้อยแล้ว!', 3000);
                     hideFoodRecordForm();
-                    fetchFoodRecords(liffUserId); // Refresh records
+                    fetchFoodRecords(liffUserId); 
                 } else {
                     showMessage('errorMessage', `❌ เกิดข้อผิดพลาด: ${result.message || 'ไม่สามารถบันทึกข้อมูลได้'}`, 5000);
                 }
@@ -326,7 +325,6 @@
 
         async function editFoodRecord(record) {
             showFoodRecordForm(record);
-            // Scroll to the form
             document.getElementById('foodRecordFormSection').scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -366,7 +364,7 @@
 
                 if (result.status === 'success') {
                     showMessage('successMessage', '✅ ลบข้อมูลเรียบร้อยแล้ว!', 3000);
-                    fetchFoodRecords(liffUserId); // Refresh records
+                    fetchFoodRecords(liffUserId); 
                 } else {
                     showMessage('errorMessage', `❌ เกิดข้อผิดพลาด: ${result.message || 'ไม่สามารถลบข้อมูลได้'}`, 5000);
                 }
@@ -394,22 +392,34 @@
             }
         }
 
-
         document.addEventListener('DOMContentLoaded', () => {
             initializeLiff();
 
-            // Navigation tab listeners (redirect to correct pages)
-            document.querySelector('.nav-tabs a[href="profile.html"]').addEventListener('click', (e) => {
+            // Navigation tab listeners
+            document.getElementById('profileTab').addEventListener('click', (e) => {
                 e.preventDefault();
-                liff.openWindow({ url: `profile.html`, external: false });
+                if (liff.isLoggedIn()) {
+                    liff.openWindow({ url: `${window.location.origin}/profile.html`, external: false });
+                } else {
+                    console.warn('LIFF not logged in, cannot open profile page.');
+                }
             });
-            document.querySelector('.nav-tabs a[href="food_records.html"]').addEventListener('click', (e) => {
+            document.getElementById('foodRecordsTab').addEventListener('click', (e) => {
                 e.preventDefault();
-                liff.openWindow({ url: `food_records.html`, external: false });
+                // Already on this page, do nothing or re-fetch data
+                if (liff.isLoggedIn()) {
+                    liff.openWindow({ url: `${window.location.origin}/food_records.html`, external: false });
+                } else {
+                    console.warn('LIFF not logged in, cannot open food records page.');
+                }
             });
-            document.querySelector('.nav-tabs a[href="sugar_records.html"]').addEventListener('click', (e) => {
+            document.getElementById('sugarRecordsTab').addEventListener('click', (e) => {
                 e.preventDefault();
-                liff.openWindow({ url: `sugar_records.html`, external: false });
+                if (liff.isLoggedIn()) {
+                    liff.openWindow({ url: `${window.location.origin}/sugar_records.html`, external: false });
+                } else {
+                    console.warn('LIFF not logged in, cannot open sugar records page.');
+                }
             });
 
             // Button listeners for form
