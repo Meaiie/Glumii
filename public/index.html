@@ -18,7 +18,7 @@
                 🔄 กำลังเชื่อมต่อ LINE...
             </div>
             
-            <form id="patientForm">
+            <form id="patientForm" style="display: none;"> 
                 <div class="form-section">
                     <h3 class="section-title">ข้อมูลส่วนตัว</h3>
                     
@@ -192,6 +192,7 @@
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
         let isLiffReady = false;
+        let liffUserId = null; // เก็บ userId ไว้ใช้ทั่วถึง
 
         async function initializeLiff() {
             try {
@@ -202,6 +203,13 @@
                     isLiffReady = true;
                     document.getElementById('liffStatus').className = 'liff-status liff-connected';
                     document.getElementById('liffStatus').innerHTML = '✅ เชื่อมต่อ LINE สำเร็จ';
+                    
+                    const profile = await liff.getProfile();
+                    liffUserId = profile.userId; // เก็บ userId
+
+                    // **** เพิ่มการตรวจสอบผู้ใช้ตรงนี้ ****
+                    await checkUserProfile(liffUserId);
+
                     document.querySelector('.submit-btn').disabled = false;
                 }
             } catch (error) {
@@ -210,11 +218,58 @@
             }
         }
 
+        async function checkUserProfile(userId) {
+            console.log('Checking user profile for userId:', userId);
+            try {
+                const url = '/.netlify/functions/apps-script-proxy';
+                const response = await fetch(url, {
+                    method: 'POST', // เราจะใช้ POST เพื่อส่ง action และ userId
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action: 'checkUser', userId: userId })
+                });
+
+                if (!response.ok) {
+                    const errorDetails = await response.text();
+                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails}`);
+                }
+
+                const result = await response.json();
+                console.log('User check response from Netlify Function:', result);
+
+                if (result.status === 'profile_exists') {
+                    // ถ้าผู้ใช้มีโปรไฟล์อยู่แล้ว ให้เปลี่ยนเส้นทางไปหน้า Profile.html
+                    alert('คุณเคยกรอกข้อมูลแล้ว จะเปิดหน้า Profile.html');
+                    // คุณอาจจะส่งข้อมูล profileData ไปยัง Profile.html ด้วย URL parameters หรือ localStorage
+                    // ตัวอย่างการส่ง userId ไป
+                    liff.openWindow({
+                        url: `Profile.html?userId=${userId}`,
+                        external: false // ให้อยู่ใน LIFF window
+                    });
+                } else if (result.status === 'new_user') {
+                    // ถ้าผู้ใช้ยังไม่เคยกรอก ให้แสดงฟอร์ม
+                    document.getElementById('patientForm').style.display = 'block';
+                    alert('กรุณากรอกข้อมูลเพื่อลงทะเบียนใหม่');
+                } else {
+                    // กรณีเกิดข้อผิดพลาดจาก Apps Script แต่ HTTP status ยังเป็น 200
+                    console.error('Error from Apps Script during checkUser:', result.message);
+                    alert(`เกิดข้อผิดพลาดในการตรวจสอบข้อมูล: ${result.message}`);
+                    document.getElementById('patientForm').style.display = 'block'; // แสดงฟอร์มไว้ก่อน
+                }
+
+            } catch (error) {
+                console.error('Error checking user profile via Netlify Function:', error);
+                alert(`เกิดข้อผิดพลาดในการตรวจสอบโปรไฟล์: ${error.message}`);
+                document.getElementById('patientForm').style.display = 'block'; // แสดงฟอร์มไว้ก่อน
+            }
+        }
+
         async function handleSubmit(event) {
             event.preventDefault();
 
-            if (!isLiffReady) {
-                alert('กรุณารอให้เชื่อมต่อ LINE เสร็จสิ้น');
+            if (!isLiffReady || !liffUserId) { // ตรวจสอบ liffUserId ด้วย
+                alert('กรุณารอให้เชื่อมต่อ LINE และดึงข้อมูลผู้ใช้เสร็จสิ้น');
                 return;
             }
 
@@ -228,15 +283,13 @@
             document.querySelector('.submit-btn').disabled = true;
 
             try {
-                const profile = await liff.getProfile();
-                const userId = profile.userId;
-
+                // ดึงค่า formData เหมือนเดิม
                 let comorbidities = '';
                 const chronicDiseaseRadio = document.querySelector('input[name="chronicDisease"]:checked');
                 if (chronicDiseaseRadio) {
                     comorbidities = chronicDiseaseRadio.value === 'มี' ? (document.getElementById('comorbidities').value || '') : 'ไม่มี';
                 } else {
-                    comorbidities = 'ไม่ระบุ'; // เพิ่มกรณีที่ไม่ได้เลือกเลย
+                    comorbidities = 'ไม่ระบุ';
                 }
 
                 let prePregMedications = '';
@@ -244,11 +297,12 @@
                 if (medicationRadio) {
                     prePregMedications = medicationRadio.value === 'มี' ? (document.getElementById('pre_pregnancy_medications').value || '') : 'ไม่มี';
                 } else {
-                    prePregMedications = 'ไม่ระบุ'; // เพิ่มกรณีที่ไม่ได้เลือกเลย
+                    prePregMedications = 'ไม่ระบุ';
                 }
 
                 const formData = {
-                    userId,
+                    action: 'saveData', // เพิ่ม action เพื่อบอก Apps Script ว่าให้บันทึกข้อมูล
+                    userId: liffUserId, // ใช้ userId ที่ดึงมาแล้ว
                     full_name: document.getElementById('full_name').value || '',
                     nickname: document.getElementById('nickname').value || '',
                     hospital_id: document.getElementById('hospital_id').value || '',
@@ -271,7 +325,6 @@
 
                 console.log('Sending data:', JSON.stringify(formData, null, 2));
 
-                // **** สำคัญ: เปลี่ยน URL ตรงนี้ให้ชี้ไปยัง Netlify Function ของคุณ ****
                 const url = '/.netlify/functions/apps-script-proxy'; 
                 console.log('Attempting to fetch to Netlify Function:', url);
 
@@ -284,12 +337,12 @@
                 });
 
                 if (!response.ok) {
-                    const errorDetails = await response.text(); // อ่านข้อความผิดพลาดจาก server
+                    const errorDetails = await response.text(); 
                     throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails}`);
                 }
 
                 const result = await response.json();
-                console.log('Server response from Netlify Function:', result);
+                console.log('Server response from Netlify Function (saveData):', result);
 
                 if (result.status === 'success') {
                     document.getElementById('loading').style.display = 'none';
@@ -303,10 +356,15 @@
                         document.querySelectorAll('.sugar-check').forEach(cb => cb.disabled = false);
                         document.getElementById('chronicDiseaseDetail').classList.remove('show');
                         document.getElementById('medicationDetail').classList.remove('show');
-                        // ไม่ต้องใช้ window.history.replaceState สำหรับการแสดงผลสำเร็จ/ล้มเหลว เพราะไม่ได้มาจาก redirect ของ Apps Script แล้ว
+                        
+                        // หลังจากบันทึกสำเร็จ อาจจะเปิดหน้า Profile.html หรือปิด LIFF window
+                        liff.openWindow({
+                            url: `Profile.html?userId=${liffUserId}`,
+                            external: false
+                        });
+                        // หรือ liff.closeWindow(); ถ้าต้องการปิด
                     }, 3000);
                 } else {
-                    // กรณีที่ Apps Script ตอบกลับมาว่ามีข้อผิดพลาด แต่ HTTP status ยังเป็น 200
                     throw new Error(result.message || 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ Apps Script');
                 }
             } catch (error) {
@@ -318,17 +376,13 @@
 
                 setTimeout(() => {
                     document.getElementById('errorMessage').style.display = 'none';
-                    // ไม่ต้องใช้ window.history.replaceState สำหรับการแสดงผลสำเร็จ/ล้มเหลว
                 }, 8000);
             }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // ลบโค้ดจัดการ redirect จาก Apps Script ออก เพราะตอนนี้ใช้ Netlify Function เป็นตัวกลางแล้ว
-            // const urlParams = new URLSearchParams(window.location.search);
-            // const status = urlParams.get('status');
-            // const message = urlParams.get('message');
-            // ... (โค้ดส่วนนี้ถูกลบออกไป) ...
+            // ซ่อนฟอร์มเริ่มต้น
+            document.getElementById('patientForm').style.display = 'none';
 
             document.querySelectorAll('input[name="chronicDisease"]').forEach(radio => {
                 radio.addEventListener('change', function () {
@@ -373,12 +427,8 @@
             document.getElementById('due_date').min = today;
 
             initializeLiff();
-            // ลบ debugTest() ออกไป เพราะไม่จำเป็นแล้ว
-            // debugTest(); 
-
             document.getElementById('patientForm').addEventListener('submit', handleSubmit);
         });
     </script>
-
 </body>
 </html>
