@@ -266,11 +266,11 @@
 
             document.getElementById('sugarRecordForm').addEventListener('submit', handleSaveSugarRecord);
 
-            // Navigation tab listeners
+            // Navigation tab listeners - เปลี่ยนเป็นใช้ window.location.href เพื่อโหลดหน้าเดิม
             document.getElementById('profileTab').addEventListener('click', (e) => {
                 e.preventDefault();
                 if (liff.isLoggedIn()) {
-                    liff.openWindow({ url: `${window.location.origin}/profile.html`, external: false });
+                    window.location.href = `${window.location.origin}/profile.html`;
                 } else {
                     console.warn('LIFF not logged in, cannot open profile page.');
                 }
@@ -278,17 +278,20 @@
             document.getElementById('foodRecordsTab').addEventListener('click', (e) => {
                 e.preventDefault();
                 if (liff.isLoggedIn()) {
-                    liff.openWindow({ url: `${window.location.origin}/food_records.html`, external: false });
+                    window.location.href = `${window.location.origin}/food_records.html`;
                 } else {
                     console.warn('LIFF not logged in, cannot open food records page.');
                 }
             });
             document.getElementById('sugarRecordsTab').addEventListener('click', (e) => {
                 e.preventDefault();
-                if (liff.isLoggedIn()) {
-                    liff.openWindow({ url: `${window.location.origin}/sugar_records.html`, external: false });
-                } else {
-                    console.warn('LIFF not logged in, cannot open sugar records page.');
+                // ถ้าอยู่ในหน้าปัจจุบันอยู่แล้ว ไม่ต้องโหลดใหม่
+                if (window.location.pathname !== '/sugar_records.html') {
+                    if (liff.isLoggedIn()) {
+                        window.location.href = `${window.location.origin}/sugar_records.html`;
+                    } else {
+                        console.warn('LIFF not logged in, cannot open sugar records page.');
+                    }
                 }
             });
         });

@@ -231,8 +231,9 @@
                 currentEditingRecordId = record.recordId; 
                 const dateTime = new Date(record.datetime);
                 const date = dateTime.toISOString().split('T')[0];
-                const time = dateTime.toTimeString().split(' ')[0].substring(0, 5); 
-
+                // Pad time with leading zero if single digit for hour or minute
+                const time = `${String(dateTime.getHours()).padStart(2, '0')}:${String(dateTime.getMinutes()).padStart(2, '0')}`;
+                
                 document.getElementById('recordDate').value = date;
                 document.getElementById('recordTime').value = time;
                 document.getElementById('mealType').value = record.meal || '';
@@ -241,6 +242,10 @@
             } else {
                 currentEditingRecordId = null; 
                 document.getElementById('recordDate').valueAsDate = new Date();
+                // Set current time as default for new record
+                const now = new Date();
+                const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                document.getElementById('recordTime').value = currentTime;
             }
         }
 
@@ -272,7 +277,7 @@
             const formData = new FormData(form);
             const recordDate = formData.get('datetime');
             const recordTime = formData.get('time');
-            const fullDateTime = `${recordDate} ${recordTime}:00`; 
+            const fullDateTime = `${recordDate}T${recordTime}:00`; // Use ISO format for consistency
 
             const data = {
                 userId: liffUserId,
@@ -427,9 +432,8 @@
             document.getElementById('cancelFoodRecordBtn').addEventListener('click', hideFoodRecordForm);
             document.getElementById('foodRecordForm').addEventListener('submit', handleSaveFoodRecord);
 
-            // Set default date for new records
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('recordDate').value = today;
+            // Set default date and time for new records when the form is shown
+            // This is handled inside showFoodRecordForm now.
         });
     </script>
 </body>
