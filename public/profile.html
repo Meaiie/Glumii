@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>โปรไฟล์คนไข้ - ระบบบันทึกข้อมูลคนไข้สตรีตั้งครรภ์</title>
-    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
         /* CSS เพิ่มเติมสำหรับการสลับโหมด */
         /* ซ่อน edit-mode ในตอนแรก */
@@ -32,6 +33,249 @@
         }
         .conditional-input.show {
             display: block; /* หรือตามที่คุณจัด layout */
+        }
+
+        /* Custom Styles for better aesthetics */
+        body {
+            font-family: 'Inter', sans-serif; /* ใช้ Font Inter */
+            background-color: #f0f4f8; /* สีพื้นหลังอ่อนๆ */
+        }
+        .container {
+            max-width: 900px;
+            background-color: white; /* เพิ่มพื้นหลังสีขาวให้ container */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-lg */
+            overflow: hidden; /* ซ่อนส่วนที่เกินขอบเขต */
+            margin: 2rem auto; /* จัดกึ่งกลางและมีระยะห่าง */
+        }
+        .header {
+            background-color: #2c3e50; /* สีกรมท่าเข้ม */
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            border-top-left-radius: 0.75rem; /* rounded-t-xl */
+            border-top-right-radius: 0.75rem; /* rounded-t-xl */
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: bold;
+        }
+        .user-info {
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .nav-tabs {
+            background-color: #4a5568; /* สีเทาเข้ม */
+            padding: 0.75rem;
+            display: flex;
+            justify-content: space-around;
+            border-bottom-left-radius: 0.75rem;
+            border-bottom-right-radius: 0.75rem;
+        }
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: #cbd5e0; /* text-gray-300 */
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        .nav-tab.active {
+            background-color: #1a202c; /* สีเข้มขึ้นเมื่อ active */
+            color: white;
+        }
+        .nav-tab:hover:not(.active) {
+            background-color: #2d3748; /* สี hover */
+            color: white;
+        }
+        .nav-tab i {
+            margin-right: 0.5rem;
+        }
+
+        .profile-container {
+            padding: 1.5rem;
+        }
+        .liff-status {
+            text-align: center;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+        }
+        .liff-connected {
+            background-color: #d1fae5; /* green-100 */
+            color: #065f46; /* green-800 */
+        }
+        .liff-disconnected {
+            background-color: #fee2e2; /* red-100 */
+            color: #991b1b; /* red-800 */
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e2e8f0; /* gray-200 */
+        }
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #2d3748; /* gray-800 */
+        }
+        .edit-btn, .save-btn, .cancel-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .edit-btn {
+            background-color: #3498db; /* primary blue */
+            color: white;
+        }
+        .edit-btn:hover {
+            background-color: #2980b9;
+        }
+        .save-btn {
+            background-color: #27ae60; /* green */
+            color: white;
+        }
+        .save-btn:hover {
+            background-color: #229954;
+        }
+        .cancel-btn {
+            background-color: #e74c3c; /* red */
+            color: white;
+            margin-right: 0.5rem;
+        }
+        .cancel-btn:hover {
+            background-color: #c0392b;
+        }
+        .button-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        @media (min-width: 768px) {
+            .profile-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .profile-item.full-width {
+                grid-column: span 2;
+            }
+        }
+        .profile-item {
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0; /* gray-200 */
+            border-radius: 0.5rem;
+            background-color: #f7fafc; /* gray-50 */
+        }
+        .profile-item label {
+            display: block;
+            font-weight: 600;
+            color: #4a5568; /* gray-700 */
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .profile-item span {
+            color: #2d3748; /* gray-800 */
+            font-size: 1.1rem;
+            min-height: 1.5rem; /* Ensure consistent height even if no data */
+            display: block;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #cbd5e0; /* gray-300 */
+            border-radius: 0.25rem;
+            font-size: 1rem;
+            color: #2d3748;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.25);
+        }
+        .form-group input[readonly], .form-group input[disabled],
+        .form-group select[readonly], .form-group select[disabled],
+        .form-group textarea[readonly], .form-group textarea[disabled] {
+            background-color: #e2e8f0; /* gray-200 */
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        .radio-item, .checkbox-item {
+            display: flex;
+            align-items: center;
+        }
+        .radio-item input[type="radio"], .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 0.5rem;
+        }
+        .radio-item label, .checkbox-item label {
+            margin-bottom: 0;
+            font-weight: normal;
+            font-size: 1rem;
+            color: #2d3748;
+        }
+
+        .carb-ratio-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+        }
+        @media (min-width: 768px) {
+            .carb-ratio-group {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+        .carb-ratio-group div {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .carb-ratio-group label {
+            margin-bottom: 0;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+        .carb-ratio-group input {
+            flex-grow: 1;
+        }
+
+        .loading, .success-message, .error-message {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1.5rem;
+            font-weight: bold;
+            display: none; /* Hidden by default */
+        }
+        .loading {
+            background-color: #bfdbfe; /* blue-200 */
+            color: #1e40af; /* blue-800 */
+        }
+        .success-message {
+            background-color: #d1fae5; /* green-100 */
+            color: #065f46; /* green-800 */
+        }
+        .error-message {
+            background-color: #fee2e2; /* red-100 */
+            color: #991b1b; /* red-800 */
         }
     </style>
 </head>
@@ -111,7 +355,7 @@
                             <label>อายุ</label>
                             <span id="displayAge"></span>
                             <div class="form-group">
-                                <input type="number" id="editAge" name="age" min="15" max="60">
+                                <input type="number" id="editAge" name="age" min="15" max="60" readonly>
                             </div>
                         </div>
 
@@ -119,7 +363,7 @@
                             <label>ส่วนสูง (ซม.)</label>
                             <span id="displayHeight"></span>
                             <div class="form-group">
-                                <input type="number" id="editHeight" name="height" min="100" max="200" required>
+                                <input type="number" id="editHeight" name="height" min="100" max="200" required step="0.1">
                             </div>
                         </div>
                         <div class="profile-item">
@@ -139,10 +383,16 @@
                         <div class="profile-item">
                             <label>BMI</label>
                             <span id="displayBMI"></span>
+                            <div class="form-group">
+                                <input type="text" id="editBMI" name="bmi" readonly>
+                            </div>
                         </div>
                         <div class="profile-item">
                             <label>น้ำหนักที่ควรเพิ่ม</label>
                             <span id="displayWeightGain"></span>
+                            <div class="form-group">
+                                <input type="text" id="editWeightGain" name="weight_gain" readonly>
+                            </div>
                         </div>
 
                         <div class="profile-item full-width">
@@ -208,14 +458,23 @@
                         <div class="profile-item">
                             <label>อายุครรภ์ (สัปดาห์)</label>
                             <span id="displayGestationalWeek"></span>
+                            <div class="form-group">
+                                <input type="text" id="editGestationalWeek" name="gestational_week" readonly>
+                            </div>
                         </div>
                         <div class="profile-item">
                             <label>พลังงานที่ต้องได้รับ (กิโลแคลอรี/วัน)</label>
                             <span id="displayCalorieRequired"></span>
+                            <div class="form-group">
+                                <input type="text" id="editCalorieRequired" name="calorie_required" readonly>
+                            </div>
                         </div>
                         <div class="profile-item">
                             <label>คาร์บที่ต้องได้รับ (หน่วยคาร์บ/วัน)</label>
                             <span id="displayCarbUnitRequired"></span>
+                            <div class="form-group">
+                                <input type="text" id="editCarbUnitRequired" name="carb_unit_required" readonly>
+                            </div>
                         </div>
 
                         <div class="profile-item full-width">
@@ -249,6 +508,9 @@
                         <div class="profile-item">
                             <label>วันลงทะเบียน</label>
                             <span id="displayRegistrationDate"></span>
+                            <div class="form-group">
+                                <input type="text" id="editRegistrationDate" name="registration_date" readonly>
+                            </div>
                         </div>
 
                     </div>
@@ -266,6 +528,70 @@
         let isLiffReady = false;
         let liffUserId = null;
         let currentProfileData = null; // เก็บข้อมูลโปรไฟล์ที่ดึงมา
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initializeLiff();
+
+            // Event Listeners สำหรับปุ่ม Tab
+            document.getElementById('profileTab').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+                this.classList.add('active');
+                // โค้ดสำหรับแสดงส่วนโปรไฟล์ (ถ้ามีหลายส่วน)
+                // เนื่องจากหน้านี้มีแค่โปรไฟล์ จึงไม่จำเป็นต้องซ่อน/แสดงส่วนอื่น
+            });
+
+            document.getElementById('foodRecordsTab').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+                this.classList.add('active');
+                if (liff.isLoggedIn()) {
+                    window.location.href = `${window.location.origin}/food_records.html`;
+                } else {
+                    console.warn('LIFF not logged in, cannot open food records page.');
+                }
+            });
+
+            document.getElementById('sugarRecordsTab').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+                this.classList.add('active');
+                if (liff.isLoggedIn()) {
+                    window.location.href = `${window.location.origin}/sugar_records.html`;
+                } else {
+                    console.warn('LIFF not logged in, cannot open sugar records page.');
+                }
+            });
+
+            // Event Listeners สำหรับปุ่มแก้ไข/บันทึก/ยกเลิก
+            document.getElementById('editProfileBtn').addEventListener('click', setEditMode);
+            document.getElementById('cancelEditBtn').addEventListener('click', () => {
+                setDisplayMode(); // กลับไปโหมดแสดง
+                displayProfileData(currentProfileData); // โหลดข้อมูลเดิมกลับมา
+            });
+            document.getElementById('saveProfileBtn').addEventListener('click', handleSaveProfile);
+
+            // Event Listeners สำหรับ conditional inputs radio
+            document.querySelectorAll('input[name="comorbidities_radio"]').forEach(radio => {
+                radio.addEventListener('change', () => toggleConditionalInput('comorbidities_radio', 'editComorbiditiesDetail', 'editComorbiditiesYes', 'editComorbidities'));
+            });
+            document.querySelectorAll('input[name="pre_pregnancy_medications_radio"]').forEach(radio => {
+                radio.addEventListener('change', () => toggleConditionalInput('pre_pregnancy_medications_radio', 'editPrePregnancyMedicationsDetail', 'editPrePregnancyMedicationsYes', 'editPrePregnancyMedications'));
+            });
+
+            // Event Listeners สำหรับ checkbox วันที่ต้องเจาะน้ำตาล
+            document.querySelectorAll('.sugar-check').forEach(checkbox => {
+                checkbox.addEventListener('change', checkSugarCheckboxes);
+            });
+
+            // Event Listeners สำหรับการคำนวณอัตโนมัติ (ใส่ใน populateEditForm ด้วย)
+            document.getElementById('editBirthDate').addEventListener('change', calculateAge);
+            document.getElementById('editHeight').addEventListener('input', calculateBMIAndRecommendations);
+            document.getElementById('editPrePregnancyWeight').addEventListener('input', calculateBMIAndRecommendations);
+            document.getElementById('editWeight').addEventListener('input', calculateBMIAndRecommendations);
+            document.getElementById('editFetusCount').addEventListener('change', calculateBMIAndRecommendations); // เมื่อเปลี่ยนจำนวนทารก
+            document.getElementById('editDueDate').addEventListener('change', calculateGestationalWeekAndRecommendations);
+        });
 
         async function initializeLiff() {
             try {
@@ -360,16 +686,33 @@
             document.getElementById('displayCarbUnitRequired').innerText = data.carb_unit_required ? `${data.carb_unit_required} หน่วย` : 'N/A';
 
             // Carb Ratio
-            const carbRatioText = (data.carb_ratio && typeof data.carb_ratio === 'object')
-                                        ? `เช้า: ${data.carb_ratio.breakfast || 0}% / กลางวัน: ${data.carb_ratio.lunch || 0}% / เย็น: ${data.carb_ratio.dinner || 0}%`
-                                        : 'N/A';
+            let carbRatioParsed = null;
+            if (data.carb_ratio) {
+                try {
+                    carbRatioParsed = typeof data.carb_ratio === 'string' ? JSON.parse(data.carb_ratio) : data.carb_ratio;
+                } catch (e) {
+                    console.error("Error parsing carb_ratio for display:", e);
+                }
+            }
+            const carbRatioText = (carbRatioParsed && typeof carbRatioParsed === 'object')
+                                    ? `เช้า: ${carbRatioParsed.breakfast || 0}% / กลางวัน: ${carbRatioParsed.lunch || 0}% / เย็น: ${carbRatioParsed.dinner || 0}%`
+                                    : 'N/A';
             document.getElementById('displayCarbRatio').innerText = carbRatioText;
 
             // PBS Date (วันที่ต้องเจาะน้ำตาล)
             const displayPbsDateElement = document.getElementById('displayPbsDate');
+            let pbsDateParsed = null;
+            if (data.pbs_date) {
+                try {
+                    pbsDateParsed = typeof data.pbs_date === 'string' ? JSON.parse(data.pbs_date) : data.pbs_date;
+                } catch (e) {
+                    console.error("Error parsing pbs_date for display:", e);
+                }
+            }
+
             if (displayPbsDateElement) {
-                if (data.pbs_date && Array.isArray(data.pbs_date) && data.pbs_date.length > 0) {
-                    displayPbsDateElement.innerText = data.pbs_date.join(', ');
+                if (pbsDateParsed && Array.isArray(pbsDateParsed) && pbsDateParsed.length > 0) {
+                    displayPbsDateElement.innerText = pbsDateParsed.join(', ');
                 } else {
                     displayPbsDateElement.innerText = 'ไม่มี'; // ถ้าไม่มีข้อมูล หรือไม่ใช่ Array
                 }
@@ -377,95 +720,9 @@
 
             document.getElementById('displayRegistrationDate').innerText = data.registration_date ? new Date(data.registration_date).toLocaleDateString('th-TH', {year: 'numeric', month: 'long', day: 'numeric'}) : 'N/A';
 
-            // ซ่อนโหมดแก้ไขและแสดงโหมดแสดงผล
-            setDisplayMode();
-        }
-
-        function populateEditForm(data) {
-            // เติมข้อมูลลงในฟอร์มแก้ไข
-            document.getElementById('editFullName').value = data.full_name || '';
-            document.getElementById('editNickname').value = data.nickname || '';
-            document.getElementById('editHospitalId').value = data.hospital_id || '';
-            document.getElementById('editNationalId').value = data.national_id || '';
-            document.getElementById('editBirthDate').value = data.birth_date || '';
-            document.getElementById('editAge').value = data.age || '';
-            document.getElementById('editHeight').value = data.height || '';
-            document.getElementById('editPrePregnancyWeight').value = data.pre_pregnancy_weight || '';
-            document.getElementById('editWeight').value = data.weight || '';
-            document.getElementById('editFetusCount').value = data.fetus_count || '';
-            document.getElementById('editDueDate').value = data.due_date || '';
-
-            // โรคประจำตัว
-            const editComorbiditiesNo = document.getElementById('editComorbiditiesNo');
-            const editComorbiditiesYes = document.getElementById('editComorbiditiesYes');
-            const editComorbiditiesDetail = document.getElementById('editComorbiditiesDetail');
-            const editComorbiditiesInput = document.getElementById('editComorbidities');
-
-            if (data.comorbidities === 'ไม่มี') {
-                editComorbiditiesNo.checked = true;
-                editComorbiditiesDetail.classList.remove('show');
-                editComorbiditiesInput.value = '';
-                editComorbiditiesInput.required = false;
-            } else if (data.comorbidities && data.comorbidities !== 'N/A' && data.comorbidities !== '') {
-                editComorbiditiesYes.checked = true;
-                editComorbiditiesDetail.classList.add('show');
-                editComorbiditiesInput.value = data.comorbidities;
-                editComorbiditiesInput.required = true;
-            } else {
-                editComorbiditiesNo.checked = true; // Default to 'ไม่มี' if no data or invalid
-                editComorbiditiesDetail.classList.remove('show');
-                editComorbiditiesInput.value = '';
-                editComorbiditiesInput.required = false;
-            }
-
-            // ยาที่ใช้ก่อนตั้งครรภ์
-            const editMedicationsNo = document.getElementById('editPrePregnancyMedicationsNo');
-            const editMedicationsYes = document.getElementById('editPrePregnancyMedicationsYes');
-            const editMedicationsDetail = document.getElementById('editPrePregnancyMedicationsDetail');
-            const editMedicationsInput = document.getElementById('editPrePregnancyMedications');
-
-            if (data.pre_pregnancy_medications === 'ไม่มี') {
-                editMedicationsNo.checked = true;
-                editMedicationsDetail.classList.remove('show');
-                editMedicationsInput.value = '';
-                editMedicationsInput.required = false;
-            } else if (data.pre_pregnancy_medications && data.pre_pregnancy_medications !== 'N/A' && data.pre_pregnancy_medications !== '') {
-                editMedicationsYes.checked = true;
-                editMedicationsDetail.classList.add('show');
-                editMedicationsInput.value = data.pre_pregnancy_medications;
-                editMedicationsInput.required = true;
-            } else {
-                editMedicationsNo.checked = true; // Default to 'ไม่มี' if no data or invalid
-                editMedicationsDetail.classList.remove('show');
-                editMedicationsInput.value = '';
-                editMedicationsInput.required = false;
-            }
-
-            // Carb Ratio
-            if (data.carb_ratio && typeof data.carb_ratio === 'object') {
-                document.getElementById('editCarbRatioBreakfast').value = data.carb_ratio.breakfast || '';
-                document.getElementById('editCarbRatioLunch').value = data.carb_ratio.lunch || '';
-                document.getElementById('editCarbRatioDinner').value = data.carb_ratio.dinner || '';
-            } else {
-                document.getElementById('editCarbRatioBreakfast').value = '';
-                document.getElementById('editCarbRatioLunch').value = '';
-                document.getElementById('editCarbRatioDinner').value = '';
-            }
-
-            // PBS Date (วันที่ต้องเจาะน้ำตาล)
-            document.querySelectorAll('.sugar-check').forEach(checkbox => {
-                checkbox.checked = false; // clear all first
-                checkbox.disabled = false; // ensure all are enabled before setting
-            });
-            if (data.pbs_date && Array.isArray(data.pbs_date)) {
-                data.pbs_date.forEach(day => {
-                    const checkbox = document.querySelector(`.sugar-check[value="${day}"]`);
-                    if (checkbox) {
-                        checkbox.checked = true;
-                    }
-                });
-            }
-            checkSugarCheckboxes(); // เรียกใช้ฟังก์ชันตรวจสอบจำนวน checkbox ที่ถูกเลือกหลังจากโหลดข้อมูล
+            // เมื่อแสดงข้อมูลเสร็จ ให้เติมข้อมูลลงในฟอร์มแก้ไขด้วย
+            populateEditForm(data);
+            setDisplayMode(); // ซ่อนโหมดแก้ไขและแสดงโหมดแสดงผล
         }
 
         // โหมดการแสดงผล
@@ -504,22 +761,148 @@
             
             // เติมข้อมูลลงในฟอร์มแก้ไข
             populateEditForm(currentProfileData);
+            checkConditionalInputs('comorbidities_radio', 'editComorbiditiesDetail', 'editComorbiditiesYes', 'editComorbidities');
+            checkConditionalInputs('pre_pregnancy_medications_radio', 'editPrePregnancyMedicationsDetail', 'editPrePregnancyMedicationsYes', 'editPrePregnancyMedications');
+            checkSugarCheckboxes(); // ตรวจสอบสถานะ checkbox วันที่ต้องเจาะน้ำตาล
         }
 
-        // ตรวจสอบจำนวน checkbox ที่เลือก
-        function checkSugarCheckboxes() {
-            const checked = document.querySelectorAll('.sugar-check:checked');
-            const allCheckboxes = document.querySelectorAll('.sugar-check');
+        function populateEditForm(data) {
+            if (!data) {
+                console.warn("No data provided to populateEditForm.");
+                return;
+            }
 
-            if (checked.length >= 3) {
-                allCheckboxes.forEach(cb => {
-                    if (!cb.checked) {
-                        cb.disabled = true;
+            // เติมข้อมูลลงในฟอร์มแก้ไข
+            document.getElementById('editFullName').value = data.full_name || '';
+            document.getElementById('editNickname').value = data.nickname || '';
+            document.getElementById('editHospitalId').value = data.hospital_id || '';
+            document.getElementById('editNationalId').value = data.national_id || '';
+            // *** สำคัญ: การกำหนดค่าให้ input type="date" ต้องอยู่ในรูปแบบYYYY-MM-DD ***
+            document.getElementById('editBirthDate').value = data.birth_date ? formatDateForInput(data.birth_date) : '';
+            document.getElementById('editAge').value = data.age || ''; // อายุจะถูกคำนวณใหม่เมื่อเปลี่ยนวันเกิด
+            document.getElementById('editHeight').value = data.height || '';
+            document.getElementById('editPrePregnancyWeight').value = data.pre_pregnancy_weight || '';
+            document.getElementById('editWeight').value = data.weight || '';
+            document.getElementById('editBMI').value = data.bmi || '';
+            document.getElementById('editWeightGain').value = data.weight_gain || '';
+
+            // โรคประจำตัว (Radio Buttons และ Conditional Input)
+            const editComorbiditiesNo = document.getElementById('editComorbiditiesNo');
+            const editComorbiditiesYes = document.getElementById('editComorbiditiesYes');
+            const editComorbiditiesDetail = document.getElementById('editComorbiditiesDetail');
+            const editComorbiditiesInput = document.getElementById('editComorbidities');
+
+            if (data.comorbidities === 'ไม่มี') {
+                editComorbiditiesNo.checked = true;
+                editComorbiditiesDetail.classList.remove('show');
+                editComorbiditiesInput.value = '';
+                editComorbiditiesInput.required = false;
+            } else if (data.comorbidities && data.comorbidities !== 'N/A' && data.comorbidities !== '') {
+                editComorbiditiesYes.checked = true;
+                editComorbiditiesDetail.classList.add('show');
+                editComorbiditiesInput.value = data.comorbidities; // ใส่ข้อมูลโรคประจำตัวตรงๆ
+                editComorbiditiesInput.required = true;
+            } else {
+                // หากไม่มีข้อมูลหรือไม่ถูกต้อง ให้ตั้งค่าเริ่มต้นเป็น 'ไม่มี'
+                editComorbiditiesNo.checked = true;
+                editComorbiditiesDetail.classList.remove('show');
+                editComorbiditiesInput.value = '';
+                editComorbiditiesInput.required = false;
+            }
+
+            // ยาที่ใช้ก่อนตั้งครรภ์ (Radio Buttons และ Conditional Input)
+            const editMedicationsNo = document.getElementById('editPrePregnancyMedicationsNo');
+            const editMedicationsYes = document.getElementById('editPrePregnancyMedicationsYes');
+            const editMedicationsDetail = document.getElementById('editPrePregnancyMedicationsDetail');
+            const editMedicationsInput = document.getElementById('editPrePregnancyMedications');
+
+            if (data.pre_pregnancy_medications === 'ไม่มี') {
+                editMedicationsNo.checked = true;
+                editMedicationsDetail.classList.remove('show');
+                editMedicationsInput.value = '';
+                editMedicationsInput.required = false;
+            } else if (data.pre_pregnancy_medications && data.pre_pregnancy_medications !== 'N/A' && data.pre_pregnancy_medications !== '') {
+                editMedicationsYes.checked = true;
+                editMedicationsDetail.classList.add('show');
+                editMedicationsInput.value = data.pre_pregnancy_medications; // ใส่ข้อมูลยาตรงๆ
+                editMedicationsInput.required = true;
+            } else {
+                // หากไม่มีข้อมูลหรือไม่ถูกต้อง ให้ตั้งค่าเริ่มต้นเป็น 'ไม่มี'
+                editMedicationsNo.checked = true;
+                editMedicationsDetail.classList.remove('show');
+                editMedicationsInput.value = '';
+                editMedicationsInput.required = false;
+            }
+
+            document.getElementById('editFetusCount').value = data.fetus_count || '1';
+            // *** สำคัญ: การกำหนดค่าให้ input type="date" ต้องอยู่ในรูปแบบYYYY-MM-DD ***
+            document.getElementById('editDueDate').value = data.due_date ? formatDateForInput(data.due_date) : '';
+            document.getElementById('editGestationalWeek').value = data.gestational_week || '';
+            document.getElementById('editCalorieRequired').value = data.calorie_required || '';
+            document.getElementById('editCarbUnitRequired').value = data.carb_unit_required || '';
+
+            // Carb Ratio
+            let carbRatioParsed = null;
+            if (data.carb_ratio) {
+                try {
+                    carbRatioParsed = typeof data.carb_ratio === 'string' ? JSON.parse(data.carb_ratio) : data.carb_ratio;
+                } catch (e) {
+                    console.error("Error parsing carb_ratio for edit form:", e);
+                }
+            }
+            if (carbRatioParsed && typeof carbRatioParsed === 'object') {
+                document.getElementById('editCarbRatioBreakfast').value = carbRatioParsed.breakfast || '';
+                document.getElementById('editCarbRatioLunch').value = carbRatioParsed.lunch || '';
+                document.getElementById('editCarbRatioDinner').value = carbRatioParsed.dinner || '';
+            } else {
+                document.getElementById('editCarbRatioBreakfast').value = '';
+                document.getElementById('editCarbRatioLunch').value = '';
+                document.getElementById('editCarbRatioDinner').value = '';
+            }
+
+            // PBS Date (วันที่ต้องเจาะน้ำตาล)
+            document.querySelectorAll('.sugar-check').forEach(checkbox => {
+                checkbox.checked = false; // clear all first
+                checkbox.disabled = false; // ensure all are enabled before setting
+            });
+            let pbsDateParsed = null;
+            if (data.sugar_check_days) {
+                try {
+                    pbsDateParsed = typeof data.sugar_check_days === 'string' ? JSON.parse(data.sugar_check_days) : data.sugar_check_days;
+                } catch (e) {
+                    console.error("Error parsing sugar_check_days for edit form:", e);
+                }
+            }
+            if (pbsDateParsed && Array.isArray(pbsDateParsed)) {
+                pbsDateParsed.forEach(day => {
+                    const checkbox = document.querySelector(`.sugar-check[value="${day}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
                     }
                 });
-            } else {
-                allCheckboxes.forEach(cb => cb.disabled = false);
             }
+            // เรียกใช้ฟังก์ชันตรวจสอบจำนวน checkbox ที่ถูกเลือกหลังจากโหลดข้อมูล
+            checkSugarCheckboxes();
+
+            document.getElementById('editRegistrationDate').value = data.registration_date || '';
+        }
+
+        /**
+         * ฟังก์ชันสำหรับฟอร์แมตวันที่ให้อยู่ในรูปแบบYYYY-MM-DD สำหรับ input type="date"
+         * @param {string|Date} dateInput - วันที่ที่ต้องการฟอร์แมต อาจเป็น string หรือ Date object
+         * @returns {string} - วันที่ในรูปแบบYYYY-MM-DD
+         */
+        function formatDateForInput(dateInput) {
+            if (!dateInput) return '';
+            let date = new Date(dateInput);
+            if (isNaN(date.getTime())) { // Check if date is invalid
+                console.warn("Invalid date format detected:", dateInput);
+                return ''; 
+            }
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
         async function handleSaveProfile(event) {
@@ -556,162 +939,232 @@
             document.getElementById('errorMessage').style.display = 'none';
             document.getElementById('successMessage').style.display = 'none';
 
-            const formData = new FormData(form);
             const pbsDates = Array.from(document.querySelectorAll('.sugar-check:checked')).map(cb => cb.value);
 
-            const data = {
-                action: 'updateProfile', // Action for Google Apps Script
+            // ดึงค่าจาก input fields ที่มี 'edit' prefix
+            const formData = {
                 userId: liffUserId,
-                full_name: formData.get('full_name'),
-                nickname: formData.get('nickname'),
-                hospital_id: formData.get('hospital_id'),
-                national_id: formData.get('national_id'),
-                birth_date: formData.get('birth_date'),
-                age: formData.get('age') ? parseInt(formData.get('age')) : null,
-                height: formData.get('height') ? parseFloat(formData.get('height')) : null,
-                pre_pregnancy_weight: formData.get('pre_pregnancy_weight') ? parseFloat(formData.get('pre_pregnancy_weight')) : null,
-                weight: formData.get('weight') ? parseFloat(formData.get('weight')) : null,
-                comorbidities: formData.get('comorbidities_radio') === 'มี' ? formData.get('comorbidities_input') : 'ไม่มี',
-                pre_pregnancy_medications: formData.get('pre_pregnancy_medications_radio') === 'มี' ? formData.get('pre_pregnancy_medications_input') : 'ไม่มี',
-                fetus_count: formData.get('fetus_count') ? parseInt(formData.get('fetus_count')) : null,
-                due_date: formData.get('due_date'),
+                full_name: document.getElementById('editFullName').value,
+                nickname: document.getElementById('editNickname').value,
+                hospital_id: document.getElementById('editHospitalId').value,
+                national_id: document.getElementById('editNationalId').value,
+                birth_date: document.getElementById('editBirthDate').value,
+                // age จะถูกคำนวณที่ฝั่ง Apps Script
+                comorbidities: document.querySelector('input[name="comorbidities_radio"]:checked')?.value || '',
+                comorbiditiesText: document.getElementById('editComorbidities').value,
+                pre_pregnancy_medications: document.querySelector('input[name="pre_pregnancy_medications_radio"]:checked')?.value || '',
+                pre_pregnancy_medicationsText: document.getElementById('editPrePregnancyMedications').value,
+                pre_pregnancy_weight: document.getElementById('editPrePregnancyWeight').value,
+                weight: document.getElementById('editWeight').value,
+                height: document.getElementById('editHeight').value,
+                // bmi จะถูกคำนวณที่ฝั่ง Apps Script
+                fetus_count: document.getElementById('editFetusCount').value,
+                due_date: document.getElementById('editDueDate').value,
+                // gestational_week จะถูกคำนวณที่ฝั่ง Apps Script
                 carb_ratio: {
-                    breakfast: formData.get('carb_ratio_breakfast') ? parseFloat(formData.get('carb_ratio_breakfast')) : null,
-                    lunch: formData.get('carb_ratio_lunch') ? parseFloat(formData.get('carb_ratio_lunch')) : null,
-                    dinner: formData.get('carb_ratio_dinner') ? parseFloat(formData.get('carb_ratio_dinner')) : null
+                    breakfast: document.getElementById('editCarbRatioBreakfast').value,
+                    lunch: document.getElementById('editCarbRatioLunch').value,
+                    dinner: document.getElementById('editCarbRatioDinner').value
                 },
-                pbs_date: pbsDates // Array of selected days
+                // calorie_required จะถูกคำนวณที่ฝั่ง Apps Script
+                // carb_unit_required จะถูกคำนวณที่ฝั่ง Apps Script
+                // weight_gain จะถูกคำนวณที่ฝั่ง Apps Script
+                sugar_check_days: pbsDates, // ใช้ค่าจาก checkbox ที่ถูกเลือก
+                // registration_date ไม่ต้องส่งจาก frontend ในการ update
+                fetal_movement_notified: currentProfileData?.fetal_movement_notified || false // ส่งค่าเดิมกลับไป
             };
 
-            console.log('Data to be sent:', data);
+            // กรณีที่ค่าที่ส่งมาเป็น 'ไม่มี' สำหรับโรคประจำตัว/ยา ควรล้างช่อง text ที่เกี่ยวข้อง
+            if (formData.comorbidities === 'ไม่มี') {
+                formData.comorbiditiesText = '';
+            }
+            if (formData.pre_pregnancy_medications === 'ไม่มี') {
+                formData.pre_pregnancy_medicationsText = '';
+            }
+
+            // เนื่องจาก Apps Script ของเราใช้ action updateProfile สำหรับการอัปเดต
+            // และ saveData สำหรับการลงทะเบียนใหม่/อัปเดตแบบรวม
+            // เราจะส่ง action: 'updateProfile' หากเป็นผู้ใช้เดิม
+            const actionType = currentProfileData && currentProfileData.userId === liffUserId ? 'updateProfile' : 'saveData'; // ตรวจสอบจาก currentProfileData
 
             try {
-                const url = '/.netlify/functions/apps-script-proxy';
-                const response = await fetch(url, {
+                const response = await fetch(APPS_SCRIPT_PROXY_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({
+                        action: actionType,
+                        ...formData // ส่งข้อมูลทั้งหมด
+                    })
                 });
-
-                if (!response.ok) {
-                    const errorDetails = await response.text();
-                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails}`);
-                }
-
                 const result = await response.json();
                 console.log('Save profile result:', result);
 
                 if (result.status === 'success') {
                     document.getElementById('successMessage').style.display = 'block';
-                    currentProfileData = data; // อัปเดตข้อมูลที่เก็บไว้
-                    displayProfileData(currentProfileData); // แสดงข้อมูลที่อัปเดตแล้วในโหมดแสดงผล
-                    setTimeout(() => document.getElementById('successMessage').style.display = 'none', 3000);
-                } else {
-                    document.getElementById('errorMessage').innerHTML = `❌ บันทึกข้อมูลไม่สำเร็จ: ${result.message || 'Unknown error'}`;
-                    document.getElementById('errorMessage').style.display = 'block';
-                    setTimeout(() => document.getElementById('errorMessage').style.display = 'none', 5000);
-                }
+                    document.getElementById('errorMessage').style.display = 'none'; // ซ่อน error message หากเคยแสดง
+                    
+                    // อัปเดต currentProfileData จาก response ถ้ามี หรือใช้ formData
+                    // ถ้า Apps Script คืน profileData ที่คำนวณแล้วกลับมา ก็ใช้จาก response
+                    // ถ้าไม่ ให้ใช้ formData ที่เราเพิ่งสร้างขึ้นมา
+                    currentProfileData = result.profileData || { ...currentProfileData, ...formData }; 
 
+                    displayProfileData(currentProfileData); // แสดงข้อมูลที่บันทึกแล้ว
+                    // setDisplayMode(); // กลับสู่โหมดแสดงผล (เรียกใน displayProfileData แล้ว)
+                } else {
+                    document.getElementById('errorMessage').innerHTML = '❌ เกิดข้อผิดพลาดในการบันทึกโปรไฟล์: ' + (result.message || 'Unknown error');
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('successMessage').style.display = 'none';
+                }
             } catch (error) {
-                console.error('Error saving profile via Netlify Function:', error);
-                document.getElementById('errorMessage').innerHTML = `❌ เกิดข้อผิดพลาดในการบันทึก: ${error.message}`;
+                document.getElementById('errorMessage').innerHTML = '❌ เกิดข้อผิดพลาดในการเชื่อมต่อ: ' + error.message;
                 document.getElementById('errorMessage').style.display = 'block';
-                setTimeout(() => document.getElementById('errorMessage').style.display = 'none', 5000);
+                document.getElementById('successMessage').style.display = 'none';
+                console.error('Network or parsing error:', error);
             } finally {
                 document.getElementById('loading').style.display = 'none';
+                setTimeout(() => { // ซ่อนข้อความแจ้งเตือนหลังจาก 3 วินาที
+                    document.getElementById('successMessage').style.display = 'none';
+                    document.getElementById('errorMessage').style.display = 'none';
+                }, 3000);
             }
         }
 
-        // --- Event Listeners ---
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeLiff();
-
-            // ปุ่มแก้ไข
-            document.getElementById('editProfileBtn').addEventListener('click', setEditMode);
-
-            // ปุ่มยกเลิก
-            document.getElementById('cancelEditBtn').addEventListener('click', setDisplayMode);
-
-            // ปุ่มบันทึกข้อมูล
-            document.getElementById('saveProfileBtn').addEventListener('click', handleSaveProfile);
-
-            // Radio button listeners for conditional inputs
-            document.querySelectorAll('input[name="comorbidities_radio"]').forEach(radio => {
-                radio.addEventListener('change', function() {
-                    const detailDiv = document.getElementById('editComorbiditiesDetail');
-                    const inputField = document.getElementById('editComorbidities');
-                    if (this.value === 'มี') {
-                        detailDiv.classList.add('show');
-                        inputField.required = true;
-                    } else {
-                        detailDiv.classList.remove('show');
-                        inputField.required = false;
-                        inputField.value = ''; // Clear value if 'ไม่มี' is selected
-                    }
-                });
-            });
-
-            document.querySelectorAll('input[name="pre_pregnancy_medications_radio"]').forEach(radio => {
-                radio.addEventListener('change', function() {
-                    const detailDiv = document.getElementById('editPrePregnancyMedicationsDetail');
-                    const inputField = document.getElementById('editPrePregnancyMedications');
-                    if (this.value === 'มี') {
-                        detailDiv.classList.add('show');
-                        inputField.required = true;
-                    } else {
-                        detailDiv.classList.remove('show');
-                        inputField.required = false;
-                        inputField.value = ''; // Clear value if 'ไม่มี' is selected
-                    }
-                });
-            });
-
-            // Checkbox listener for PBS Date
-            document.querySelectorAll('.sugar-check').forEach(checkbox => {
-                checkbox.addEventListener('change', checkSugarCheckboxes);
-            });
-
-            // Tab handlers (แก้ไขให้ใช้ window.location.href)
-            document.getElementById('profileTab').addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
-                this.classList.add('active');
-                if (window.location.pathname !== '/profile.html' && window.location.pathname !== '/') { // เช็คทั้ง / และ /profile.html
-                    if (liff.isLoggedIn()) {
-                        window.location.href = `${window.location.origin}/profile.html`;
-                    } else {
-                        console.warn('LIFF not logged in, cannot open profile page.');
-                    }
+        // Helper functions for dynamic calculations
+        function calculateAge() {
+            const birthDateStr = document.getElementById('editBirthDate').value; // อ่านจาก input field
+            if (birthDateStr) {
+                const birthDate = new Date(birthDateStr);
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const m = today.getMonth() - birthDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
                 }
-            });
+                document.getElementById('editAge').value = age; // ตั้งค่าใน input field
+            } else {
+                document.getElementById('editAge').value = '';
+            }
+        }
 
-            document.getElementById('foodRecordsTab').addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
-                this.classList.add('active');
-                if (liff.isLoggedIn()) {
-                    window.location.href = `${window.location.origin}/food_records.html`;
+        function calculateBMI(weightKg, heightCm) {
+            if (isNaN(weightKg) || isNaN(heightCm) || heightCm <= 0) {
+                return '';
+            }
+            const heightM = heightCm / 100;
+            return (weightKg / (heightM * heightM)).toFixed(2);
+        }
+
+        function calculateGestationalWeek(dueDateStr) {
+            if (!dueDateStr) return '';
+            try {
+                const due = new Date(dueDateStr);
+                const today = new Date();
+                const diffTime = Math.abs(due.getTime() - today.getTime());
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const totalWeeks = 40; // Full term pregnancy is 40 weeks
+                
+                if (today < due) {
+                    return Math.max(0, totalWeeks - Math.floor(diffDays / 7));
                 } else {
-                    console.warn('LIFF not logged in, cannot open food records page.');
+                    return totalWeeks + Math.floor(diffDays / 7);
                 }
-            });
+            } catch (e) {
+                console.error('Error calculating gestational week:', e.message);
+                return '';
+            }
+        }
 
-            document.getElementById('sugarRecordsTab').addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
-                this.classList.add('active');
-                if (liff.isLoggedIn()) {
-                    window.location.href = `${window.location.origin}/sugar_records.html`;
+        function calculateCalorieRequired(prePregnancyBMI, gestationalWeek, prePregnancyWeight) {
+            if (isNaN(prePregnancyBMI) || isNaN(gestationalWeek) || isNaN(prePregnancyWeight) || gestationalWeek < 0) {
+                return '';
+            }
+            let bmrFactor;
+            if (prePregnancyBMI < 18.5) { bmrFactor = 35; }
+            else if (prePregnancyBMI >= 18.5 && prePregnancyBMI <= 24.9) { bmrFactor = 30; }
+            else if (prePregnancyBMI >= 25 && prePregnancyBMI <= 29.9) { bmrFactor = 25; }
+            else { bmrFactor = 23; }
+
+            let extraCalories = 0;
+            if (gestationalWeek >= 14 && gestationalWeek <= 28) { extraCalories = 300; }
+            else if (gestationalWeek > 28) { extraCalories = 450; }
+            return ((prePregnancyWeight * bmrFactor) + extraCalories).toFixed(0);
+        }
+
+        function calculateCarbUnitRequired(calorieRequired) {
+            if (isNaN(calorieRequired) || calorieRequired <= 0) {
+                return '';
+            }
+            const totalCarbCalories = calorieRequired * 0.55;
+            return (totalCarbCalories / 60).toFixed(1);
+        }
+
+        function calculateWeightGain(prePregnancyBMI) {
+            if (isNaN(prePregnancyBMI)) { return ''; }
+            if (prePregnancyBMI < 18.5) { return '12.5 - 18 kg'; }
+            else if (prePregnancyBMI >= 18.5 && prePregnancyBMI <= 24.9) { return '11.5 - 16 kg'; }
+            else if (prePregnancyBMI >= 25 && prePregnancyBMI <= 29.9) { return '7 - 11.5 kg'; }
+            else { return '5 - 9 kg'; }
+        }
+
+        function calculateBMIAndRecommendations() {
+            const weight = parseFloat(document.getElementById('editWeight').value);
+            const height = parseFloat(document.getElementById('editHeight').value);
+            const prePregnancyWeight = parseFloat(document.getElementById('editPrePregnancyWeight').value);
+            const dueDateStr = document.getElementById('editDueDate').value;
+            const fetusCount = parseInt(document.getElementById('editFetusCount').value || '1');
+
+            const bmiVal = calculateBMI(weight, height);
+            document.getElementById('editBMI').value = bmiVal;
+
+            const prePregnancyBMI = calculateBMI(prePregnancyWeight, height);
+            const gestationalWeek = calculateGestationalWeek(dueDateStr);
+            
+
+            let calorieReq = 'N/A';
+            if (fetusCount >= 2) {
+                if (!isNaN(prePregnancyWeight)) {
+                    calorieReq = (prePregnancyWeight * 45).toFixed(0);
+                }
+            } else {
+                if (prePregnancyBMI && gestationalWeek !== '' && !isNaN(prePregnancyWeight)) {
+                    calorieReq = calculateCalorieRequired(parseFloat(prePregnancyBMI), parseInt(gestationalWeek), prePregnancyWeight);
+                }
+            }
+            document.getElementById('editCalorieRequired').value = calorieReq;
+
+            const carbUnitReq = calculateCarbUnitRequired(parseFloat(calorieReq));
+            document.getElementById('editCarbUnitRequired').value = carbUnitReq;
+            
+            document.getElementById('editWeightGain').value = calculateWeightGain(parseFloat(prePregnancyBMI));
+        }
+
+        function calculateGestationalWeekAndRecommendations() {
+            const dueDateStr = document.getElementById('editDueDate').value;
+            const gestationalWeekVal = calculateGestationalWeek(dueDateStr);
+            document.getElementById('editGestationalWeek').value = gestationalWeekVal;
+
+            calculateBMIAndRecommendations(); // Recalculate other fields that depend on gestational week
+        }
+
+        function toggleConditionalInput(radioName, inputContainerId, yesRadioId, inputFieldId) {
+            const yesRadio = document.getElementById(yesRadioId);
+            const inputContainer = document.getElementById(inputContainerId);
+            const inputField = document.getElementById(inputFieldId);
+
+            if (yesRadio && inputContainer && inputField) {
+                if (yesRadio.checked) {
+                    inputContainer.classList.add('show');
+                    inputField.required = true;
                 } else {
-                    console.warn('LIFF not logged in, cannot open sugar records page.');
+                    inputContainer.classList.remove('show');
+                    inputField.required = false;
+                    // Clear the input field if 'No' is selected
+                    inputField.value = '';
                 }
-            });
-
-            // เรียกใช้ setDisplayMode() เมื่อโหลดหน้าเว็บครั้งแรกเพื่อให้แสดงผลถูกต้อง
-            // setDisplayMode(); // ถูกเรียกจาก displayProfileData() แล้ว
-        });
+            }
+        }
     </script>
 </body>
 </html>
