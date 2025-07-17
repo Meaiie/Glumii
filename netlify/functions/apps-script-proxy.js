@@ -85,12 +85,15 @@ exports.handler = async function(event, context) {
         return {
             statusCode: response.status,
             headers: {
-                'Access-Control-Allow-Origin': '*', // อนุญาตทุก Origin ที่เรียกมายัง Netlify Function นี้
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Methods': 'GET, POST', // บอกเบราว์เซอร์ว่า Methods ที่อนุญาต
-            },
-            body: JSON.stringify(data)
-        };
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                        'Access-Control-Allow-Methods': 'GET, POST',
+                    },
+            body: JSON.stringify({
+                    status: 'success',
+                    profileData: data.data || data.profileData || data
+                })
+            };
 
     } catch (error) {
         console.error('Error in Netlify Function:', error);
