@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบบันทึกข้อมูลคนไข้สตรีตั้งครรภ์</title>
     <link rel="stylesheet" href="style.css">
-    <!-- ไม่ต้องมี <style> block ที่นี่แล้ว เพราะจะย้ายไป style.css -->
 </head>
 <body>
     <div class="container">
@@ -13,16 +12,16 @@
             <h1> ระบบบันทึกข้อมูลคนไข้</h1>
             <p>สตรีตั้งครรภ์</p>
         </div>
-       
+        
         <div class="form-container">
             <div id="liffStatus" class="liff-status liff-disconnected">
                 🔄 กำลังเชื่อมต่อ LINE...
             </div>
-           
-            <form id="patientForm" style="display: none;">
+            
+            <form id="patientForm" style="display: none;"> 
                 <div class="form-section">
                     <h3 class="section-title">ข้อมูลส่วนตัว</h3>
-                   
+                    
                     <div class="form-row">
                         <div class="form-group">
                             <label for="full_name">ชื่อ-นามสกุล *</label>
@@ -33,7 +32,7 @@
                             <input type="text" id="nickname" name="nickname" required>
                         </div>
                     </div>
-                   
+                    
                     <div class="form-row">
                         <div class="form-group">
                             <label for="hospital_id">รหัสโรงพยาบาล *</label>
@@ -44,7 +43,7 @@
                             <input type="text" id="national_id" name="national_id" pattern="[0-9]{13}" maxlength="13" required>
                         </div>
                     </div>
-                   
+                    
                     <div class="form-row">
                         <div class="form-group">
                             <label for="birth_date">วันเกิด *</label>
@@ -56,10 +55,10 @@
                         </div>
                     </div>
                 </div>
-               
+                
                 <div class="form-section">
                     <h3 class="section-title">ข้อมูลสุขภาพ</h3>
-                   
+                    
                     <div class="form-group full-width">
                         <label>โรคประจำตัว *</label>
                         <div class="radio-group">
@@ -76,7 +75,7 @@
                             <input type="text" id="comorbidities" name="comorbidities" placeholder="ระบุโรคประจำตัว">
                         </div>
                     </div>
-                   
+                    
                     <div class="form-group full-width">
                         <label>ยาที่ใช้ก่อนตั้งครรภ์ *</label>
                         <div class="radio-group">
@@ -93,7 +92,7 @@
                             <textarea id="pre_pregnancy_medications" name="pre_pregnancy_medications" rows="3" placeholder="ระบุยาที่ใช้"></textarea>
                         </div>
                     </div>
-                   
+                    
                     <div class="form-row">
                         <div class="form-group">
                             <label for="pre_pregnancy_weight">น้ำหนักก่อนตั้งครรภ์ (กก.) *</label>
@@ -105,10 +104,10 @@
                         </div>
                     </div>
                 </div>
-               
+                
                 <div class="form-section">
                     <h3 class="section-title">ข้อมูลการตั้งครรภ์</h3>
-                   
+                    
                     <div class="form-row">
                         <div class="form-group">
                             <label for="fetus_count">จำนวนทารกในครรภ์ *</label>
@@ -126,49 +125,29 @@
                         </div>
                     </div>
                 </div>
-               
+                
                 <div class="form-section">
-                    <h3 class="section-title">อัตราส่วนมื้อหลัก</h3>
-                   
+                    <h3 class="section-title">อัตราส่วนคาร์บ</h3>
+                    
                     <div class="carb-ratio-group">
                         <div class="form-group">
-                            <label for="main_ratio_breakfast">อาหารเช้า (Breakfast) *</label>
-                            <input type="number" id="main_ratio_breakfast" name="main_ratio_breakfast" step="0.1" min="0" placeholder="เช่น 3" required>
+                            <label for="carb_ratio_breakfast">อาหารเช้า (Breakfast) *</label>
+                            <input type="number" id="carb_ratio_breakfast" name="carb_ratio_breakfast" step="0.1" min="0" placeholder="เช่น 30 %" required>
                         </div>
                         <div class="form-group">
-                            <label for="main_ratio_lunch">อาหารกลางวัน (Lunch) *</label>
-                            <input type="number" id="main_ratio_lunch" name="main_ratio_lunch" step="0.1" min="0" placeholder="เช่น 4" required>
+                            <label for="carb_ratio_lunch">อาหารกลางวัน (Lunch) *</label>
+                            <input type="number" id="carb_ratio_lunch" name="carb_ratio_lunch" step="0.1" min="0" placeholder="เช่น 40 %" required>
                         </div>
                         <div class="form-group">
-                            <label for="main_ratio_dinner">อาหารเย็น (Dinner) *</label>
-                            <input type="number" id="main_ratio_dinner" name="main_ratio_dinner" step="0.1" min="0" placeholder="เช่น 3" required>
+                            <label for="carb_ratio_dinner">อาหารเย็น (Dinner) *</label>
+                            <input type="number" id="carb_ratio_dinner" name="carb_ratio_dinner" step="0.1" min="0" placeholder="เช่น 30 %" required>
                         </div>
                     </div>
                 </div>
-
-
+                
                 <div class="form-section">
-                    <h3 class="section-title">อัตราส่วนมื้อรอง</h3>
-                   
-                    <div class="carb-ratio-group">
-                        <div class="form-group">
-                            <label for="snack_ratio_morning">มื้อเช้า (Morning Snack) *</label>
-                            <input type="number" id="snack_ratio_morning" name="snack_ratio_morning" step="0.1" min="0" placeholder="เช่น 1" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="snack_ratio_afternoon">มื้อบ่าย (Afternoon Snack) *</label>
-                            <input type="number" id="snack_ratio_afternoon" name="snack_ratio_afternoon" step="0.1" min="0" placeholder="เช่น 1.5" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="snack_ratio_evening">มื้อค่ำ (Evening Snack) *</label>
-                            <input type="number" id="snack_ratio_evening" name="snack_ratio_evening" step="0.1" min="0" placeholder="เช่น 0.5" required>
-                        </div>
-                    </div>
-                </div>
-               
-                <div class="form-section">
-                    <h3 class="section-title">วันที่ต้องเจาะน้ำตาล (เลือก 2 วัน)</h3>
-                   
+                    <h3 class="section-title">วันที่ต้องเจาะน้ำตาล (เลือก 3 วัน)</h3>
+                    
                     <div class="checkbox-group">
                         <div class="checkbox-item">
                             <input type="checkbox" id="monday" class="sugar-check" value="จันทร์">
@@ -200,9 +179,9 @@
                         </div>
                     </div>
                 </div>
-               
+                
                 <button type="submit" class="submit-btn" disabled>💾 บันทึกข้อมูล</button>
-               
+                
                 <div class="loading" id="loading">⏳ กำลังบันทึกข้อมูล...</div>
                 <div class="success-message" id="successMessage">✅ บันทึกข้อมูลเรียบร้อยแล้ว!</div>
                 <div class="error-message" id="errorMessage">❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง</div>
@@ -210,12 +189,10 @@
         </div>
     </div>
 
-
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
         let isLiffReady = false;
         let liffUserId = null; // เก็บ userId ไว้ใช้ทั่วถึง
-
 
         async function initializeLiff() {
             try {
@@ -226,165 +203,93 @@
                     isLiffReady = true;
                     document.getElementById('liffStatus').className = 'liff-status liff-connected';
                     document.getElementById('liffStatus').innerHTML = '✅ เชื่อมต่อ LINE สำเร็จ';
-                   
+                    
                     const profile = await liff.getProfile();
                     liffUserId = profile.userId; // เก็บ userId
 
-
                     await checkUserProfile(liffUserId);
-
 
                     document.querySelector('.submit-btn').disabled = false;
                 }
             } catch (error) {
                 console.error('LIFF initialization failed:', error);
                 document.getElementById('liffStatus').innerHTML = '❌ ไม่สามารถเชื่อมต่อ LINE ได้';
+                // หาก LIFF เชื่อมต่อไม่ได้ หรือเกิดข้อผิดพลาดรุนแรง อาจจะแสดงฟอร์มไม่ได้
+                // คุณอาจจะต้องพิจารณา UX ตรงนี้เพิ่มเติม (เช่น แสดงข้อความบอกว่าไม่สามารถใช้งานได้)
             }
         }
-
 
         async function checkUserProfile(userId) {
             console.log('Checking user profile for userId:', userId);
             try {
-                const url = '/.netlify/functions/apps-script-proxy';
-                // เปลี่ยนเป็น GET request สำหรับ checkUser
-                const response = await fetch(`${url}?action=checkUser&userId=${userId}`, {
-                    method: 'GET', // เปลี่ยนเป็น GET
+                const url = '/.netlify/functions/apps-script-proxy'; 
+                const response = await fetch(url, {
+                    method: 'POST', 
                     headers: {
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    body: JSON.stringify({ action: 'checkUser', userId: userId })
                 });
-
 
                 if (!response.ok) {
                     const errorDetails = await response.text();
                     throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails}`);
                 }
 
-
                 const result = await response.json();
                 console.log('User check response from Netlify Function:', result);
 
-
                 if (result.status === 'profile_exists') {
-                    const profileData = result.profileData;
-                    // เติมข้อมูลลงในฟอร์ม
-                    document.getElementById('full_name').value = profileData.full_name || '';
-                    document.getElementById('nickname').value = profileData.nickname || '';
-                    document.getElementById('hospital_id').value = profileData.hospital_id || '';
-                    document.getElementById('national_id').value = profileData.national_id || '';
-                    document.getElementById('birth_date').value = profileData.birth_date || '';
-                    document.getElementById('height').value = profileData.height || '';
+                    // เก็บข้อมูลโปรไฟล์ใน localStorage ก่อน redirect
+                    localStorage.setItem('userProfile', JSON.stringify(result.profileData));
 
-
-                    // โรคประจำตัว
-                    if (profileData.comorbidities === 'ไม่มี') {
-                        document.getElementById('chronicDiseaseNo').checked = true;
-                        document.getElementById('chronicDiseaseDetail').classList.remove('show');
-                    } else if (profileData.comorbidities) {
-                        document.getElementById('chronicDiseaseYes').checked = true;
-                        document.getElementById('chronicDiseaseDetail').classList.add('show');
-                        document.getElementById('comorbidities').value = profileData.comorbidities;
-                    }
-
-
-                    // ยาที่ใช้ก่อนตั้งครรภ์
-                    if (profileData.pre_pregnancy_medications === 'ไม่มี') {
-                        document.getElementById('medicationNo').checked = true;
-                        document.getElementById('medicationDetail').classList.remove('show');
-                    } else if (profileData.pre_pregnancy_medications) {
-                        document.getElementById('medicationYes').checked = true;
-                        document.getElementById('medicationDetail').classList.add('show');
-                        document.getElementById('pre_pregnancy_medications').value = profileData.pre_pregnancy_medications;
-                    }
-
-
-                    document.getElementById('pre_pregnancy_weight').value = profileData.pre_pregnancy_weight || '';
-                    document.getElementById('weight').value = profileData.weight || '';
-                    document.getElementById('fetus_count').value = profileData.fetus_count || '';
-                    document.getElementById('due_date').value = profileData.due_date || '';
-
-
-                    // อัตราส่วนมื้อหลัก (main_ratio)
-                    if (profileData.main_ratio) {
-                        try {
-                            const mainRatio = typeof profileData.main_ratio === 'string' ? JSON.parse(profileData.main_ratio) : profileData.main_ratio;
-                            document.getElementById('main_ratio_breakfast').value = mainRatio.breakfast || '';
-                            document.getElementById('main_ratio_lunch').value = mainRatio.lunch || '';
-                            document.getElementById('main_ratio_dinner').value = mainRatio.dinner || '';
-                        } catch (e) {
-                            console.error("Error parsing main_ratio:", e);
-                        }
-                    }
-
-
-                    // อัตราส่วนมื้อรอง (snack_ratio) - NEW
-                    if (profileData.snack_ratio) {
-                        try {
-                            const snackRatio = typeof profileData.snack_ratio === 'string' ? JSON.parse(profileData.snack_ratio) : profileData.snack_ratio;
-                            document.getElementById('snack_ratio_morning').value = snackRatio.morning || '';
-                            document.getElementById('snack_ratio_afternoon').value = snackRatio.afternoon || '';
-                            document.getElementById('snack_ratio_evening').value = snackRatio.evening || '';
-                        } catch (e) {
-                            console.error("Error parsing snack_ratio:", e);
-                        }
-                    }
-
-
-                    // วันที่ต้องเจาะน้ำตาล
-                    if (profileData.sugar_check_days && Array.isArray(profileData.sugar_check_days)) {
-                        document.querySelectorAll('.sugar-check').forEach(checkbox => {
-                            checkbox.checked = profileData.sugar_check_days.includes(checkbox.value);
-                        });
-                        // เรียก event listener เพื่ออัปเดตสถานะ disabled ของ checkbox
-                        const event = new Event('change');
-                        document.getElementById('monday').dispatchEvent(event);
-                    }
-
-
-                    document.getElementById('patientForm').style.display = 'block';
-                    // ไม่ต้อง redirect ไป Profile.html ทันที ให้ผู้ใช้แก้ไขได้เลย
-                    // liff.openWindow({ url: `Profile.html`, external: false });
+                    // เปลี่ยนเส้นทางไปหน้า Profile.html ทันที
+                    liff.openWindow({
+                        url: `Profile.html`, 
+                        external: false 
+                    });
                 } else if (result.status === 'new_user') {
                     // ถ้าผู้ใช้ยังไม่เคยกรอก ให้แสดงฟอร์ม
                     document.getElementById('patientForm').style.display = 'block';
+                    // ไม่มี alert() สำหรับผู้ใช้ใหม่แล้ว
                 } else {
+                    // กรณีเกิดข้อผิดพลาดจาก Apps Script แต่ HTTP status ยังเป็น 200
                     console.error('Error from Apps Script during checkUser:', result.message);
-                    document.getElementById('patientForm').style.display = 'block';
+                    // ไม่มี alert() ให้ผู้ใช้เห็น แต่จะแสดงฟอร์มเผื่อไว้
+                    document.getElementById('patientForm').style.display = 'block'; 
                 }
-
 
             } catch (error) {
                 console.error('Error checking user profile via Netlify Function:', error);
-                document.getElementById('patientForm').style.display = 'block';
+                // ไม่มี alert() ให้ผู้ใช้เห็น แต่จะแสดงฟอร์มเผื่อไว้
+                document.getElementById('patientForm').style.display = 'block'; 
             }
         }
-
 
         async function handleSubmit(event) {
             event.preventDefault();
 
-
-            if (!isLiffReady || !liffUserId) {
+            if (!isLiffReady || !liffUserId) { 
+                // สามารถใช้ UI Element อื่นๆ เช่น แสดงข้อความใน div แทน alert
+                // document.getElementById('errorMessage').innerText = 'กรุณารอให้เชื่อมต่อ LINE และดึงข้อมูลผู้ใช้เสร็จสิ้น';
+                // document.getElementById('errorMessage').style.display = 'block';
                 console.warn('LIFF not ready or userId not available.');
                 return;
             }
 
-
             const selectedSugarCheck = Array.from(document.querySelectorAll('.sugar-check:checked')).map(cb => cb.value);
-            if (selectedSugarCheck.length !== 2) { // เปลี่ยนจาก 3 เป็น 2 ตามที่ระบุใน label
-                document.getElementById('errorMessage').innerHTML = '❌ กรุณาเลือก "วันที่ต้องเจาะน้ำตาล" ให้ครบ 2 วัน';
+            if (selectedSugarCheck.length !== 3) {
+                // แสดงข้อความใน div แทน alert
+                document.getElementById('errorMessage').innerHTML = '❌ กรุณาเลือก "วันที่ต้องเจาะน้ำตาล" ให้ครบ 3 วัน';
                 document.getElementById('errorMessage').style.display = 'block';
                 setTimeout(() => {
                     document.getElementById('errorMessage').style.display = 'none';
-                }, 5000);
+                }, 5000); // ซ่อนข้อความหลังจาก 5 วินาที
                 return;
             }
 
-
             document.getElementById('loading').style.display = 'block';
             document.querySelector('.submit-btn').disabled = true;
-
 
             try {
                 let comorbidities = '';
@@ -395,7 +300,6 @@
                     comorbidities = 'ไม่ระบุ';
                 }
 
-
                 let prePregMedications = '';
                 const medicationRadio = document.querySelector('input[name="medication"]:checked');
                 if (medicationRadio) {
@@ -404,47 +308,33 @@
                     prePregMedications = 'ไม่ระบุ';
                 }
 
-
                 const formData = {
-                    action: 'updateProfile', // เปลี่ยนเป็น updateProfile เพื่อให้ Apps Script รู้ว่าเป็นการอัปเดต
-                    userId: liffUserId,
-                    data: { // ส่งข้อมูลเป็น object ภายใต้ key 'data'
-                        full_name: document.getElementById('full_name').value || '',
-                        nickname: document.getElementById('nickname').value || '',
-                        hospital_id: document.getElementById('hospital_id').value || '',
-                        national_id: document.getElementById('national_id').value || '',
-                        birth_date: document.getElementById('birth_date').value || '',
-                        comorbidities,
-                        pre_pregnancy_medications: prePregMedications,
-                        pre_pregnancy_weight: parseFloat(document.getElementById('pre_pregnancy_weight').value) || 0,
-                        weight: parseFloat(document.getElementById('weight').value) || 0,
-                        height: parseFloat(document.getElementById('height').value) || 0,
-                        fetus_count: parseInt(document.getElementById('fetus_count').value) || 0,
-                        due_date: document.getElementById('due_date').value || '',
-                       
-                        // อัตราส่วนมื้อหลัก (main_ratio)
-                        main_ratio: { // เปลี่ยนชื่อจาก carb_ratio เป็น main_ratio
-                            breakfast: parseFloat(document.getElementById('main_ratio_breakfast').value) || 0,
-                            lunch: parseFloat(document.getElementById('main_ratio_lunch').value) || 0,
-                            dinner: parseFloat(document.getElementById('main_ratio_dinner').value) || 0
-                        },
-                        // อัตราส่วนมื้อรอง (snack_ratio) - NEW
-                        snack_ratio: {
-                            morning: parseFloat(document.getElementById('snack_ratio_morning').value) || 0,
-                            afternoon: parseFloat(document.getElementById('snack_ratio_afternoon').value) || 0,
-                            evening: parseFloat(document.getElementById('snack_ratio_evening').value) || 0
-                        },
-                        sugar_check_days: selectedSugarCheck
-                    }
+                    action: 'saveData', 
+                    userId: liffUserId, 
+                    full_name: document.getElementById('full_name').value || '',
+                    nickname: document.getElementById('nickname').value || '',
+                    hospital_id: document.getElementById('hospital_id').value || '',
+                    national_id: document.getElementById('national_id').value || '',
+                    birth_date: document.getElementById('birth_date').value || '',
+                    comorbidities,
+                    pre_pregnancy_medications: prePregMedications,
+                    pre_pregnancy_weight: parseFloat(document.getElementById('pre_pregnancy_weight').value) || 0,
+                    weight: parseFloat(document.getElementById('weight').value) || 0,
+                    height: parseFloat(document.getElementById('height').value) || 0,
+                    fetus_count: parseInt(document.getElementById('fetus_count').value) || 0,
+                    due_date: document.getElementById('due_date').value || '',
+                    carb_ratio: {
+                        breakfast: parseFloat(document.getElementById('carb_ratio_breakfast').value) || 0,
+                        lunch: parseFloat(document.getElementById('carb_ratio_lunch').value) || 0,
+                        dinner: parseFloat(document.getElementById('carb_ratio_dinner').value) || 0
+                    },
+                    sugar_check_days: selectedSugarCheck
                 };
-
 
                 console.log('Sending data:', JSON.stringify(formData, null, 2));
 
-
-                const url = '/.netlify/functions/apps-script-proxy';
+                const url = '/.netlify/functions/apps-script-proxy'; 
                 console.log('Attempting to fetch to Netlify Function:', url);
-
 
                 const response = await fetch(url, {
                     method: 'POST',
@@ -454,33 +344,30 @@
                     body: JSON.stringify(formData)
                 });
 
-
                 if (!response.ok) {
-                    const errorDetails = await response.text();
+                    const errorDetails = await response.text(); 
                     throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails}`);
                 }
 
-
                 const result = await response.json();
                 console.log('Server response from Netlify Function (saveData):', result);
-
 
                 if (result.status === 'success') {
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('successMessage').style.display = 'block';
                     console.log('✅ ข้อมูลบันทึกสำเร็จ!');
 
-
                     setTimeout(() => {
+                        // ไม่ต้อง reset ฟอร์ม เพราะจะเปลี่ยนหน้าไป Profile.html
                         document.getElementById('successMessage').style.display = 'none';
                         document.querySelector('.submit-btn').disabled = false;
-                       
+                        
                         // Redirect ไป Profile.html เลย
                         liff.openWindow({
-                            url: `Profile.html`,
+                            url: `Profile.html`, 
                             external: false
                         });
-                    }, 3000);
+                    }, 3000); // ให้ผู้ใช้เห็นข้อความ "บันทึกข้อมูลเรียบร้อยแล้ว!" เป็นเวลา 3 วินาที ก่อนเปลี่ยนหน้า
                 } else {
                     throw new Error(result.message || 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ Apps Script');
                 }
@@ -491,18 +378,15 @@
                 document.getElementById('errorMessage').innerHTML = `❌ เกิดข้อผิดพลาด: ${error.message}`;
                 document.querySelector('.submit-btn').disabled = false;
 
-
                 setTimeout(() => {
                     document.getElementById('errorMessage').style.display = 'none';
                 }, 8000);
             }
         }
 
-
         document.addEventListener('DOMContentLoaded', () => {
             // ซ่อนฟอร์มเริ่มต้น
             document.getElementById('patientForm').style.display = 'none';
-
 
             document.querySelectorAll('input[name="chronicDisease"]').forEach(radio => {
                 radio.addEventListener('change', function () {
@@ -518,7 +402,6 @@
                 });
             });
 
-
             document.querySelectorAll('input[name="medication"]').forEach(radio => {
                 radio.addEventListener('change', function () {
                     const detail = document.getElementById('medicationDetail');
@@ -533,11 +416,10 @@
                 });
             });
 
-
             document.querySelectorAll('.sugar-check').forEach(checkbox => {
                 checkbox.addEventListener('change', function () {
                     const checked = document.querySelectorAll('.sugar-check:checked');
-                    if (checked.length >= 2) { // เปลี่ยนเป็น 2 ตามที่ระบุใน label "เลือก 2 วัน"
+                    if (checked.length >= 3) {
                         document.querySelectorAll('.sugar-check:not(:checked)').forEach(cb => cb.disabled = true);
                     } else {
                         document.querySelectorAll('.sugar-check').forEach(cb => cb.disabled = false);
@@ -545,10 +427,8 @@
                 });
             });
 
-
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('due_date').min = today;
-
 
             initializeLiff();
             document.getElementById('patientForm').addEventListener('submit', handleSubmit);
@@ -556,6 +436,3 @@
     </script>
 </body>
 </html>
-
-
-

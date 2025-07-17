@@ -5,6 +5,7 @@
     box-sizing: border-box;
 }
 
+
 body {
     font-family: sans-serif;
     background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 50%, #e1bee7 100%);
@@ -12,6 +13,7 @@ body {
     padding: 20px;
     color: #333; /* ตั้งค่าสีข้อความเริ่มต้น */
 }
+
 
 /* Main Container */
 .container {
@@ -22,6 +24,7 @@ body {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 }
+
 
 /* Header Styling */
 .header {
@@ -36,6 +39,7 @@ body {
     align-items: center; /* จัดแนวตั้งกึ่งกลาง */
 }
 
+
 .header h1 {
     font-size: 2em;
     margin-bottom: 10px;
@@ -44,12 +48,14 @@ body {
     font-size: 1.5em; /* ปรับขนาดสำหรับ h1 ใน header ของ profile */
 }
 
+
 .header p {
     opacity: 0.9;
     font-size: 1.1em;
     margin: 0; /* ลบ margin ที่ไม่จำเป็นออก */
     color: #fff; /* ให้สีเป็นสีขาว */
 }
+
 
 /* User Info in Header */
 .user-info {
@@ -59,12 +65,14 @@ body {
     color: white;
 }
 
+
 .user-info img {
     width: 24px;
     height: 24px;
     border-radius: 50%;
     margin-right: 5px;
 }
+
 
 /* LIFF Status */
 .liff-status {
@@ -75,15 +83,18 @@ body {
     margin: 20px; /* เพิ่ม margin เพื่อให้มีพื้นที่รอบๆ */
 }
 
+
 .liff-connected {
     background: #e8f5e8;
     color: #2e7d32;
 }
 
+
 .liff-disconnected {
     background: #ffebee;
     color: #c62828;
 }
+
 
 /* Navigation Tabs */
 .nav-tabs {
@@ -93,6 +104,7 @@ body {
     font-size: 0.95em;
     padding: 0 20px; /* เพิ่ม padding ด้านข้าง */
 }
+
 
 .nav-tab {
     flex: 1;
@@ -110,9 +122,11 @@ body {
     gap: 8px;
 }
 
+
 .nav-tab.active {
     color: #ef78a0; /* สีชมพูเข้มสำหรับ tab ที่เลือก */
 }
+
 
 .nav-tab.active::after {
     content: '';
@@ -124,15 +138,18 @@ body {
     background-color: #ef78a0; /* สีชมพูเข้มขีดเส้นใต้ */
 }
 
+
 .nav-tab:hover {
     background-color: #fce4ec; /* สีอ่อนๆ เมื่อ hover */
     color: #ef78a0;
 }
 
+
 /* Form Container & Sections (Shared with Register/Profile) */
 .form-container, .profile-container {
     padding: 40px; /* ใช้ padding เดียวกัน */
 }
+
 
 .form-section, .profile-section { /* ใช้คลาสเดียวกัน */
     margin-bottom: 30px;
@@ -142,6 +159,7 @@ body {
     padding: 30px; /* เพิ่ม padding ภายใน section */
 }
 
+
 .section-title {
     color: #f494be;
     font-size: 1.3em;
@@ -150,6 +168,7 @@ body {
     border-bottom: 2px solid #f8bbd9;
     padding-bottom: 8px;
 }
+
 
 /* Section Header (for Profile and Food Records) */
 .section-header {
@@ -161,11 +180,13 @@ body {
     border-bottom: 2px solid #f8bbd9; /* ใช้สีเดียวกับ section-title */
 }
 
+
 .section-header h3 {
     margin: 0;
     color: #f494be;
     font-size: 1.3em;
 }
+
 
 /* Edit/Save/Cancel Buttons (General purpose) */
 .edit-btn, .save-btn, .cancel-btn {
@@ -181,10 +202,12 @@ body {
     box-shadow: 0 2px 8px rgba(232, 131, 165, 0.2);
 }
 
+
 .edit-btn:hover, .save-btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 10px rgba(192, 116, 141, 0.3);
 }
+
 
 .cancel-btn {
     background: #ccc;
@@ -192,17 +215,20 @@ body {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+
 .cancel-btn:hover {
     background: #bbb;
     transform: translateY(-1px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
+
 .button-group {
     display: flex;
     justify-content: flex-end;
     margin-top: 0; /* ลบ margin-top ซ้ำซ้อน */
 }
+
 
 /* Form Row and Group (Shared with Register/Profile/Food Records) */
 .form-row {
@@ -212,6 +238,7 @@ body {
     flex-wrap: wrap;
 }
 
+
 .form-group {
     flex: 1;
     min-width: 250px;
@@ -219,9 +246,11 @@ body {
     flex-direction: column; /* Added for consistency */
 }
 
+
 .form-group.full-width {
     flex: 100%;
 }
+
 
 label {
     display: block;
@@ -229,6 +258,7 @@ label {
     color: #555;
     font-weight: 500;
 }
+
 
 input,
 select,
@@ -242,6 +272,7 @@ textarea {
     background: white;
 }
 
+
 input:focus,
 select:focus,
 textarea:focus {
@@ -250,6 +281,7 @@ textarea:focus {
     box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1);
 }
 
+
 /* Radio & Checkbox Groups */
 .radio-group {
     display: flex;
@@ -257,11 +289,13 @@ textarea:focus {
     margin-top: 8px;
 }
 
+
 .radio-item {
     display: flex;
     align-items: center;
     gap: 8px;
 }
+
 
 .radio-item input[type="radio"] {
     width: auto;
@@ -279,10 +313,12 @@ textarea:focus {
     transition: background 0.2s ease, border-color 0.2s ease;
 }
 
+
 .radio-item input[type="radio"]:checked {
     background-color: #ef78a0;
     border-color: #ef78a0;
 }
+
 
 .radio-item input[type="radio"]:checked::before {
     content: '';
@@ -294,14 +330,17 @@ textarea:focus {
     border-radius: 50%;
 }
 
+
 .conditional-input {
     margin-top: 10px;
     display: none;
 }
 
+
 .conditional-input.show {
     display: block;
 }
+
 
 .checkbox-group {
     display: grid;
@@ -309,6 +348,7 @@ textarea:focus {
     gap: 15px;
     margin-top: 8px;
 }
+
 
 .checkbox-item {
     display: flex;
@@ -320,9 +360,11 @@ textarea:focus {
     transition: background 0.3s ease;
 }
 
+
 .checkbox-item:hover {
     background: #f8bbd9;
 }
+
 
 .checkbox-item input[type="checkbox"] {
     /* รีเซ็ตสไตล์เริ่มต้น */
@@ -342,10 +384,12 @@ textarea:focus {
     position: relative;
 }
 
+
 .checkbox-item input[type="checkbox"]:checked {
     background-color: #ef78a0;
     border-color: #ef78a0;
 }
+
 
 .checkbox-item input[type="checkbox"]:checked::after {
     content: '';
@@ -360,6 +404,7 @@ textarea:focus {
     transform: rotate(45deg);
 }
 
+
 .checkbox-item label {
     cursor: pointer;
     user-select: none; /* ป้องกันการเลือกข้อความ */
@@ -368,11 +413,13 @@ textarea:focus {
     flex-grow: 1;
 }
 
+
 .carb-ratio-group {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
 }
+
 
 /* Submit Button */
 .submit-btn {
@@ -390,20 +437,24 @@ textarea:focus {
     box-shadow: 0 4px 15px rgba(232, 131, 165, 0.3);
 }
 
+
 .submit-btn:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(192, 116, 141, 0.4);
 }
 
+
 .submit-btn:active {
     transform: translateY(0);
 }
+
 
 .submit-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
     transform: none;
 }
+
 
 /* Message Styles */
 .loading {
@@ -413,6 +464,7 @@ textarea:focus {
     font-weight: bold;
     margin-top: 20px;
 }
+
 
 .success-message {
     display: none;
@@ -424,6 +476,7 @@ textarea:focus {
     margin-top: 20px;
 }
 
+
 .error-message {
     display: none;
     background: #f44336;
@@ -434,6 +487,7 @@ textarea:focus {
     margin-top: 20px;
 }
 
+
 /* Profile Page Specific Styles (for display mode) */
 .profile-grid {
     display: grid;
@@ -441,16 +495,19 @@ textarea:focus {
     gap: 15px 20px; /* ระยะห่างระหว่าง grid items */
 }
 
+
 .profile-item {
     display: flex;
     flex-direction: column;
 }
+
 
 .profile-item label {
     font-size: 0.85em;
     color: #777;
     margin-bottom: 5px;
 }
+
 
 .profile-item span {
     font-size: 1em;
@@ -462,18 +519,22 @@ textarea:focus {
     align-items: center; /* จัดแนวตั้งกึ่งกลาง */
 }
 
+
 .profile-item.full-width {
     grid-column: 1 / -1; /* spans across both columns */
 }
+
 
 .profile-item.full-width span {
     white-space: pre-wrap; /* เพื่อให้ขึ้นบรรทัดใหม่ใน textarea ที่แสดงผล */
 }
 
+
 /* Edit Mode Specific Styles */
 .edit-mode .profile-item span {
     display: none; /* ซ่อนค่าที่แสดงเมื่ออยู่ในโหมดแก้ไข */
 }
+
 
 .edit-mode .profile-item .form-group {
     display: flex; /* แสดง input ในโหมดแก้ไข */
@@ -486,10 +547,12 @@ textarea:focus {
     display: block; /* แสดง input/textarea/select ในโหมดแก้ไข */
 }
 
+
 /* Display Mode Specific Styles */
 .display-mode .profile-item .form-group {
     display: none; /* ซ่อน input ในโหมดแสดงผล */
 }
+
 
 /* --- Food Records Specific Styles --- */
 /* Overall container for food records - already defined as .food-records-container in food_records.html but here for consistency */
@@ -502,6 +565,7 @@ textarea:focus {
     margin-top: 0; /* No extra margin if it's within .container directly */
 }
 
+
 /* Form section styling for food/sugar records - similar to .profile-section */
 .record-form-section {
     background-color: #f9f9f9; /* Lighter background for the form itself */
@@ -512,6 +576,7 @@ textarea:focus {
     box-shadow: 0 2px 8px rgba(0,0,0,0.03); /* Lighter shadow for form */
 }
 
+
 .form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -519,10 +584,12 @@ textarea:focus {
     margin-bottom: 20px;
 }
 
+
 /* Re-using existing .form-group styles */
 /* Re-using existing .form-group label styles */
 /* Re-using existing input, select, textarea styles */
 /* Re-using .form-group.full-width */
+
 
 /* Button styling for form within records (add/save/cancel) */
 .button-group.form-btns {
@@ -531,6 +598,7 @@ textarea:focus {
     gap: 10px;
     margin-top: 15px;
 }
+
 
 .add-record-btn {
     background-color: #4CAF50; /* Green */
@@ -549,6 +617,7 @@ textarea:focus {
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
 }
 
+
 .save-btn { /* Overrides the general .save-btn slightly for specific form */
     background-color: #007bff; /* Blue */
     color: white;
@@ -565,6 +634,7 @@ textarea:focus {
     transform: translateY(-1px);
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
 }
+
 
 .cancel-btn { /* Overrides the general .cancel-btn slightly for specific form */
     background-color: #dc3545; /* Red */
@@ -583,6 +653,7 @@ textarea:focus {
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
 }
 
+
 /* Table styling for records display */
 .records-display-section {
     overflow-x: auto; /* For responsive tables */
@@ -592,12 +663,14 @@ textarea:focus {
     background-color: #fff; /* White background for the table area */
 }
 
+
 #foodRecordsTable, #sugarRecordsTable { /* Apply to both tables */
     width: 100%;
     border-collapse: collapse;
     margin-top: 0; /* Adjust margin if records-display-section already has it */
     font-size: 0.95rem;
 }
+
 
 #foodRecordsTable th,
 #foodRecordsTable td,
@@ -609,6 +682,7 @@ textarea:focus {
     vertical-align: top; /* Align content to top for longer menus/notes */
 }
 
+
 #foodRecordsTable th,
 #sugarRecordsTable th {
     background-color: #e9ecef; /* Light gray header */
@@ -616,15 +690,18 @@ textarea:focus {
     color: #333;
 }
 
+
 #foodRecordsTable tbody tr:nth-child(even),
 #sugarRecordsTable tbody tr:nth-child(even) {
     background-color: #f8f9fa; /* Alternate row shading */
 }
 
+
 .actions-cell {
     white-space: nowrap; /* Prevent buttons from wrapping */
     text-align: center;
 }
+
 
 .icon-btn {
     background: none;
@@ -637,6 +714,7 @@ textarea:focus {
     transition: background-color 0.3s ease;
 }
 
+
 .edit-record-btn {
     color: #007bff; /* Blue for edit */
 }
@@ -644,12 +722,14 @@ textarea:focus {
     background-color: #e7f2ff;
 }
 
+
 .delete-record-btn {
     color: #dc3545; /* Red for delete */
 }
 .delete-record-btn:hover {
     background-color: #ffe6e8;
 }
+
 
 /* No data message */
 .no-data-message {
@@ -660,6 +740,8 @@ textarea:focus {
     border-radius: 8px;
     margin-top: 20px;
 }
+
+
 
 
 /* Responsive adjustments */
@@ -675,6 +757,7 @@ textarea:focus {
     .form-container, .profile-container, .food-records-container { /* Apply to food records container as well */
         padding: 20px;
     }
+
 
     .form-row, .form-grid { /* Apply to form-grid as well */
         flex-direction: column;
@@ -695,6 +778,7 @@ textarea:focus {
         grid-template-columns: 1fr;
     }
 
+
     .header {
         padding: 20px 15px; /* ปรับ padding header บนมือถือ */
     }
@@ -705,6 +789,7 @@ textarea:focus {
         font-size: 0.9em;
     }
 }
+
 
 @media (max-width: 480px) {
     .header h1 {
@@ -744,3 +829,4 @@ textarea:focus {
         padding: 3px;
     }
 }
+
