@@ -27,22 +27,26 @@ body {
 .header {
     background: linear-gradient(135deg, #ef78a0, #f897c1);
     color: white;
-    /* text-align: center; <--- ลบออกไปเลยครับ ไม่จำเป็นเมื่อใช้ flexbox จัดวางซ้าย-ขวา */
+    /* text-align: center; /* ไม่จำเป็นต้องใช้ถ้าใช้ justify-content: center; */
     padding: 30px 20px;
     font-size: 1.2em;
     font-weight: bold;
-    display: flex; /* ดีแล้ว! */
-    justify-content: space-between; /* ดีแล้ว! */
-    align-items: center; /* ดีแล้ว! */
+    display: flex;
+    justify-content: center; /* <<< เปลี่ยนจาก space-between เป็น center */
+    align-items: center; /* จัดแนวตั้งกึ่งกลาง */
+    flex-wrap: nowrap; /* ตรวจสอบให้แน่ใจว่าไม่ขึ้นบรรทัดใหม่ */
 }
 
-.header h1 {
-    font-size: 2em;
-    margin-bottom: 10px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    margin: 0; /* ลบ margin ที่ไม่จำเป็นออก */
-    font-size: 1.5em; /* ปรับขนาดสำหรับ h1 ใน header ของ profile */
+/* ถ้าใช้ตัวเลือกที่ 2 ใน HTML (มี <span> ภายใน <h1>) */
+.header h1 span {
+    font-weight: normal; /* ทำให้ "สตรีตั้งครรภ์" ตัวบางลง */
+    font-size: 0.8em; /* หรือปรับขนาดตามต้องการ */
+    opacity: 0.9;
+    margin-left: 10px; /* เพิ่มระยะห่างจากส่วนแรก */
 }
+
+/* ลบโค้ด header-left, header-right ที่เคยแนะนำไปก่อนหน้านี้ ถ้าไม่มีการใช้งานแล้ว */
+/* .header-left, .header-right { ... } */
 
 .header p {
     opacity: 0.9;
