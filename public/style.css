@@ -27,13 +27,13 @@ body {
 .header {
     background: linear-gradient(135deg, #ef78a0, #f897c1);
     color: white;
-    text-align: center;
+    /* text-align: center; <--- ลบออกไปเลยครับ ไม่จำเป็นเมื่อใช้ flexbox จัดวางซ้าย-ขวา */
     padding: 30px 20px;
-    font-size: 1.2em; /* ปรับ font-size ให้เข้ากับ Profile.html */
+    font-size: 1.2em;
     font-weight: bold;
-    display: flex; /* เพิ่ม display flex */
-    justify-content: space-between; /* จัดวางซ้าย-ขวา */
-    align-items: center; /* จัดแนวตั้งกึ่งกลาง */
+    display: flex; /* ดีแล้ว! */
+    justify-content: space-between; /* ดีแล้ว! */
+    align-items: center; /* ดีแล้ว! */
 }
 
 .header h1 {
