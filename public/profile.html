@@ -298,44 +298,41 @@
             try {
                 const url = '/.netlify/functions/apps-script-proxy';
                 const response = await fetch(url, {
-                 method: 'POST',
-                 headers: {
-                       'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({ action: 'getProfile', userId: userId })
-             });
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                 body: JSON.stringify({ action: 'getProfile', userId: userId })
+                });
 
-                if (!response.ok) {
-                    const errorDetails = await response.text();
-                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails}`);
-                }
+             if (!response.ok) {
+                  const errorDetails = await response.text();
+                   throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails}`);
+              }
 
-                const result = await response.json();
+             const result = await response.json();
                 console.log('Profile data from Netlify Function:', result);
 
-                // *** นี่คือส่วนที่แก้ไข ***
-                // เปลี่ยนการตรวจสอบ status เป็น 'profile_exists'
-                if (result.status === 'profile_exists' && result.profileData) {
-                    currentProfileData = result.profileData; // เก็บข้อมูลไว้
-                    displayProfileData(currentProfileData);
-                    document.getElementById('liffStatus').innerHTML = '✅ ดึงข้อมูลโปรไฟล์สำเร็จ';
-                    document.getElementById('liffStatus').className = 'liff-status liff-connected';
-                } else if (result.status === 'new_user' || result.status === 'error') {
-                    // ถ้าไม่พบข้อมูลโปรไฟล์ ให้แจ้งผู้ใช้และกลับไปหน้าลงทะเบียน
-                    console.error('Error fetching profile data:', result.message || 'No profile data found.');
-                    document.getElementById('liffStatus').innerHTML = '❌ ไม่พบข้อมูลโปรไฟล์ กรุณาลงทะเบียน';
-                    ocument.getElementById('liffStatus').className = 'liff-status liff-disconnected';
-                    setTimeout(() => {
-                        window.location.href = `index.html`;
-                    }, 3000);
-                } else {
-                    // กรณีอื่นๆ ที่ไม่คาดคิด
-                    throw new Error('Unexpected response status from server.');
-                }
-                } catch (error) {
-                    console.error('Error in getPatientProfileData:', error);
-                    document.getElementById('liffStatus').innerHTML = `❌ เกิดข้อผิดพลาดในการดึงข้อมูล: ${error.message}`;
-                }
+              if (result.status === 'profile_exists' && result.profileData) {
+                 currentProfileData = result.profileData;
+                 displayProfileData(currentProfileData);
+                 document.getElementById('liffStatus').innerHTML = '✅ ดึงข้อมูลโปรไฟล์สำเร็จ';
+                 document.getElementById('liffStatus').className = 'liff-status liff-connected';
+              } else if (result.status === 'new_user' || result.status === 'error') {
+                   console.error('Error fetching profile data:', result.message || 'No profile data found.');
+                 document.getElementById('liffStatus').innerHTML = '❌ ไม่พบข้อมูลโปรไฟล์ กรุณาลงทะเบียน';
+                 document.getElementById('liffStatus').className = 'liff-status liff-disconnected';
+                 setTimeout(() => {
+                      window.location.href = `index.html`;
+                  }, 3000);
+              } else {
+                  throw new Error('Unexpected response status from server.');
+              }
+          } catch (error) {
+             console.error('Error in getPatientProfileData:', error);
+              // แสดงข้อความ error ที่ชัดเจนขึ้น
+              document.getElementById('liffStatus').innerHTML = `❌ เกิดข้อผิดพลาดในการดึงข้อมูล: ${error.message || 'ไม่สามารถติดต่อเซิร์ฟเวอร์ได้'}`;
+          }
         }
 
         function displayProfileData(data) {
