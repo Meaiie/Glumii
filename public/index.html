@@ -325,9 +325,11 @@
                         document.getElementById('monday').dispatchEvent(event);
                     }
 
-                    document.getElementById('patientForm').style.display = 'block';
-                    // ไม่ต้อง redirect ไป Profile.html ทันที ให้ผู้ใช้แก้ไขได้เลย
-                    // liff.openWindow({ url: `Profile.html`, external: false });
+                    // document.getElementById('patientForm').style.display = 'block';
+                    liff.openWindow({
+                        url: `Profile.html`,
+                        external: false
+                            });
                 } else if (result.status === 'new_user') {
                     // ถ้าผู้ใช้ยังไม่เคยกรอก ให้แสดงฟอร์ม
                     document.getElementById('patientForm').style.display = 'block';
