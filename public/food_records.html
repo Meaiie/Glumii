@@ -397,31 +397,37 @@
             }
         }
 
+        // โค้ดที่ต้องแก้ไข
         document.addEventListener('DOMContentLoaded', () => {
             initializeLiff();
 
             // Navigation tab listeners
             document.getElementById('profileTab').addEventListener('click', (e) => {
                 e.preventDefault();
+                // เปลี่ยนมาใช้ window.location.href เพื่อเปลี่ยนหน้าในหน้าต่างเดิม
                 if (liff.isLoggedIn()) {
-                    liff.openWindow({ url: `${window.location.origin}/profile.html`, external: false });
-                } else {
+                 window.location.href = `${window.location.origin}/profile.html`;
+                 } else {
                     console.warn('LIFF not logged in, cannot open profile page.');
                 }
             });
+
             document.getElementById('foodRecordsTab').addEventListener('click', (e) => {
                 e.preventDefault();
-                // Already on this page, do nothing or re-fetch data
-                if (liff.isLoggedIn()) {
-                    liff.openWindow({ url: `${window.location.origin}/food_records.html`, external: false });
-                } else {
-                    console.warn('LIFF not logged in, cannot open food records page.');
+                // ถ้าอยู่ในหน้าปัจจุบันอยู่แล้ว ไม่ต้องโหลดใหม่
+                if (window.location.pathname !== '/food_records.html') {
+                    if (liff.isLoggedIn()) {
+                        window.location.href = `${window.location.origin}/food_records.html`;
+                    } else {
+                        console.warn('LIFF not logged in, cannot open food records page.');
+                    }
                 }
             });
+
             document.getElementById('sugarRecordsTab').addEventListener('click', (e) => {
                 e.preventDefault();
                 if (liff.isLoggedIn()) {
-                    liff.openWindow({ url: `${window.location.origin}/sugar_records.html`, external: false });
+                    window.location.href = `${window.location.origin}/sugar_records.html`;
                 } else {
                     console.warn('LIFF not logged in, cannot open sugar records page.');
                 }
@@ -431,10 +437,7 @@
             document.getElementById('addFoodRecordBtn').addEventListener('click', () => showFoodRecordForm());
             document.getElementById('cancelFoodRecordBtn').addEventListener('click', hideFoodRecordForm);
             document.getElementById('foodRecordForm').addEventListener('submit', handleSaveFoodRecord);
-
-            // Set default date and time for new records when the form is shown
-            // This is handled inside showFoodRecordForm now.
-        });
+            });
     </script>
 </body>
 </html>
