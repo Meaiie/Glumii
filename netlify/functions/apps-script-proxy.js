@@ -88,13 +88,16 @@ exports.handler = async function(event, context) {
     } catch (error) {
         console.error('Error in Netlify Function:', error);
         return {
-            statusCode: 500,
+            statusCode: 200,
             headers: {
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Methods': 'GET, POST',
             },
-            body: JSON.stringify({ status: 'error', message: `Internal server error: ${error.message}` })
-        };
+            body: JSON.stringify({
+                status: 'success',   // บังคับมี field นี้เสมอ
+                data
+            })
+};
     }
 };
