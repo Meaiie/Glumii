@@ -1,418 +1,456 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>บันทึกน้ำตาล - ระบบบันทึกข้อมูลคนไข้สตรีตั้งครรภ์</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บันทึกน้ำตาล - ระบบบันทึกข้อมูลคนไข้สตรีตั้งครรภ์</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-tint"></i> บันทึกระดับน้ำตาล <span>สำหรับคุณแม่ตั้งครรภ์</span></h1>
-            <div class="user-info">
-                สวัสดี, <span id="liffDisplayName">คุณแม่</span> <span>👩‍🦰</span>
-            </div>
-        </div>
-        
-        <div class="nav-tabs">
-            <a href="#" class="nav-tab" id="profileTab">
-                <i class="fas fa-user-alt"></i> ประวัติส่วนตัว
-            </a>
-            <a href="#" class="nav-tab" id="foodRecordsTab">
-                <i class="fas fa-utensils"></i> บันทึกอาหาร
-            </a>
-            <a href="#" class="nav-tab active" id="sugarRecordsTab">
-                <i class="fas fa-tint"></i> บันทึกน้ำตาล
-            </a>
-        </div>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-tint"></i> บันทึกระดับน้ำตาล <span>สำหรับคุณแม่ตั้งครรภ์</span></h1>
+            <div class="user-info">
+                สวัสดี, <span id="liffDisplayName">คุณแม่</span> <span>👩‍🦰</span>
+            </div>
+        </div>
+        
+        <div class="nav-tabs">
+            <a href="#" class="nav-tab" id="profileTab">
+                <i class="fas fa-user-alt"></i> ประวัติส่วนตัว
+            </a>
+            <a href="#" class="nav-tab" id="foodRecordsTab">
+                <i class="fas fa-utensils"></i> บันทึกอาหาร
+            </a>
+            <a href="#" class="nav-tab active" id="sugarRecordsTab">
+                <i class="fas fa-tint"></i> บันทึกน้ำตาล
+            </a>
+        </div>
 
-        <div class="record-container">
-            <div id="liffStatus" class="liff-status liff-disconnected">
-                🔄 กำลังเชื่อมต่อ LINE...
-            </div>
+        <div class="record-container">
+            <div id="liffStatus" class="liff-status liff-disconnected">
+                🔄 กำลังเชื่อมต่อ LINE...
+            </div>
 
-            <div class="record-form-section">
-                <div class="section-header">
-                    <h3 class="section-title">บันทึกระดับน้ำตาลในเลือด</h3>
-                </div>
-                
-                <form id="sugarRecordForm">
-                    <input type="hidden" id="editingRecordId" value=""> <div class="form-grid">
-                        <div class="form-group">
-                            <label for="recordDate">วันที่:</label>
-                            <input type="date" id="recordDate" name="record_date" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="recordTime">เวลา:</label>
-                            <input type="time" id="recordTime" name="record_time" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="pbsValue">ค่า PBS (mg/dL):</label>
-                            <input type="number" id="pbsValue" name="pbs_value" step="0.1" min="0" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="sugarFlag">สถานะ:</label>
-                            <select id="sugarFlag" name="sugar_flag" required>
-                                <option value="">เลือกสถานะ</option>
-                                <option value="ปกติ">ปกติ</option>
-                                <option value="ผิดปกติ">ผิดปกติ</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="button-group form-btns">
-                        <button type="button" id="cancelEditBtn" class="cancel-btn" style="display: none;">ยกเลิก</button>
-                        <button type="submit" id="saveSugarRecordBtn" class="save-btn">บันทึกข้อมูลน้ำตาล</button>
-                    </div>
-                </form>
+            <div class="record-form-section">
+                <div class="section-header">
+                    <h3 class="section-title">บันทึกระดับน้ำตาลในเลือด</h3>
+                </div>
+                
+                <form id="sugarRecordForm">
+                    <input type="hidden" id="editingRecordId" value=""> 
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="recordDate">วันที่:</label>
+                            <input type="date" id="recordDate" name="record_date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="recordTime">เวลา:</label>
+                            <input type="time" id="recordTime" name="record_time" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pbsValue">ค่า PBS (mg/dL):</label>
+                            <input type="number" id="pbsValue" name="pbs_value" step="0.1" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sugarFlag">สถานะ:</label>
+                            <select id="sugarFlag" name="sugar_flag" required>
+                                <option value="">เลือกสถานะ</option>
+                                <option value="ปกติ">ปกติ</option>
+                                <option value="ผิดปกติ">ผิดปกติ</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="button-group form-btns">
+                        <button type="button" id="cancelEditBtn" class="cancel-btn" style="display: none;">ยกเลิก</button>
+                        <button type="submit" id="saveSugarRecordBtn" class="save-btn">บันทึกข้อมูลน้ำตาล</button>
+                    </div>
+                </form>
 
-                <div class="loading" id="loading">⏳ กำลังดำเนินการ...</div>
-                <div class="success-message" id="successMessage">✅ บันทึกข้อมูลเรียบร้อยแล้ว!</div>
-                <div class="error-message" id="errorMessage">❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง</div>
-            </div>
+                <div class="loading" id="loading">⏳ กำลังดำเนินการ...</div>
+                <div class="success-message" id="successMessage">✅ บันทึกข้อมูลเรียบร้อยแล้ว!</div>
+                <div class="error-message" id="errorMessage">❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง</div>
+            </div>
 
-            <div class="records-display-section">
-                <div class="section-header">
-                    <h3 class="section-title">ประวัติบันทึกน้ำตาล</h3>
-                </div>
-                <div class="records-table-wrapper">
-                    <table id="sugarRecordsTable">
-                        <thead>
-                            <tr>
-                                <th>วันที่</th>
-                                <th>เวลา</th>
-                                <th>ค่า PBS (mg/dL)</th>
-                                <th>สถานะ</th>
-                                <th>ดำเนินการ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="sugarRecordsTableBody">
-                            </tbody>
-                    </table>
-                    </div>
-            </div>
-        </div>
-    </div>
+            <div class="records-display-section">
+                <div class="section-header">
+                    <h3 class="section-title">ประวัติบันทึกน้ำตาล</h3>
+                </div>
+                <div class="records-table-wrapper">
+                    <table id="sugarRecordsTable">
+                        <thead>
+                            <tr>
+                                <th>วันที่</th>
+                                <th>เวลา</th>
+                                <th>ค่า PBS (mg/dL)</th>
+                                <th>สถานะ</th>
+                                <th>ดำเนินการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sugarRecordsTableBody">
+                            </tbody>
+                    </table>
+                    </div>
+            </div>
+        </div>
+    </div>
 
-    <div class="modal-overlay" id="confirmationModal">
-        <div class="modal-content">
-            <p>ยืนยันการดำเนินการ</p>
-            <p>คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้?</p>
-            <div class="modal-actions">
-                <button class="cancel-btn" id="modalCancelBtn">ยกเลิก</button>
-                <button class="confirm-btn" id="modalConfirmBtn">ยืนยัน</button>
-            </div>
-        </div>
-    </div>
+    <div class="modal-overlay" id="confirmationModal">
+        <div class="modal-content">
+            <p>ยืนยันการดำเนินการ</p>
+            <p>คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้?</p>
+            <div class="modal-actions">
+                <button class="cancel-btn" id="modalCancelBtn">ยกเลิก</button>
+                <button class="confirm-btn" id="modalConfirmBtn">ยืนยัน</button>
+            </div>
+        </div>
+    </div>
 
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <script>
-        // LIFF Config
-        let isLiffReady = false;
-        let liffUserId = null;
-        let userDisplayName = 'คุณแม่';
-        const appsScriptUrl = '/.netlify/functions/apps-script-proxy'; 
-        let currentRecords = []; // เก็บข้อมูลบันทึกทั้งหมดที่ดึงมา
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        // LIFF Config
+        let isLiffReady = false;
+        let liffUserId = null;
+        let userDisplayName = 'คุณแม่';
+        // URL สำหรับเรียกใช้ Netlify Function ที่เป็น Proxy ไปยัง Apps Script
+        const appsScriptUrl = '/.netlify/functions/apps-script-proxy'; 
+        let currentRecords = []; // เก็บข้อมูลบันทึกทั้งหมดที่ดึงมา
 
-        // --- Helper Functions ---
-        function formatDate(isoString) {
-            if (!isoString) return 'N/A';
-            const date = new Date(isoString);
-            return date.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
-        }
+        // --- Helper Functions ---
+        
+        /**
+        * แปลง ISO String เป็นรูปแบบวันที่ภาษาไทยสำหรับแสดงผล
+        * @param {string} isoString - ISO Date String (e.g., YYYY-MM-DDTHH:MM:SS.SSSZ)
+        */
+        function formatDate(isoString) {
+            if (!isoString) return 'N/A';
+            const date = new Date(isoString);
+            // ตรวจสอบว่าวันที่ถูกต้องหรือไม่
+            if (isNaN(date.getTime())) return 'วันที่ไม่ถูกต้อง';
+            return date.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
 
-        function formatTime(isoString) {
-            if (!isoString) return 'N/A';
-            const date = new Date(isoString);
-            return date.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false });
-        }
+        /**
+        * แปลง ISO String เป็นรูปแบบเวลา (HH:MM) สำหรับแสดงผล
+        * @param {string} isoString - ISO Date String (e.g., YYYY-MM-DDTHH:MM:SS.SSSZ)
+        */
+        function formatTime(isoString) {
+            if (!isoString) return 'N/A';
+            const date = new Date(isoString);
+            // ตรวจสอบว่าวันที่ถูกต้องหรือไม่
+            if (isNaN(date.getTime())) return 'เวลาไม่ถูกต้อง';
+            return date.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false });
+        }
 
-        function displayMessage(type, message) {
-            // ซ่อนข้อความทั้งหมด
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('successMessage').style.display = 'none';
-            document.getElementById('errorMessage').style.display = 'none';
+        function displayMessage(type, message) {
+            // ซ่อนข้อความทั้งหมด
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
 
-            // แสดงเฉพาะข้อความที่ต้องการ
-            const targetElement = document.getElementById(type + 'Message');
-            if (targetElement) {
-                targetElement.innerHTML = (type === 'error' ? '❌ ' : '✅ ') + message;
-                targetElement.style.display = 'block';
-                if (type !== 'loading') {
-                    setTimeout(() => targetElement.style.display = 'none', 5000);
-                }
-            }
-        }
-
-
-        // --- LIFF Initialization ---
-
-        async function initializeLiff() {
-            try {
-                // IMPORTANT: ใช้ LIFF ID ของคุณ
-                await liff.init({ liffId: "2007493917-XdpdZalP" }); 
-                
-                if (!liff.isLoggedIn()) {
-                    liff.login();
-                } else {
-                    isLiffReady = true;
-                    document.getElementById('liffStatus').className = 'liff-status liff-connected';
-                    document.getElementById('liffStatus').innerHTML = '✅ เชื่อมต่อ LINE สำเร็จ';
-                    
-                    const profile = await liff.getProfile();
-                    liffUserId = profile.userId;
-                    userDisplayName = profile.displayName || 'คุณแม่';
-                    document.getElementById('liffDisplayName').innerText = userDisplayName;
-
-                    // ดึงข้อมูลเมื่อเชื่อมต่อสำเร็จ
-                    await fetchSugarRecords(liffUserId);
-                }
-            } catch (error) {
-                console.error('LIFF initialization failed:', error);
-                document.getElementById('liffStatus').innerHTML = '❌ ไม่สามารถเชื่อมต่อ LINE ได้';
-                document.getElementById('liffStatus').className = 'liff-status liff-disconnected';
-            }
-        }
-
-        // --- Fetch Records ---
-
-        async function fetchSugarRecords(userId) {
-            console.log('Fetching sugar records for userId:', userId);
-            const recordsTableBody = document.getElementById('sugarRecordsTableBody');
-            recordsTableBody.innerHTML = '<tr><td colspan="5" class="loading">🔄 กำลังดึงข้อมูลบันทึกน้ำตาล...</td></tr>';
-
-            try {
-                const response = await fetch(appsScriptUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'getSugarRecords', userId: userId })
-                });
-
-                if (!response.ok) {
-                    const errorDetails = await response.text();
-                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails}`);
-                }
-
-                const result = await response.json();
-                console.log('Sugar records data from Netlify Function:', result);
-
-                recordsTableBody.innerHTML = ''; // ล้างข้อมูลเดิม
-
-                if (result.status === 'success' && result.records && result.records.length > 0) {
-                    currentRecords = result.records; // เก็บข้อมูลที่ดึงมา
-                    
-                    // สร้างตาราง
-                    result.records.forEach(record => {
-                        const tr = document.createElement('tr');
-                        
-                        // ตรวจสอบและกำหนด class ตามสถานะน้ำตาล
-                        const statusClass = record.sugarFlag === 'ปกติ' ? 'sugar-flag-normal' : 'sugar-flag-abnormal';
-                        
-                        tr.innerHTML = `
-                            <td>${formatDate(record.datetime)}</td>
-                            <td>${formatTime(record.datetime)}</td>
-                            <td>${(record.pbs || 'N/A')}</td>
-                            <td><span class="${statusClass}">${record.sugarFlag || 'N/A'}</span></td>
-                            <td class="actions-cell">
-                                <button type="button" class="icon-btn edit-record-btn" onclick="editSugarRecord('${record.recordId}')"><i class="fas fa-edit"></i></button>
-                                <button type="button" class="icon-btn delete-record-btn" onclick="showDeleteConfirmation('${record.recordId}')"><i class="fas fa-trash-alt"></i></button>
-                            </td>
-                        `;
-                        recordsTableBody.appendChild(tr);
-                    });
-                } else {
-                    // แสดงข้อความ 'ยังไม่มีข้อมูล'
-                    recordsTableBody.innerHTML = '<tr><td colspan="5" class="no-data-message">ยังไม่มีข้อมูลบันทึกน้ำตาล</td></tr>';
-                }
-
-            } catch (error) {
-                console.error('Error fetching sugar records:', error);
-                recordsTableBody.innerHTML = '<tr><td colspan="5" class="error-message">❌ ไม่สามารถดึงข้อมูลบันทึกน้ำตาลได้</td></tr>';
-            }
-        }
-
-        // --- Save / Update Record ---
-
-        async function handleSaveSugarRecord(event) {
-            event.preventDefault();
-
-            if (!isLiffReady || !liffUserId) {
-                displayMessage('error', 'กรุณารอการเชื่อมต่อ LIFF ให้สมบูรณ์');
-                return;
-            }
-
-            const form = event.target;
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                displayMessage('error', 'กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
-                return;
-            }
-
-            displayMessage('loading', 'กำลังบันทึกข้อมูล...');
-
-            const recordDate = document.getElementById('recordDate').value;
-            const recordTime = document.getElementById('recordTime').value;
-            const pbsValue = document.getElementById('pbsValue').value;
-            const sugarFlag = document.getElementById('sugarFlag').value;
-            const editingRecordId = document.getElementById('editingRecordId').value;
-            
-            const action = editingRecordId ? 'updateSugarRecord' : 'addSugarRecord';
-            const dateTimeCombined = `${recordDate}T${recordTime}:00`; 
-
-            const data = {
-                action: action,
-                userId: liffUserId,
-                datetime: dateTimeCombined,
-                pbs: parseFloat(pbsValue),
-                sugarFlag: sugarFlag,
-                ...(editingRecordId && { recordId: editingRecordId }) // เพิ่ม recordId ในโหมด update
-            };
-
-            try {
-                const response = await fetch(appsScriptUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-
-                if (!response.ok) {
-                    const errorDetails = await response.text();
-                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails}`);
-                }
-
-                const result = await response.json();
-                displayMessage('loading', '');
-
-                if (result.status === 'success') {
-                    displayMessage('success', `${action === 'updateSugarRecord' ? 'แก้ไข' : 'บันทึก'} ข้อมูลเรียบร้อยแล้ว!`);
-                    form.reset(); 
-                    document.getElementById('editingRecordId').value = '';
-                    document.getElementById('saveSugarRecordBtn').innerText = 'บันทึกข้อมูลน้ำตาล';
-                    document.getElementById('cancelEditBtn').style.display = 'none';
-                    await fetchSugarRecords(liffUserId); 
-                } else {
-                    displayMessage('error', `เกิดข้อผิดพลาด: ${result.message || 'ไม่สามารถดำเนินการได้'}`);
-                }
-
-            } catch (error) {
-                console.error('Error saving/updating sugar record:', error);
-                displayMessage('error', `เกิดข้อผิดพลาดในการเชื่อมต่อ: ${error.message}`);
-            }
-        }
-
-        // --- Edit Record ---
-
-        function editSugarRecord(recordId) {
-            const record = currentRecords.find(r => r.recordId === recordId);
-            if (!record) {
-                console.error('Record not found for editing:', recordId);
-                return;
-            }
-
-            // แยกวันที่และเวลาออกจาก ISO String (YYYY-MM-DDTHH:MM:SS)
-            const parts = record.datetime.split('T');
-            const datePart = parts[0];
-            const timePart = parts[1] ? parts[1].substring(0, 5) : ''; // ตัดให้เหลือ HH:MM
-
-            document.getElementById('editingRecordId').value = record.recordId;
-            document.getElementById('recordDate').value = datePart;
-            document.getElementById('recordTime').value = timePart;
-            document.getElementById('pbsValue').value = record.pbs;
-            document.getElementById('sugarFlag').value = record.sugarFlag;
-
-            document.getElementById('saveSugarRecordBtn').innerText = 'บันทึกการแก้ไข';
-            document.getElementById('cancelEditBtn').style.display = 'inline-block';
-            
-            // เลื่อนหน้าจอไปที่ฟอร์ม
-            document.getElementById('sugarRecordForm').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function cancelEdit() {
-            document.getElementById('sugarRecordForm').reset();
-            document.getElementById('editingRecordId').value = '';
-            document.getElementById('saveSugarRecordBtn').innerText = 'บันทึกข้อมูลน้ำตาล';
-            document.getElementById('cancelEditBtn').style.display = 'none';
-        }
-
-        // --- Delete Record (Confirmation Modal) ---
-
-        let recordIdToDelete = null;
-
-        function showDeleteConfirmation(recordId) {
-            recordIdToDelete = recordId;
-            document.getElementById('confirmationModal').classList.add('active');
-        }
-
-        async function confirmDelete() {
-            if (!recordIdToDelete || !liffUserId) return;
-
-            document.getElementById('confirmationModal').classList.remove('active');
-            displayMessage('loading', 'กำลังลบข้อมูล...');
-            
-            try {
-                const response = await fetch(appsScriptUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'deleteSugarRecord', userId: liffUserId, recordId: recordIdToDelete })
-                });
-
-                if (!response.ok) throw new Error('Failed to delete record from server.');
-
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    displayMessage('success', 'ลบข้อมูลเรียบร้อยแล้ว!');
-                    await fetchSugarRecords(liffUserId); // Refresh list
-                } else {
-                    displayMessage('error', `ลบไม่สำเร็จ: ${result.message || 'เกิดข้อผิดพลาดในการลบ'}`);
-                }
-
-            } catch (error) {
-                console.error('Error deleting record:', error);
-                displayMessage('error', `เกิดข้อผิดพลาดในการลบ: ${error.message}`);
-            } finally {
-                recordIdToDelete = null;
-            }
-        }
-
-        function cancelDelete() {
-            document.getElementById('confirmationModal').classList.remove('active');
-            recordIdToDelete = null;
-        }
+            // แสดงเฉพาะข้อความที่ต้องการ
+            const targetElement = document.getElementById(type + 'Message');
+            if (targetElement) {
+                targetElement.innerHTML = (type === 'error' ? '❌ ' : '✅ ') + message;
+                targetElement.style.display = 'block';
+                if (type !== 'loading') {
+                    setTimeout(() => targetElement.style.display = 'none', 5000);
+                }
+            }
+        }
 
 
-        // --- Event Listeners ---
+        // --- LIFF Initialization ---
 
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeLiff();
+        async function initializeLiff() {
+            try {
+                // IMPORTANT: ใช้ LIFF ID ของคุณ
+                await liff.init({ liffId: "2007493917-XdpdZalP" }); 
+                
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                } else {
+                    isLiffReady = true;
+                    document.getElementById('liffStatus').className = 'liff-status liff-connected';
+                    document.getElementById('liffStatus').innerHTML = '✅ เชื่อมต่อ LINE สำเร็จ';
+                    
+                    const profile = await liff.getProfile();
+                    liffUserId = profile.userId;
+                    userDisplayName = profile.displayName || 'คุณแม่';
+                    document.getElementById('liffDisplayName').innerText = userDisplayName;
 
-            // Set default date to today
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('recordDate').value = today;
+                    // ดึงข้อมูลเมื่อเชื่อมต่อสำเร็จ
+                    await fetchSugarRecords(liffUserId);
+                }
+            } catch (error) {
+                console.error('LIFF initialization failed:', error);
+                document.getElementById('liffStatus').innerHTML = '❌ ไม่สามารถเชื่อมต่อ LINE ได้';
+                document.getElementById('liffStatus').className = 'liff-status liff-disconnected';
+            }
+        }
 
-            // Form submission
-            document.getElementById('sugarRecordForm').addEventListener('submit', handleSaveSugarRecord);
-            document.getElementById('cancelEditBtn').addEventListener('click', cancelEdit);
+        // --- Fetch Records ---
 
-            // Modal listeners
-            document.getElementById('modalConfirmBtn').addEventListener('click', confirmDelete);
-            document.getElementById('modalCancelBtn').addEventListener('click', cancelDelete);
-            document.getElementById('confirmationModal').addEventListener('click', (e) => {
-                if (e.target.id === 'confirmationModal') cancelDelete();
-            });
+        async function fetchSugarRecords(userId) {
+            console.log('Fetching sugar records for userId:', userId);
+            const recordsTableBody = document.getElementById('sugarRecordsTableBody');
+            recordsTableBody.innerHTML = '<tr><td colspan="5" class="loading">🔄 กำลังดึงข้อมูลบันทึกน้ำตาล...</td></tr>';
 
-            // Navigation tab listeners (Same as before)
-            document.getElementById('profileTab').addEventListener('click', (e) => {
-                e.preventDefault();
-                window.location.href = `${window.location.origin}/profile.html`;
-            });
-            document.getElementById('foodRecordsTab').addEventListener('click', (e) => {
-                e.preventDefault();
-                window.location.href = `${window.location.origin}/food_records.html`;
-            });
-            // sugarRecordsTab ไม่ต้องทำอะไร เพราะเราอยู่ที่หน้านี้แล้ว
-        });
-    </script>
+            try {
+                // ใช้ Netlify Function Proxy ในการเรียก Apps Script
+                const response = await fetch(appsScriptUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'getSugarRecords', userId: userId })
+                });
+
+                if (!response.ok) {
+                    const errorDetails = await response.text();
+                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails}`);
+                }
+
+                const result = await response.json();
+                console.log('Sugar records data from Netlify Function:', result);
+
+                recordsTableBody.innerHTML = ''; // ล้างข้อมูลเดิม
+
+                if (result.status === 'success' && result.records && result.records.length > 0) {
+                    currentRecords = result.records; // เก็บข้อมูลที่ดึงมา
+                    
+                    // สร้างตาราง
+                    result.records.forEach(record => {
+                        const tr = document.createElement('tr');
+                        
+                        // ตรวจสอบและกำหนด class ตามสถานะน้ำตาล
+                        const statusClass = record.sugarFlag === 'ปกติ' ? 'sugar-flag-normal' : 'sugar-flag-abnormal';
+                        
+                        tr.innerHTML = `
+                            <td>${formatDate(record.datetime)}</td>
+                            <td>${formatTime(record.datetime)}</td>
+                            <td>${(record.pbs || 'N/A')}</td>
+                            <td><span class="${statusClass}">${record.sugarFlag || 'N/A'}</span></td>
+                            <td class="actions-cell">
+                                <button type="button" class="icon-btn edit-record-btn" onclick="editSugarRecord('${record.recordId}')"><i class="fas fa-edit"></i></button>
+                                <button type="button" class="icon-btn delete-record-btn" onclick="showDeleteConfirmation('${record.recordId}')"><i class="fas fa-trash-alt"></i></button>
+                            </td>
+                        `;
+                        recordsTableBody.appendChild(tr);
+                    });
+                } else {
+                    // แสดงข้อความ 'ยังไม่มีข้อมูล'
+                    recordsTableBody.innerHTML = '<tr><td colspan="5" class="no-data-message">ยังไม่มีข้อมูลบันทึกน้ำตาล</td></tr>';
+                }
+
+            } catch (error) {
+                console.error('Error fetching sugar records:', error);
+                recordsTableBody.innerHTML = '<tr><td colspan="5" class="error-message">❌ ไม่สามารถดึงข้อมูลบันทึกน้ำตาลได้</td></tr>';
+            }
+        }
+
+        // --- Save / Update Record ---
+
+        async function handleSaveSugarRecord(event) {
+            event.preventDefault();
+
+            if (!isLiffReady || !liffUserId) {
+                displayMessage('error', 'กรุณารอการเชื่อมต่อ LIFF ให้สมบูรณ์');
+                return;
+            }
+
+            const form = event.target;
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                displayMessage('error', 'กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
+                return;
+            }
+
+            displayMessage('loading', 'กำลังบันทึกข้อมูล...');
+
+            const recordDate = document.getElementById('recordDate').value;
+            const recordTime = document.getElementById('recordTime').value;
+            const pbsValue = document.getElementById('pbsValue').value;
+            const sugarFlag = document.getElementById('sugarFlag').value;
+            const editingRecordId = document.getElementById('editingRecordId').value;
+            
+            const action = editingRecordId ? 'updateSugarRecord' : 'addSugarRecord';
+            // รวมวันที่และเวลาในรูปแบบ YYYY-MM-DDTHH:MM:00 ซึ่งเป็น ISO 8601 string ที่ถูกต้อง
+            const dateTimeCombined = `${recordDate}T${recordTime}:00`; 
+
+            const data = {
+                action: action,
+                userId: liffUserId,
+                datetime: dateTimeCombined,
+                pbs: parseFloat(pbsValue),
+                sugarFlag: sugarFlag,
+                ...(editingRecordId && { recordId: editingRecordId }) // เพิ่ม recordId ในโหมด update
+            };
+
+            try {
+                const response = await fetch(appsScriptUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const errorDetails = await response.text();
+                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails}`);
+                }
+
+                const result = await response.json();
+                displayMessage('loading', '');
+
+                if (result.status === 'success') {
+                    displayMessage('success', `${action === 'updateSugarRecord' ? 'แก้ไข' : 'บันทึก'} ข้อมูลเรียบร้อยแล้ว!`);
+                    form.reset(); 
+                    document.getElementById('editingRecordId').value = '';
+                    document.getElementById('saveSugarRecordBtn').innerText = 'บันทึกข้อมูลน้ำตาล';
+                    document.getElementById('cancelEditBtn').style.display = 'none';
+                    await fetchSugarRecords(liffUserId); 
+                } else {
+                    displayMessage('error', `เกิดข้อผิดพลาด: ${result.message || 'ไม่สามารถดำเนินการได้'}`);
+                }
+
+            } catch (error) {
+                console.error('Error saving/updating sugar record:', error);
+                displayMessage('error', `เกิดข้อผิดพลาดในการเชื่อมต่อ: ${error.message}`);
+            }
+        }
+
+        // --- Edit Record ---
+
+        function editSugarRecord(recordId) {
+            const record = currentRecords.find(r => r.recordId === recordId);
+            if (!record) {
+                console.error('Record not found for editing:', recordId);
+                return;
+            }
+
+            // *** แก้ไขส่วนนี้เพื่อใช้ Date Object ในการแยก วันที่และเวลาที่ถูกต้องสำหรับ Input ***
+            const dateObj = new Date(record.datetime);
+
+            if (isNaN(dateObj.getTime())) {
+                console.error('Cannot parse datetime string for editing:', record.datetime);
+                displayMessage('error', 'ไม่สามารถอ่านค่าวันที่/เวลาสำหรับการแก้ไขได้');
+                return;
+            }
+
+            // 1. Date part (YYYY-MM-DD) - ต้องเป็นรูปแบบนี้เป๊ะๆ สำหรับ input type="date"
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const datePart = `${year}-${month}-${day}`;
+
+            // 2. Time part (HH:MM) - ต้องเป็นรูปแบบ 24 ชม. สำหรับ input type="time"
+            const hours = String(dateObj.getHours()).padStart(2, '0');
+            const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+            const timePart = `${hours}:${minutes}`;
+
+            document.getElementById('editingRecordId').value = record.recordId;
+            document.getElementById('recordDate').value = datePart; // กำหนดค่า YYYY-MM-DD
+            document.getElementById('recordTime').value = timePart; // กำหนดค่า HH:MM
+            document.getElementById('pbsValue').value = record.pbs;
+            document.getElementById('sugarFlag').value = record.sugarFlag;
+
+            document.getElementById('saveSugarRecordBtn').innerText = 'บันทึกการแก้ไข';
+            document.getElementById('cancelEditBtn').style.display = 'inline-block';
+            
+            // เลื่อนหน้าจอไปที่ฟอร์ม
+            document.getElementById('sugarRecordForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelEdit() {
+            document.getElementById('sugarRecordForm').reset();
+            document.getElementById('editingRecordId').value = '';
+            document.getElementById('saveSugarRecordBtn').innerText = 'บันทึกข้อมูลน้ำตาล';
+            document.getElementById('cancelEditBtn').style.display = 'none';
+            // Set default date to today after reset
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('recordDate').value = today;
+        }
+
+        // --- Delete Record (Confirmation Modal) ---
+
+        let recordIdToDelete = null;
+
+        function showDeleteConfirmation(recordId) {
+            recordIdToDelete = recordId;
+            document.getElementById('confirmationModal').classList.add('active');
+        }
+
+        async function confirmDelete() {
+            if (!recordIdToDelete || !liffUserId) return;
+
+            document.getElementById('confirmationModal').classList.remove('active');
+            displayMessage('loading', 'กำลังลบข้อมูล...');
+            
+            try {
+                // ใช้ Netlify Function Proxy ในการเรียก Apps Script
+                const response = await fetch(appsScriptUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'deleteSugarRecord', userId: liffUserId, recordId: recordIdToDelete })
+                });
+
+                if (!response.ok) throw new Error('Failed to delete record from server.');
+
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    displayMessage('success', 'ลบข้อมูลเรียบร้อยแล้ว!');
+                    await fetchSugarRecords(liffUserId); // Refresh list
+                } else {
+                    displayMessage('error', `ลบไม่สำเร็จ: ${result.message || 'เกิดข้อผิดพลาดในการลบ'}`);
+                }
+
+            } catch (error) {
+                console.error('Error deleting record:', error);
+                displayMessage('error', `เกิดข้อผิดพลาดในการลบ: ${error.message}`);
+            } finally {
+                recordIdToDelete = null;
+            }
+        }
+
+        function cancelDelete() {
+            document.getElementById('confirmationModal').classList.remove('active');
+            recordIdToDelete = null;
+        }
+
+
+        // --- Event Listeners ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeLiff();
+
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('recordDate').value = today;
+
+            // Form submission
+            document.getElementById('sugarRecordForm').addEventListener('submit', handleSaveSugarRecord);
+            document.getElementById('cancelEditBtn').addEventListener('click', cancelEdit);
+
+            // Modal listeners
+            document.getElementById('modalConfirmBtn').addEventListener('click', confirmDelete);
+            document.getElementById('modalCancelBtn').addEventListener('click', cancelDelete);
+            document.getElementById('confirmationModal').addEventListener('click', (e) => {
+                if (e.target.id === 'confirmationModal') cancelDelete();
+            });
+
+            // Navigation tab listeners (Same as before)
+            document.getElementById('profileTab').addEventListener('click', (e) => {
+                e.preventDefault();
+                // สมมติว่าไฟล์ profile.html อยู่ใน path เดียวกัน
+                window.location.href = `${window.location.origin}/profile.html`;
+            });
+            document.getElementById('foodRecordsTab').addEventListener('click', (e) => {
+                e.preventDefault();
+                // สมมติว่าไฟล์ food_records.html อยู่ใน path เดียวกัน
+                window.location.href = `${window.location.origin}/food_records.html`;
+            });
+            // sugarRecordsTab ไม่ต้องทำอะไร เพราะเราอยู่ที่หน้านี้แล้ว
+        });
+    </script>
 </body>
 </html>
