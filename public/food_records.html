@@ -388,7 +388,7 @@
                             <th>วันที่</th>
                             <th>มื้อ</th>
                             <th>เมนู</th>
-                            <th>คาร์บ/th>
+                            <th>คาร์บ</th>
                             <th>       </th>
                         </tr>
                     </thead>
@@ -564,7 +564,7 @@
                 
                 const formattedDate = new Intl.DateTimeFormat('th-TH', dateOptions).format(dateTime);
                 const formattedTime = new Intl.DateTimeFormat('th-TH', timeOptions).format(dateTime);
-                const formattedDateTime = `${formattedDate} ${formattedTime} น.`;
+                const formattedDateTime = `${formattedDate}`;
 
 
                 row.insertCell(0).innerText = formattedDateTime;
