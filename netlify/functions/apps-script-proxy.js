@@ -2,7 +2,6 @@
 const fetch = require('node-fetch');
 
 exports.handler = async function(event, context) {
-    // ดึง URL ของ Google Apps Script Web App จาก Environment Variables
     const googleAppsScriptUrl = process.env.GOOGLE_APPS_SCRIPT_URL;
 
     if (!googleAppsScriptUrl) {
@@ -14,11 +13,14 @@ exports.handler = async function(event, context) {
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
             },
-            body: JSON.stringify({ status: 'error', message: 'Server configuration error: Google Apps Script URL is missing.' }),
+            body: JSON.stringify({ 
+                status: 'error', 
+                message: 'Server configuration error: Google Apps Script URL is missing.' 
+            }),
         };
     }
-                                        
-    // จัดการ Preflight request (OPTIONS)
+
+    // Preflight
     if (event.httpMethod === 'OPTIONS') {
         return {
             statusCode: 200,
@@ -32,72 +34,69 @@ exports.handler = async function(event, context) {
     }
 
     try {
-        const requestMethod = event.httpMethod;
-        let requestBody = {};
-        let fetchOptions = {
-            method: requestMethod,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        };
+        const method = event.httpMethod;
         let targetUrl = googleAppsScriptUrl;
+        let fetchOptions = {
+            method,
+            headers: { 'Content-Type': 'application/json' }
+        };
 
-        if (requestMethod === 'POST') {
-            if (!event.body) {
-                throw new Error('POST request body is empty.');
-            }
-            requestBody = JSON.parse(event.body);
-            fetchOptions.body = JSON.stringify(requestBody);
-        } else if (requestMethod === 'GET') {
+        if (method === 'POST') {
+            if (!event.body) throw new Error('POST request body is empty.');
+            fetchOptions.body = event.body;
+        } else if (method === 'GET') {
             if (event.queryStringParameters) {
-                const queryString = new URLSearchParams(event.queryStringParameters).toString();
-                targetUrl = `${googleAppsScriptUrl}?${queryString}`;
+                const q = new URLSearchParams(event.queryStringParameters).toString();
+                targetUrl = `${googleAppsScriptUrl}?${q}`;
             }
         }
 
-        console.log(`Forwarding ${requestMethod} request to Google Apps Script.`);
-        console.log('Target URL:', targetUrl);
-        if (requestMethod === 'POST') {
-            console.log('Request Body:', requestBody);
-        }
+        console.log(`Forwarding ${method} to GAS:`, targetUrl);
 
         const response = await fetch(targetUrl, fetchOptions);
+        const dataText = await response.text();
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`Error from Apps Script: ${response.status} - ${errorText}`);
-            throw new Error(`Google Apps Script responded with status ${response.status}: ${errorText}`);
+        let data;
+        try {
+            data = JSON.parse(dataText);
+        } catch (e) {
+            throw new Error(`Response is not JSON: ${dataText}`);
         }
 
-        const data = await response.json();
+        if (!response.ok) {
+            console.error('Apps Script Error:', data);
+            return {
+                statusCode: response.status,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                },
+                body: JSON.stringify({
+                    status: 'error',
+                    message: data.message || 'Apps Script error',
+                    details: data
+                })
+            };
+        }
 
-        console.log('Successfully received data from Google Apps Script:', data);
-
-        // *** นี่คือส่วนที่แก้ไข ***
-        // ส่ง response จาก Apps Script กลับไปให้หน้าบ้านโดยตรง
-        return {
-            statusCode: response.status,
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Methods': 'GET, POST',
-            },
-            body: JSON.stringify(data) // ส่ง Object ที่ได้รับจาก Apps Script กลับไปเลย
-        };
-
-    } catch (error) {
-        console.error('Error in Netlify Function:', error);
         return {
             statusCode: 200,
             headers: {
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Methods': 'GET, POST',
+            },
+            body: JSON.stringify(data)
+        };
+
+    } catch (error) {
+        console.error('Error in Netlify Function:', error.message);
+        return {
+            statusCode: 500,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
             },
             body: JSON.stringify({
-                status: 'success',   // บังคับมี field นี้เสมอ
-                data
+                status: 'error',
+                message: error.message
             })
-};
+        };
     }
 };
