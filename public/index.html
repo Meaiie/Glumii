@@ -436,7 +436,7 @@
                 const result = await response.json();
                 console.log('Server response from Netlify Function (saveData):', result);
 
-                if (result.status === 'success') {
+                if (result.success) {
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('successMessage').style.display = 'block';
                     console.log('✅ ข้อมูลบันทึกสำเร็จ!');
