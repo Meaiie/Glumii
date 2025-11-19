@@ -1,554 +1,488 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบบันทึกข้อมูลคนไข้สตรีตั้งครรภ์</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบบันทึกข้อมูลคนไข้สตรีตั้งครรภ์</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>ระบบบันทึกข้อมูลคนไข้สตรีตั้งครรภ์</h1>
-        </div>
-        
-        <div class="form-container">
-            <div id="liffStatus" class="liff-status liff-disconnected">
-                🔄 กำลังเชื่อมต่อ LINE...
-            </div>
-            
-            <form id="patientForm" style="display: none;"> 
-                <div class="form-section">
-                    <h3 class="section-title">ข้อมูลส่วนตัว</h3>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="full_name">ชื่อ-นามสกุล *</label>
-                            <input type="text" id="full_name" name="full_name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="nickname">ชื่อเล่น *</label>
-                            <input type="text" id="nickname" name="nickname" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="hospital_id">รหัสโรงพยาบาล *</label>
-                            <input type="text" id="hospital_id" name="hospital_id" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="national_id">เลขบัตรประชาชน *</label>
-                            <input type="text" id="national_id" name="national_id" pattern="[0-9]{13}" maxlength="13" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="birth_date">วันเกิด *</label>
-                            <input type="date" id="birth_date" name="birth_date" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="height">ส่วนสูง (ซม.) *</label>
-                            <input type="number" id="height" name="height" min="100" max="200" required>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-section">
-                    <h3 class="section-title">ข้อมูลสุขภาพ</h3>
-                    
-                    <div class="form-group full-width">
-                        <label>โรคประจำตัว *</label>
-                        <div class="radio-group">
-                            <div class="radio-item">
-                                <input type="radio" id="chronicDiseaseNo" name="chronicDisease" value="ไม่มี" required>
-                                <label for="chronicDiseaseNo">ไม่มี</label>
-                            </div>
-                            <div class="radio-item">
-                                <input type="radio" id="chronicDiseaseYes" name="chronicDisease" value="มี" required>
-                                <label for="chronicDiseaseYes">มี</label>
-                            </div>
-                        </div>
-                        <div class="conditional-input" id="chronicDiseaseDetail"> 
-                                                        <input type="text" id="comorbidities" name="comorbidities" placeholder="ระบุโรคประจำตัว">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group full-width">
-                        <label>ยาที่ใช้ก่อนตั้งครรภ์ *</label>
-                        <div class="radio-group">
-                            <div class="radio-item">
-                                <input type="radio" id="medicationNo" name="medication" value="ไม่มี" required>
-                                <label for="medicationNo">ไม่มี</label>
-                            </div>
-                            <div class="radio-item">
-                                <input type="radio" id="medicationYes" name="medication" value="มี" required>
-                                <label for="medicationYes">มี</label>
-                            </div>
-                        </div>
-                        <div class="conditional-input" id="medicationDetail">
-                                                        <textarea id="pre_pregnancy_medications" name="pre_pregnancy_medications" rows="3" placeholder="ระบุยาที่ใช้"></textarea>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="pre_pregnancy_weight">น้ำหนักก่อนตั้งครรภ์ (กก.) *</label>
-                            <input type="number" id="pre_pregnancy_weight" name="pre_pregnancy_weight" min="30" max="150" step="0.1" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="weight">น้ำหนักปัจจุบัน (กก.) *</label>
-                            <input type="number" id="weight" name="weight" min="30" max="150" step="0.1" required>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-section">
-                    <h3 class="section-title">ข้อมูลการตั้งครรภ์</h3>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="fetus_count">จำนวนทารกในครรภ์ *</label>
-                            <select id="fetus_count" name="fetus_count" required>
-                                <option value="">เลือกจำนวนทารก</option>
-                                <option value="1">1 คน</option>
-                                <option value="2">2 คน</option>
-                                <option value="3">3 คน</option>
-                                <option value="4">4 คน หรือมากกว่า</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="due_date">วันครบกำหนดคลอด *</label>
-                            <input type="date" id="due_date" name="due_date" required>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-section">
-                    <h3 class="section-title">อัตราส่วนมื้อหลัก</h3>
-                    
-                    <div class="carb-ratio-group">
-                        <div class="form-group">
-                            <label for="main_ratio_breakfast">อาหารเช้า (Breakfast) *</label>
-                            <input type="number" id="main_ratio_breakfast" name="main_ratio_breakfast" step="0.1" min="0" placeholder="เช่น 3" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="main_ratio_lunch">อาหารกลางวัน (Lunch) *</label>
-                            <input type="number" id="main_ratio_lunch" name="main_ratio_lunch" step="0.1" min="0" placeholder="เช่น 4" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="main_ratio_dinner">อาหารเย็น (Dinner) *</label>
-                            <input type="number" id="main_ratio_dinner" name="main_ratio_dinner" step="0.1" min="0" placeholder="เช่น 3" required>
-                        </div>
-                    </div>
-                </div>
+    <div class="container">
+        <div class="header">
+            <h1>ระบบบันทึกข้อมูลคนไข้สตรีตั้งครรภ์</h1>
+        </div>
+        
+        <div class="form-container">
+            <div id="liffStatus" class="liff-status liff-disconnected">
+                🔄 กำลังเชื่อมต่อ LINE...
+            </div>
+            
+            <form id="patientForm" style="display: none;"> 
+                <div class="form-section">
+                    <h3 class="section-title">ข้อมูลส่วนตัว</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="full_name">ชื่อ-นามสกุล *</label>
+                            <input type="text" id="full_name" name="full_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="nickname">ชื่อเล่น *</label>
+                            <input type="text" id="nickname" name="nickname" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="hospital_id">รหัสโรงพยาบาล *</label>
+                            <input type="text" id="hospital_id" name="hospital_id" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="national_id">เลขบัตรประชาชน *</label>
+                            <input type="text" id="national_id" name="national_id" pattern="[0-9]{13}" maxlength="13" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="birth_date">วันเกิด *</label>
+                            <input type="date" id="birth_date" name="birth_date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="height">ส่วนสูง (ซม.) *</label>
+                            <input type="number" id="height" name="height" min="100" max="200" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3 class="section-title">ข้อมูลสุขภาพ</h3>
+                    
+                    <div class="form-group full-width">
+                        <label>โรคประจำตัว *</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="chronicDiseaseNo" name="chronicDisease" value="ไม่มี" required>
+                                <label for="chronicDiseaseNo">ไม่มี</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="chronicDiseaseYes" name="chronicDisease" value="มี" required>
+                                <label for="chronicDiseaseYes">มี</label>
+                            </div>
+                        </div>
+                        <div class="conditional-input" id="chronicDiseaseDetail"> 
+                                                     <input type="text" id="comorbidities" name="comorbidities" placeholder="ระบุโรคประจำตัว">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label>ยาที่ใช้ก่อนตั้งครรภ์ *</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="medicationNo" name="medication" value="ไม่มี" required>
+                                <label for="medicationNo">ไม่มี</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="medicationYes" name="medication" value="มี" required>
+                                <label for="medicationYes">มี</label>
+                            </div>
+                        </div>
+                        <div class="conditional-input" id="medicationDetail">
+                                                     <textarea id="pre_pregnancy_medications" name="pre_pregnancy_medications" rows="3" placeholder="ระบุยาที่ใช้"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pre_pregnancy_weight">น้ำหนักก่อนตั้งครรภ์ (กก.) *</label>
+                            <input type="number" id="pre_pregnancy_weight" name="pre_pregnancy_weight" min="30" max="150" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="weight">น้ำหนักปัจจุบัน (กก.) *</label>
+                            <input type="number" id="weight" name="weight" min="30" max="150" step="0.1" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3 class="section-title">ข้อมูลการตั้งครรภ์</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fetus_count">จำนวนทารกในครรภ์ *</label>
+                            <select id="fetus_count" name="fetus_count" required>
+                                <option value="">เลือกจำนวนทารก</option>
+                                <option value="1">1 คน</option>
+                                <option value="2">2 คน</option>
+                                <option value="3">3 คน</option>
+                                <option value="4">4 คน หรือมากกว่า</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="due_date">วันครบกำหนดคลอด *</label>
+                            <input type="date" id="due_date" name="due_date" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3 class="section-title">อัตราส่วนมื้อหลัก</h3>
+                    
+                    <div class="carb-ratio-group">
+                        <div class="form-group">
+                            <label for="main_ratio_breakfast">อาหารเช้า (Breakfast) *</label>
+                            <input type="number" id="main_ratio_breakfast" name="main_ratio_breakfast" step="0.1" min="0" placeholder="เช่น 3" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="main_ratio_lunch">อาหารกลางวัน (Lunch) *</label>
+                            <input type="number" id="main_ratio_lunch" name="main_ratio_lunch" step="0.1" min="0" placeholder="เช่น 4" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="main_ratio_dinner">อาหารเย็น (Dinner) *</label>
+                            <input type="number" id="main_ratio_dinner" name="main_ratio_dinner" step="0.1" min="0" placeholder="เช่น 3" required>
+                        </div>
+                    </div>
+                </div>
 
-                <div class="form-section">
-                    <h3 class="section-title">อัตราส่วนมื้อรอง</h3>
-                    
-                    <div class="carb-ratio-group">
-                        <div class="form-group">
-                            <label for="snack_ratio_morning">มื้อเช้า (Morning Snack) *</label>
-                            <input type="number" id="snack_ratio_morning" name="snack_ratio_morning" step="0.1" min="0" placeholder="เช่น 1" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="snack_ratio_afternoon">มื้อบ่าย (Afternoon Snack) *</label>
-                            <input type="number" id="snack_ratio_afternoon" name="snack_ratio_afternoon" step="0.1" min="0" placeholder="เช่น 1.5" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="snack_ratio_evening">มื้อค่ำ (Evening Snack) *</label>
-                            <input type="number" id="snack_ratio_evening" name="snack_ratio_evening" step="0.1" min="0" placeholder="เช่น 0.5" required>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-section">
-                    <h3 class="section-title">วันที่ต้องเจาะน้ำตาล (เลือก 2 วัน)</h3>
-                    
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="monday" class="sugar-check" value="จันทร์">
-                            <label for="monday">จันทร์</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="tuesday" class="sugar-check" value="อังคาร">
-                            <label for="tuesday">อังคาร</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="wednesday" class="sugar-check" value="พุธ">
-                            <label for="wednesday">พุธ</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="thursday" class="sugar-check" value="พฤหัสบดี">
-                            <label for="thursday">พฤหัสบดี</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="friday" class="sugar-check" value="ศุกร์">
-                            <label for="friday">ศุกร์</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="saturday" class="sugar-check" value="เสาร์">
-                            <label for="saturday">เสาร์</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="sunday" class="sugar-check" value="อาทิตย์">
-                            <label for="sunday">อาทิตย์</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <button type="submit" class="submit-btn" disabled>💾 บันทึกข้อมูล</button>
-                
-                <div class="loading" id="loading">⏳ กำลังบันทึกข้อมูล...</div>
-                <div class="success-message" id="successMessage">✅ บันทึกข้อมูลเรียบร้อยแล้ว!</div>
-                <div class="error-message" id="errorMessage">❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง</div>
-            </form>
-        </div>
-    </div>
+                <div class="form-section">
+                    <h3 class="section-title">อัตราส่วนมื้อรอง</h3>
+                    
+                    <div class="carb-ratio-group">
+                        <div class="form-group">
+                            <label for="snack_ratio_morning">มื้อเช้า (Morning Snack) *</label>
+                            <input type="number" id="snack_ratio_morning" name="snack_ratio_morning" step="0.1" min="0" placeholder="เช่น 1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="snack_ratio_afternoon">มื้อบ่าย (Afternoon Snack) *</label>
+                            <input type="number" id="snack_ratio_afternoon" name="snack_ratio_afternoon" step="0.1" min="0" placeholder="เช่น 1.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="snack_ratio_evening">มื้อค่ำ (Evening Snack) *</label>
+                            <input type="number" id="snack_ratio_evening" name="snack_ratio_evening" step="0.1" min="0" placeholder="เช่น 0.5" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3 class="section-title">วันที่ต้องเจาะน้ำตาล (เลือก 2 วัน)</h3>
+                    
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="monday" class="sugar-check" value="จันทร์">
+                            <label for="monday">จันทร์</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="tuesday" class="sugar-check" value="อังคาร">
+                            <label for="tuesday">อังคาร</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="wednesday" class="sugar-check" value="พุธ">
+                            <label for="wednesday">พุธ</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="thursday" class="sugar-check" value="พฤหัสบดี">
+                            <label for="thursday">พฤหัสบดี</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="friday" class="sugar-check" value="ศุกร์">
+                            <label for="friday">ศุกร์</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="saturday" class="sugar-check" value="เสาร์">
+                            <label for="saturday">เสาร์</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="sunday" class="sugar-check" value="อาทิตย์">
+                            <label for="sunday">อาทิตย์</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn" disabled>💾 บันทึกข้อมูล</button>
+                
+                <div class="loading" id="loading">⏳ กำลังบันทึกข้อมูล...</div>
+                <div class="success-message" id="successMessage">✅ บันทึกข้อมูลเรียบร้อยแล้ว!</div>
+                <div class="error-message" id="errorMessage">❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง</div>
+            </form>
+        </div>
+    </div>
 
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-        <script>
-        let isLiffReady = false;
-        let liffUserId = null; 
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+        <script>
+        let isLiffReady = false;
+        let liffUserId = null; 
 
-        async function initializeLiff() {
-            try {
-                // **ต้องเปลี่ยน LIFF ID ของคุณ**
-                await liff.init({ liffId: "2007493917-XdpdZalP" }); 
-                if (!liff.isLoggedIn()) {
-                    liff.login();
-                } else {
-                    isLiffReady = true;
-                    document.getElementById('liffStatus').className = 'liff-status liff-connected';
-                    document.getElementById('liffStatus').innerHTML = '✅ เชื่อมต่อ LINE สำเร็จ';
-                    
-                    const profile = await liff.getProfile();
-                    liffUserId = profile.userId;
+        async function initializeLiff() {
+            try {
+                // **ต้องเปลี่ยน LIFF ID ของคุณ**
+                await liff.init({ liffId: "2007493917-XdpdZalP" }); 
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                } else {
+                    isLiffReady = true;
+                    document.getElementById('liffStatus').className = 'liff-status liff-connected';
+                    document.getElementById('liffStatus').innerHTML = '✅ เชื่อมต่อ LINE สำเร็จ';
+                    
+                    const profile = await liff.getProfile();
+                    liffUserId = profile.userId;
 
-                    await checkUserProfile(liffUserId);
+                    await checkUserProfile(liffUserId);
 
-                    // เปิดปุ่มเมื่อทุกอย่างพร้อมแล้ว
-                    document.querySelector('.submit-btn').disabled = false;
-                }
-            } catch (error) {
-                console.error('LIFF initialization failed:', error);
-                document.getElementById('liffStatus').innerHTML = '❌ ไม่สามารถเชื่อมต่อ LINE ได้';
-                document.getElementById('patientForm').style.display = 'block'; 
-            }
-        }
+                    // เปิดปุ่มเมื่อทุกอย่างพร้อมแล้ว
+                    document.querySelector('.submit-btn').disabled = false;
+                }
+            } catch (error) {
+                console.error('LIFF initialization failed:', error);
+                document.getElementById('liffStatus').innerHTML = '❌ ไม่สามารถเชื่อมต่อ LINE ได้';
+                // ถ้า LIFF ล้มเหลว ก็ยังแสดงฟอร์มไว้เป็นทางเลือก เผื่อการทดสอบ
+                document.getElementById('patientForm').style.display = 'block'; 
+            }
+        }
 
-        async function checkUserProfile(userId) {
-            console.log('Checking user profile for userId:', userId);
-            try {
-                const url = '/.netlify/functions/apps-script-proxy'; 
-                // ใช้ GET request สำหรับ checkUser
-                const response = await fetch(`${url}?action=checkUser&userId=${userId}`, {
-                    method: 'GET',
-                });
+        async function checkUserProfile(userId) {
+            console.log('Checking user profile for userId:', userId);
+            try {
+                const url = '/.netlify/functions/apps-script-proxy'; 
+                // ใช้ GET request สำหรับ checkUser
+                const response = await fetch(`${url}?action=checkUser&userId=${userId}`, {
+                    method: 'GET',
+                });
 
-                if (!response.ok) {
-                    const errorDetails = await response.text();
-                    // เพิ่มเติม: ควรจัดการการ parse JSON ในกรณีที่ Apps Script ส่ง text error มา
-                    try {
-                        const jsonError = JSON.parse(errorDetails);
-                        throw new Error(`HTTP error! Status: ${response.status}, Message: ${jsonError.message || 'Unknown error'}`);
-                    } catch (e) {
-                        throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails.substring(0, 100)}...`);
-                    }
-                }
+                if (!response.ok) {
+                    const errorDetails = await response.text();
+                    try {
+                        const jsonError = JSON.parse(errorDetails);
+                        throw new Error(`HTTP error! Status: ${response.status}, Message: ${jsonError.message || 'Unknown error'}`);
+                    } catch (e) {
+                        throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorDetails.substring(0, 100)}...`);
+                    }
+                }
 
-                const result = await response.json();
-                console.log('User check response from Netlify Function:', result);
+                const result = await response.json();
+                console.log('User check response from Netlify Function:', result);
 
-                if (result.status === 'profile_exists') {
-                    const profileData = result.profileData;
-                    // เติมข้อมูลส่วนตัว
-                    document.getElementById('full_name').value = profileData.full_name || '';
-                    document.getElementById('nickname').value = profileData.nickname || '';
-                    document.getElementById('hospital_id').value = profileData.hospital_id || '';
-                    document.getElementById('national_id').value = profileData.national_id || '';
-                    document.getElementById('birth_date').value = profileData.birth_date || '';
-                    document.getElementById('height').value = profileData.height || '';
+                if (result.status === 'profile_exists') {
+                    // *** โค้ดที่ถูกแก้ไข: Redirect ไปที่ food_records.html ทันที ***
+                    console.log('User profile exists. Redirecting to food records page...');
+                    liff.openWindow({
+                        url: `${window.location.origin}/food_records.html`, // เปลี่ยนไปที่ food_records.html
+                        external: false
+                    });
+                    // ไม่ต้องทำอย่างอื่นต่อในหน้านี้ เพราะถูก redirect ไปแล้ว
 
-                    // โรคประจำตัว (พร้อมกระตุ้น Event เพื่อแสดงช่องกรอกรายละเอียด)
-                    if (profileData.comorbidities && profileData.comorbidities !== 'ไม่มี') {
-                        document.getElementById('chronicDiseaseYes').checked = true;
-                        document.getElementById('comorbidities').value = profileData.comorbidities;
-                    } else {
-                        document.getElementById('chronicDiseaseNo').checked = true;
-                    }
-                    document.querySelector('input[name="chronicDisease"]:checked')?.dispatchEvent(new Event('change'));
+                } else if (result.status === 'new_user') {
+                    // ถ้าผู้ใช้ยังไม่เคยกรอก ให้แสดงฟอร์ม
+                    document.getElementById('patientForm').style.display = 'block';
+                } else {
+                    console.error('Error from Apps Script during checkUser:', result.message);
+                    document.getElementById('patientForm').style.display = 'block'; 
+                }
 
-                    // ยาที่ใช้ก่อนตั้งครรภ์ (พร้อมกระตุ้น Event เพื่อแสดงช่องกรอกรายละเอียด)
-                    if (profileData.pre_pregnancy_medications && profileData.pre_pregnancy_medications !== 'ไม่มี') {
-                        document.getElementById('medicationYes').checked = true;
-                        document.getElementById('pre_pregnancy_medications').value = profileData.pre_pregnancy_medications;
-                    } else {
-                        document.getElementById('medicationNo').checked = true;
-                    }
-                    document.querySelector('input[name="medication"]:checked')?.dispatchEvent(new Event('change'));
+            } catch (error) {
+                console.error('Error checking user profile via Netlify Function:', error);
+                // แสดงฟอร์มเผื่อไว้ในกรณีที่เกิดข้อผิดพลาดในการโหลดข้อมูล (Fallback)
+                document.getElementById('patientForm').style.display = 'block'; 
+            }
+        }
 
-                    document.getElementById('pre_pregnancy_weight').value = profileData.pre_pregnancy_weight || '';
-                    document.getElementById('weight').value = profileData.weight || '';
-                    document.getElementById('fetus_count').value = profileData.fetus_count || '';
-                    document.getElementById('due_date').value = profileData.due_date || '';
+        async function handleSubmit(event) {
+            event.preventDefault();
 
-                    // อัตราส่วนมื้อหลัก (main_ratio)
-                    if (profileData.main_ratio) {
-                        try {
-                            // รองรับทั้ง string และ object
-                            const mainRatio = typeof profileData.main_ratio === 'string' ? JSON.parse(profileData.main_ratio) : profileData.main_ratio;
-                            document.getElementById('main_ratio_breakfast').value = mainRatio.breakfast || '';
-                            document.getElementById('main_ratio_lunch').value = mainRatio.lunch || '';
-                            document.getElementById('main_ratio_dinner').value = mainRatio.dinner || '';
-                        } catch (e) {
-                            console.error("Error parsing main_ratio:", e);
-                        }
-                    }
+            const form = document.getElementById('patientForm');
+            // ตรวจสอบความถูกต้องของฟอร์มตามมาตรฐาน HTML5
+            if (!form.checkValidity()) {
+                 // ซ่อนข้อความ error เก่าก่อน
+                 document.getElementById('errorMessage').style.display = 'none';
+                 document.querySelector('.submit-btn').click(); // กระตุ้นการตรวจสอบของ browser
+                 return;
+            }
 
-                    // อัตราส่วนมื้อรอง (snack_ratio)
-                    if (profileData.snack_ratio) {
-                        try {
-                            // รองรับทั้ง string และ object
-                            const snackRatio = typeof profileData.snack_ratio === 'string' ? JSON.parse(profileData.snack_ratio) : profileData.snack_ratio;
-                            document.getElementById('snack_ratio_morning').value = snackRatio.morning || '';
-                            document.getElementById('snack_ratio_afternoon').value = snackRatio.afternoon || '';
-                            document.getElementById('snack_ratio_evening').value = snackRatio.evening || '';
-                        } catch (e) {
-                            console.error("Error parsing snack_ratio:", e);
-                        }
-                    }
+            if (!isLiffReady || !liffUserId) { 
+                console.warn('LIFF not ready or userId not available.');
+                document.getElementById('errorMessage').innerHTML = '❌ LIFF ยังไม่พร้อม กรุณาลองใหม่';
+                document.getElementById('errorMessage').style.display = 'block';
+                setTimeout(() => document.getElementById('errorMessage').style.display = 'none', 5000);
+                return;
+            }
 
-                    // วันที่ต้องเจาะน้ำตาล (พร้อมกระตุ้น Event เพื่ออัปเดตสถานะ disabled)
-                    if (profileData.sugar_check_days && Array.isArray(profileData.sugar_check_days)) {
-                        document.querySelectorAll('.sugar-check').forEach(checkbox => {
-                            checkbox.checked = profileData.sugar_check_days.includes(checkbox.value);
-                        });
-                        // เรียก event listener เพื่ออัปเดตสถานะ disabled ของ checkbox
-                        const event = new Event('change');
-                        // กระตุ้นที่ Checkbox ตัวแรกที่ถูกเลือก หรือถ้าไม่ถูกเลือกเลยก็กระตุ้นตัวแรกของกลุ่ม
-                        document.querySelector('.sugar-check')?.dispatchEvent(event);
-                    }
+            const selectedSugarCheck = Array.from(document.querySelectorAll('.sugar-check:checked')).map(cb => cb.value);
+            if (selectedSugarCheck.length !== 2) { 
+                document.getElementById('errorMessage').innerHTML = '❌ กรุณาเลือก "วันที่ต้องเจาะน้ำตาล" ให้ครบ 2 วัน';
+                document.getElementById('errorMessage').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('errorMessage').style.display = 'none';
+                }, 5000);
+                return;
+            }
 
-                    // แสดงฟอร์ม
-                    document.getElementById('patientForm').style.display = 'block'; 
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.querySelector('.submit-btn').disabled = true;
 
-                } else if (result.status === 'new_user') {
-                    // ถ้าผู้ใช้ยังไม่เคยกรอก ให้แสดงฟอร์ม
-                    document.getElementById('patientForm').style.display = 'block';
-                } else {
-                    console.error('Error from Apps Script during checkUser:', result.message);
-                    document.getElementById('patientForm').style.display = 'block'; 
-                }
+            try {
+                let comorbidities = '';
+                const chronicDiseaseRadio = document.querySelector('input[name="chronicDisease"]:checked');
+                if (chronicDiseaseRadio) {
+                    // หากเลือก "มี" แต่ไม่ได้กรอกรายละเอียด จะส่งเป็นค่าที่กรอก หรือถ้าว่างจะส่งเป็นค่าว่าง ('')
+                    comorbidities = chronicDiseaseRadio.value === 'มี' ? (document.getElementById('comorbidities').value || '') : 'ไม่มี';
+                } else {
+                    comorbidities = 'ไม่ระบุ';
+                }
 
-            } catch (error) {
-                console.error('Error checking user profile via Netlify Function:', error);
-                // แสดงฟอร์มเผื่อไว้ในกรณีที่เกิดข้อผิดพลาดในการโหลดข้อมูล
-                document.getElementById('patientForm').style.display = 'block'; 
-            }
-        }
+                let prePregMedications = '';
+                const medicationRadio = document.querySelector('input[name="medication"]:checked');
+                if (medicationRadio) {
+                    prePregMedications = medicationRadio.value === 'มี' ? (document.getElementById('pre_pregnancy_medications').value || '') : 'ไม่มี';
+                } else {
+                    prePregMedications = 'ไม่ระบุ';
+                }
 
-        async function handleSubmit(event) {
-            event.preventDefault();
+                const formData = {
+                    action: 'updateProfile', // ส่ง action ไปบอก Apps Script ว่าให้ทำอะไร
+                    userId: liffUserId, 
+                    data: { // ส่งข้อมูลเป็น object ภายใต้ key 'data'
+                        full_name: document.getElementById('full_name').value || '',
+                        nickname: document.getElementById('nickname').value || '',
+                        hospital_id: document.getElementById('hospital_id').value || '',
+                        national_id: document.getElementById('national_id').value || '',
+                        birth_date: document.getElementById('birth_date').value || '',
+                        comorbidities,
+                        pre_pregnancy_medications: prePregMedications,
+                        pre_pregnancy_weight: parseFloat(document.getElementById('pre_pregnancy_weight').value) || 0,
+                        weight: parseFloat(document.getElementById('weight').value) || 0,
+                        height: parseFloat(document.getElementById('height').value) || 0,
+                        fetus_count: parseInt(document.getElementById('fetus_count').value) || 0,
+                        due_date: document.getElementById('due_date').value || '',
+                        
+                        // อัตราส่วนมื้อหลัก
+                        main_ratio: { 
+                            breakfast: parseFloat(document.getElementById('main_ratio_breakfast').value) || 0,
+                            lunch: parseFloat(document.getElementById('main_ratio_lunch').value) || 0,
+                            dinner: parseFloat(document.getElementById('main_ratio_dinner').value) || 0
+                        },
+                        // อัตราส่วนมื้อรอง
+                        snack_ratio: {
+                            morning: parseFloat(document.getElementById('snack_ratio_morning').value) || 0,
+                            afternoon: parseFloat(document.getElementById('snack_ratio_afternoon').value) || 0,
+                            evening: parseFloat(document.getElementById('snack_ratio_evening').value) || 0
+                        },
+                        sugar_check_days: selectedSugarCheck
+                    }
+                };
 
-            const form = document.getElementById('patientForm');
-            // ตรวจสอบความถูกต้องของฟอร์มตามมาตรฐาน HTML5
-            if (!form.checkValidity()) {
-                 // ซ่อนข้อความ error เก่าก่อน
-                 document.getElementById('errorMessage').style.display = 'none';
-                 document.querySelector('.submit-btn').click(); // กระตุ้นการตรวจสอบของ browser
-                 return;
-            }
+                console.log('Sending data:', JSON.stringify(formData, null, 2));
 
-            if (!isLiffReady || !liffUserId) { 
-                console.warn('LIFF not ready or userId not available.');
-                document.getElementById('errorMessage').innerHTML = '❌ LIFF ยังไม่พร้อม กรุณาลองใหม่';
-                document.getElementById('errorMessage').style.display = 'block';
-                setTimeout(() => document.getElementById('errorMessage').style.display = 'none', 5000);
-                return;
-            }
+                const url = '/.netlify/functions/apps-script-proxy'; 
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
 
-            const selectedSugarCheck = Array.from(document.querySelectorAll('.sugar-check:checked')).map(cb => cb.value);
-            if (selectedSugarCheck.length !== 2) { 
-                document.getElementById('errorMessage').innerHTML = '❌ กรุณาเลือก "วันที่ต้องเจาะน้ำตาล" ให้ครบ 2 วัน';
-                document.getElementById('errorMessage').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('errorMessage').style.display = 'none';
-                }, 5000);
-                return;
-            }
+                if (!response.ok) {
+                    const errorDetails = await response.text(); 
+                    // โยน Error พร้อมรายละเอียด HTTP status
+                    throw new Error(`Failed to update profile. HTTP Status: ${response.status}. Details: ${errorDetails.substring(0, 100)}...`);
+                }
 
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('successMessage').style.display = 'none';
-            document.getElementById('errorMessage').style.display = 'none';
-            document.querySelector('.submit-btn').disabled = true;
+                const result = await response.json();
 
-            try {
-                let comorbidities = '';
-                const chronicDiseaseRadio = document.querySelector('input[name="chronicDisease"]:checked');
-                if (chronicDiseaseRadio) {
-                    // หากเลือก "มี" แต่ไม่ได้กรอกรายละเอียด จะส่งเป็นค่าที่กรอก หรือถ้าว่างจะส่งเป็นค่าว่าง ('')
-                    comorbidities = chronicDiseaseRadio.value === 'มี' ? (document.getElementById('comorbidities').value || '') : 'ไม่มี';
-                } else {
-                    comorbidities = 'ไม่ระบุ';
-                }
+                if (result.success) {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                    console.log('✅ ข้อมูลบันทึกสำเร็จ!');
 
-                let prePregMedications = '';
-                const medicationRadio = document.querySelector('input[name="medication"]:checked');
-                if (medicationRadio) {
-                    prePregMedications = medicationRadio.value === 'มี' ? (document.getElementById('pre_pregnancy_medications').value || '') : 'ไม่มี';
-                } else {
-                    prePregMedications = 'ไม่ระบุ';
-                }
+                    setTimeout(() => {
+                        document.getElementById('successMessage').style.display = 'none';
+                        document.querySelector('.submit-btn').disabled = false;
+                        
+                        // *** โค้ดที่ถูกแก้ไข: Redirect ไป food_records.html หลังการบันทึกสำเร็จ ***
+                        liff.openWindow({
+                            url: `${window.location.origin}/food_records.html`, 
+                            external: false
+                        });
+                    }, 3000);
+                } else {
+                    // โยน Error ที่มาจาก Apps Script/Backend
+                    throw new Error(`Server reported failure: ${result.message || 'Unknown Apps Script error'}`);
+                }
+            } catch (error) {
+                console.error('❌ Submit Error:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('errorMessage').style.display = 'block';
+                // แสดงข้อความ Error ที่ละเอียดขึ้น
+                document.getElementById('errorMessage').innerHTML = `❌ เกิดข้อผิดพลาด: ${error.message}`;
+                document.querySelector('.submit-btn').disabled = false;
 
-                const formData = {
-                    action: 'updateProfile', // ส่ง action ไปบอก Apps Script ว่าให้ทำอะไร
-                    userId: liffUserId, 
-                    data: { // ส่งข้อมูลเป็น object ภายใต้ key 'data'
-                        full_name: document.getElementById('full_name').value || '',
-                        nickname: document.getElementById('nickname').value || '',
-                        hospital_id: document.getElementById('hospital_id').value || '',
-                        national_id: document.getElementById('national_id').value || '',
-                        birth_date: document.getElementById('birth_date').value || '',
-                        comorbidities,
-                        pre_pregnancy_medications: prePregMedications,
-                        pre_pregnancy_weight: parseFloat(document.getElementById('pre_pregnancy_weight').value) || 0,
-                        weight: parseFloat(document.getElementById('weight').value) || 0,
-                        height: parseFloat(document.getElementById('height').value) || 0,
-                        fetus_count: parseInt(document.getElementById('fetus_count').value) || 0,
-                        due_date: document.getElementById('due_date').value || '',
-                        
-                        // อัตราส่วนมื้อหลัก
-                        main_ratio: { 
-                            breakfast: parseFloat(document.getElementById('main_ratio_breakfast').value) || 0,
-                            lunch: parseFloat(document.getElementById('main_ratio_lunch').value) || 0,
-                            dinner: parseFloat(document.getElementById('main_ratio_dinner').value) || 0
-                        },
-                        // อัตราส่วนมื้อรอง
-                        snack_ratio: {
-                            morning: parseFloat(document.getElementById('snack_ratio_morning').value) || 0,
-                            afternoon: parseFloat(document.getElementById('snack_ratio_afternoon').value) || 0,
-                            evening: parseFloat(document.getElementById('snack_ratio_evening').value) || 0
-                        },
-                        sugar_check_days: selectedSugarCheck
-                    }
-                };
+                setTimeout(() => {
+                    document.getElementById('errorMessage').style.display = 'none';
+                }, 8000);
+            }
+        }
 
-                console.log('Sending data:', JSON.stringify(formData, null, 2));
+        document.addEventListener('DOMContentLoaded', () => {
+            // ซ่อนฟอร์มเริ่มต้น
+            document.getElementById('patientForm').style.display = 'none';
 
-                const url = '/.netlify/functions/apps-script-proxy'; 
-                
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
+            // Logic แสดง/ซ่อนช่องระบุโรคประจำตัว
+            document.querySelectorAll('input[name="chronicDisease"]').forEach(radio => {
+                radio.addEventListener('change', function () {
+                    const detail = document.getElementById('chronicDiseaseDetail');
+                    const input = document.getElementById('comorbidities');
+                    if (this.value === 'มี') {
+                        detail.classList.add('show');
+                        input.required = true;
+                    } else {
+                        detail.classList.remove('show');
+                        input.required = false;
+                        // เนื่องจากเราไม่ได้โหลดข้อมูลกลับมาที่หน้านี้อีกแล้ว จึงไม่ต้องล้างค่า input.value 
+                    }
+                });
+            });
+            
+            // Logic แสดง/ซ่อนช่องระบุยา
+            document.querySelectorAll('input[name="medication"]').forEach(radio => {
+                radio.addEventListener('change', function () {
+                    const detail = document.getElementById('medicationDetail');
+                    const textarea = document.getElementById('pre_pregnancy_medications');
+                    if (this.value === 'มี') {
+                        detail.classList.add('show');
+                        textarea.required = true;
+                    } else {
+                        detail.classList.remove('show');
+                        textarea.required = false;
+                        // เนื่องจากเราไม่ได้โหลดข้อมูลกลับมาที่หน้านี้อีกแล้ว จึงไม่ต้องล้างค่า textarea.value
+                    }
+                });
+            });
+            // ตรวจสอบสถานะเริ่มต้นของโรคประจำตัวและยา
+            document.querySelector('input[name="chronicDisease"]:checked')?.dispatchEvent(new Event('change'));
+            document.querySelector('input[name="medication"]:checked')?.dispatchEvent(new Event('change'));
 
-                if (!response.ok) {
-                    const errorDetails = await response.text(); 
-                    // โยน Error พร้อมรายละเอียด HTTP status
-                    throw new Error(`Failed to update profile. HTTP Status: ${response.status}. Details: ${errorDetails.substring(0, 100)}...`);
-                }
+            // Logic เลือกวันที่เจาะน้ำตาลได้ไม่เกิน 2 วัน
+            document.querySelectorAll('.sugar-check').forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    const checked = document.querySelectorAll('.sugar-check:checked');
+                    if (checked.length >= 2) { 
+                        document.querySelectorAll('.sugar-check:not(:checked)').forEach(cb => cb.disabled = true);
+                    } else {
+                        document.querySelectorAll('.sugar-check').forEach(cb => cb.disabled = false);
+                    }
+                });
+            });
 
-                const result = await response.json();
+            // กำหนดวันที่ครบกำหนดคลอดขั้นต่ำ (วันนี้)
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('due_date').min = today;
 
-                if (result.success) {
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('successMessage').style.display = 'block';
-                    console.log('✅ ข้อมูลบันทึกสำเร็จ!');
-
-                    setTimeout(() => {
-                        document.getElementById('successMessage').style.display = 'none';
-                        document.querySelector('.submit-btn').disabled = false;
-                        
-                        // Redirect ไป Profile.html 
-                        liff.openWindow({
-                            url: `${window.location.origin}/profile.html`, // ใช้ window.location.origin เพื่อความยืดหยุ่น
-                            external: false
-                        });
-                    }, 3000);
-                } else {
-                    // โยน Error ที่มาจาก Apps Script/Backend
-                    throw new Error(`Server reported failure: ${result.message || 'Unknown Apps Script error'}`);
-                }
-            } catch (error) {
-                console.error('❌ Submit Error:', error);
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('errorMessage').style.display = 'block';
-                // แสดงข้อความ Error ที่ละเอียดขึ้น
-                document.getElementById('errorMessage').innerHTML = `❌ เกิดข้อผิดพลาด: ${error.message}`;
-                document.querySelector('.submit-btn').disabled = false;
-
-                setTimeout(() => {
-                    document.getElementById('errorMessage').style.display = 'none';
-                }, 8000);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // ซ่อนฟอร์มเริ่มต้น
-            document.getElementById('patientForm').style.display = 'none';
-
-            // Logic แสดง/ซ่อนช่องระบุโรคประจำตัว
-            document.querySelectorAll('input[name="chronicDisease"]').forEach(radio => {
-                radio.addEventListener('change', function () {
-                    const detail = document.getElementById('chronicDiseaseDetail');
-                    const input = document.getElementById('comorbidities');
-                    if (this.value === 'มี') {
-                        detail.classList.add('show');
-                        input.required = true;
-                    } else {
-                        detail.classList.remove('show');
-                        input.required = false;
-                        // ไม่ต้องลบค่าในช่องกรอกเมื่อเปลี่ยนเป็น 'ไม่มี' เผื่อผู้ใช้เผลอกด
-                        // input.value = ''; 
-                    }
-                });
-            });
-            
-            // Logic แสดง/ซ่อนช่องระบุยา
-            document.querySelectorAll('input[name="medication"]').forEach(radio => {
-                radio.addEventListener('change', function () {
-                    const detail = document.getElementById('medicationDetail');
-                    const textarea = document.getElementById('pre_pregnancy_medications');
-                    if (this.value === 'มี') {
-                        detail.classList.add('show');
-                        textarea.required = true;
-                    } else {
-                        detail.classList.remove('show');
-                        textarea.required = false;
-                        // ไม่ต้องลบค่าในช่องกรอกเมื่อเปลี่ยนเป็น 'ไม่มี' เผื่อผู้ใช้เผลอกด
-                        // textarea.value = '';
-                    }
-                });
-            });
-            // ตรวจสอบสถานะเริ่มต้นของโรคประจำตัวและยา
-            document.querySelector('input[name="chronicDisease"]:checked')?.dispatchEvent(new Event('change'));
-            document.querySelector('input[name="medication"]:checked')?.dispatchEvent(new Event('change'));
-
-            // Logic เลือกวันที่เจาะน้ำตาลได้ไม่เกิน 2 วัน
-            document.querySelectorAll('.sugar-check').forEach(checkbox => {
-                checkbox.addEventListener('change', function () {
-                    const checked = document.querySelectorAll('.sugar-check:checked');
-                    if (checked.length >= 2) { 
-                        document.querySelectorAll('.sugar-check:not(:checked)').forEach(cb => cb.disabled = true);
-                    } else {
-                        document.querySelectorAll('.sugar-check').forEach(cb => cb.disabled = false);
-                    }
-                });
-            });
-
-            // กำหนดวันที่ครบกำหนดคลอดขั้นต่ำ (วันนี้)
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('due_date').min = today;
-
-            // เริ่มต้น LIFF และผูก Event Listener
-            initializeLiff();
-            document.getElementById('patientForm').addEventListener('submit', handleSubmit);
-        });
-    </script>
+            // เริ่มต้น LIFF และผูก Event Listener
+            initializeLiff();
+            document.getElementById('patientForm').addEventListener('submit', handleSubmit);
+        });
+    </script>
 </body>
 </html>
